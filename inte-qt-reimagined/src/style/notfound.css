@@ -1,0 +1,52 @@
+.page_404 {
+  background: #fff;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  text-align: center;
+  height: 100vh;
+}
+
+.four_zero_four_bg {
+  background-image: url("https://cdn.dribbble.com/users/285475/screenshots/2083086/dribbble_1.gif");
+  height: 500px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.four_zero_four_bg h1 {
+    color: black;
+  font-size: 80px;
+
+}
+
+.content_box_404 {
+    color: black;
+  margin-top: -50px;
+  padding: 20px;
+}
+
+.content_box_404 h3 {
+  font-size: 40px;
+  margin-bottom: 20px;
+}
+
+.content_box_404 p {
+  font-size: 18px;
+  max-width: 650px;
+  margin: 0 auto 20px;
+  line-height: 1.5;
+}
+
+.link_404 {
+  text-decoration: none;
+  padding: 12px 25px;
+  background: #39ac31;
+  color: #fff !important;
+  border-radius: 4px;
+  font-size: 18px;
+  display: inline-block;
+  transition: 0.3s ease;
+}
+
+.link_404:hover {
+  background: #2f8f29;
+}

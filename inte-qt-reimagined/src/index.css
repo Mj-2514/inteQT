@@ -1,0 +1,151 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+/* If any element was designed to be white, keep it white ALWAYS */
+
+
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 210 40% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 210 40% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 40% 15%;
+
+    --primary: 210 100% 35%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 195 100% 45%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 210 15% 45%;
+
+    --accent: 195 100% 45%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 210 30% 90%;
+    --input: 210 30% 90%;
+    --ring: 210 100% 35%;
+
+    --radius: 0.75rem;
+
+    /* Custom design tokens */
+    --gradient-primary: linear-gradient(135deg, hsl(210 100% 35%), hsl(195 100% 45%));
+    --gradient-hero: linear-gradient(180deg, hsl(210 100% 12%), hsl(210 100% 20%));
+    --gradient-overlay: linear-gradient(180deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3));
+    
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.15);
+    --shadow-glow: 0 0 20px rgba(0, 180, 216, 0.3);
+
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  @keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+  
+  
+}
+
+
+
+.animate-scroll {
+  animation: scroll 8s linear infinite;
+}
+
+
+  .dark {
+    --background: 210 100% 6%;
+    --foreground: 0 0% 95%;
+
+    --card: 210 50% 10%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 210 50% 10%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 195 100% 45%;
+    --primary-foreground: 210 100% 10%;
+
+    --secondary: 210 50% 15%;
+    --secondary-foreground: 0 0% 95%;
+
+    --muted: 210 50% 15%;
+    --muted-foreground: 210 20% 60%;
+
+    --accent: 195 100% 45%;
+    --accent-foreground: 210 100% 10%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 95%;
+
+    --border: 210 50% 20%;
+    --input: 210 50% 20%;
+    --ring: 195 100% 45%;
+    
+  }
+  
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer utilities {
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+
+  .text-gradient {
+  background: linear-gradient(
+    90deg,
+    #047ffa 0%,
+    #1855b0 50%,
+    #0e5eff 100%
+  );
+  -webkit-background-clip: text;
+  color: transparent;
+  font-weight: 700;
+}
+
+
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+}
