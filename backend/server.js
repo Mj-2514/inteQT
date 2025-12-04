@@ -42,7 +42,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // CORS: restrict in production via FRONTEND_URL
-const FRONTEND = process.env.FRONTEND_URL || '*';
+const FRONTEND = 'https://inte-qt.vercel.app' || 'localhost:8080';
 app.use(cors({ origin: 8080 , credentials: true }));
 
 // --- rate limiter (basic) ---

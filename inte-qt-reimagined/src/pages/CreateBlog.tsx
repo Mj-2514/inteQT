@@ -2,7 +2,7 @@
 import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_BASE = import.meta.env.VITE_API_URL || "https://inteqt.onrender.com";
 
 function countWords(text = "") {
   return text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
