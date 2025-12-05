@@ -6,7 +6,10 @@ import { useNavigate } from 'react-router-dom';
 
 type AuthMode = 'login' | 'register';
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000" || 'https://inteqt.onrender.com';
+const API_BASE = import.meta.env.DEV
+  ? "http://localhost:5000"
+  : "https://inteqt.onrender.com";
+
 
 export default function AuthPage() {
   const [mode, setMode] = useState<AuthMode>('login');

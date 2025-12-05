@@ -7,7 +7,10 @@ import { BookOpen, CheckCircle2, AlertTriangle } from "lucide-react";
 import Navbar from "../components/Navbar";
 
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000" || 'https://inteqt.onrender.com';
+const API_BASE = import.meta.env.DEV
+  ? "http://localhost:5000"
+  : "https://inteqt.onrender.com";
+
 
 function countWords(text = "") {
   return text.trim() === "" ? 0 : text.trim().split(/\s+/).length;

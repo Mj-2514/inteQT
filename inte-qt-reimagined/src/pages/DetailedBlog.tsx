@@ -4,7 +4,10 @@ import { Helmet } from "react-helmet-async";
 import { ArrowLeft, Calendar, User, Tag } from "lucide-react";
 import { motion } from "framer-motion";
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000" || 'https://inteqt.onrender.com';
+const API_BASE = import.meta.env.DEV
+  ? "http://localhost:5000"
+  : "https://inteqt.onrender.com";
+
 
 type BlogFromApi = {
   _id: string;

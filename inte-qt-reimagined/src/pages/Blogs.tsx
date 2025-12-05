@@ -5,7 +5,10 @@ import { ArrowRight, Calendar, User } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000" || 'https://inteqt.onrender.com';
+const API_BASE = import.meta.env.DEV
+  ? "http://localhost:5000"
+  : "https://inteqt.onrender.com";
+
 
 type BlogFromApi = {
   _id: string;

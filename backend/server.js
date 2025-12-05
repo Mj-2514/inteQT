@@ -43,7 +43,18 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // CORS: restrict in production via FRONTEND_URL
 const FRONTEND = 'https://inte-qt.vercel.app' || 'localhost:8080';
-app.use(cors({ origin: 8080 , credentials: true }));
+const cors = require("cors");
+
+app.use(
+  cors({
+    origin: [
+      "http://localhost:8080",   // Vite dev
+      "https://inte-qt.vercel.app"
+    ],
+    credentials: true,
+  })
+);
+
 
 // --- rate limiter (basic) ---
 const limiter = rateLimit({
