@@ -4,7 +4,7 @@ import { Helmet } from "react-helmet-async";
 import { ArrowLeft, Calendar, User, Tag } from "lucide-react";
 import { motion } from "framer-motion";
 
-const API_BASE = import.meta.env.VITE_API_URL || "https://inteqt.onrender.com" || 'localhost:5000';
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000" || 'https://inteqt.onrender.com';
 
 type BlogFromApi = {
   _id: string;
@@ -188,6 +188,14 @@ const DetailedBlog = () => {
           </>
         )}
       </Helmet>
+      const normalizeUrl = (url: string): string => {
+  if (!url) return "";
+  // if already starts with http/https, leave it
+  if (/^https?:\/\//i.test(url)) return url.trim();
+  // otherwise, prepend https://
+  return `https://${url.trim()}`;
+};
+
   return (
     <>
       
@@ -415,15 +423,18 @@ const DetailedBlog = () => {
                     </h3>
 
                     {blog.authorLinkedin && (
-                      <a
-                        href={blog.authorLinkedin}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="mt-3 inline-flex items-center gap-2 text-sm text-sky-300 hover:text-sky-200"
-                      >
-                        <span>View on LinkedIn</span>
-                      </a>
-                    )}
+  <div className="mt-2 text-sm">
+    <a
+      href={normalizeUrl(blog.authorLinkedin)}
+      target="_blank"
+      rel="noreferrer"
+      className="text-indigo-600 hover:underline"
+    >
+      View author on LinkedIn
+    </a>
+  </div>
+)}
+
 
                     <div className="mt-4 rounded-xl bg-slate-800/70 px-3 py-3 text-xs text-slate-300">
                       <p>Share this blog with your team or save it to revisit.</p>

@@ -6,8 +6,8 @@ import { BookOpen, CheckCircle2, AlertTriangle } from "lucide-react";
 // adjust this path to your actual Navbar component
 import Navbar from "../components/Navbar";
 
-const API_BASE =
-  import.meta.env.VITE_API_URL || "https://inteqt.onrender.com" || 'localhost:5000';
+
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000" || 'https://inteqt.onrender.com';
 
 function countWords(text = "") {
   return text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
