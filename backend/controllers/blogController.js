@@ -24,12 +24,15 @@ function formatDateYYYYMMDD(d) {
   return `${yyyy}/${mm}/${dd}`;
 }
 
-function uploadBufferToCloudinary(buffer, folder) {
+function uploadBufferToCloudinary(buffer, folder, opts = {}) {
+  // opts: { resource_type: 'image' | 'video' | 'auto' }
+  const resource_type = opts.resource_type || 'auto';
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
       {
         folder,
-        resource_type: 'auto', // accept gifs, webm, mp4 etc.
+        resource_type,
+        // request a derived mp4 for gifs? optional: use eager to create mp4
       },
       (error, result) => {
         if (error) return reject(error);
@@ -39,6 +42,7 @@ function uploadBufferToCloudinary(buffer, folder) {
     stream.end(buffer);
   });
 }
+
 
 function mediaTypeFromMime(mime) {
   if (!mime) return 'external';
@@ -140,10 +144,28 @@ exports.createBlog = async (req, res) => {
 };
 
 
+// Helper: build a secure cloudinary URL from an upload result or public_id
+function cloudinaryDirectUrl(maybeUrlOrPublicId) {
+  if (!maybeUrlOrPublicId) return null;
+  const s = String(maybeUrlOrPublicId);
+  // if it's already an http(s) URL, return as-is (prefer secure_url)
+  if (s.startsWith('http://') || s.startsWith('https://')) return s;
+  // otherwise assume it's a Cloudinary public_id and build a secure URL (example)
+  // adjust 'your-cloud-name' if you use a different env var or cloudinary config
+  try {
+    const cloudName = (cloudinary.config && cloudinary.config().cloud_name) || process.env.CLOUDINARY_CLOUD_NAME;
+    if (!cloudName) return s;
+    // default to video resource_type if extension indicates video is unknown — resource_type=auto would also work
+    return `https://res.cloudinary.com/${cloudName}/raw/upload/${encodeURIComponent(s)}`;
+  } catch (e) {
+    return s;
+  }
+}
+
 // GET /api/blogs/all
 exports.getBlogs = async (req, res, next) => {
   try {
-    const { q, tag, page = 1, limit = 20 } = req.query;
+    const { q, tag, page = 1, limit = 20 } = req.query || {};
     const filter = { published: true };
     if (q) filter.$or = [
       { title: new RegExp(q, 'i') },
@@ -159,13 +181,17 @@ exports.getBlogs = async (req, res, next) => {
       .skip(skip)
       .limit(Number(limit));
 
-    // map and format
     const out = blogs.map(b => {
       const o = b.toObject();
-      o.publicationDate = formatDateYYYYMMDD(o.publicationDate);
-      // ensure media fields exist for frontend (defensive)
-      o.introImage = o.introImage || null;
+
+      // ensure we have consistent, direct URLs and media type
+      o.introImage = o.introImage ? cloudinaryDirectUrl(o.introImage) : null;
+      o.descriptionImage = o.descriptionImage ? cloudinaryDirectUrl(o.descriptionImage) : null;
+
       o.introMediaType = o.introMediaType || (o.introImage ? mediaTypeFromUrl(o.introImage) : null);
+      o.descriptionMediaType = o.descriptionMediaType || (o.descriptionImage ? mediaTypeFromUrl(o.descriptionImage) : null);
+
+      o.publicationDate = formatDateYYYYMMDD(o.publicationDate);
       return o;
     });
 
@@ -175,17 +201,24 @@ exports.getBlogs = async (req, res, next) => {
   }
 };
 
-
 // GET /api/blogs/slug/:slug
 exports.getBlogBySlug = async (req, res, next) => {
   try {
     const blog = await Blog.findOne({ slug: req.params.slug, published: true });
     if (!blog) return res.status(404).json({ message: 'Blog not found' });
+
     const o = blog.toObject();
-    o.publicationDate = formatDateYYYYMMDD(o.publicationDate);
-    // ensure mediaType is present
+
+    // make sure frontend always receives a direct playable URL (or null)
+    o.introImage = o.introImage ? cloudinaryDirectUrl(o.introImage) : null;
+    o.descriptionImage = o.descriptionImage ? cloudinaryDirectUrl(o.descriptionImage) : null;
+
+    // ensure media type is present and correct
     o.introMediaType = o.introMediaType || (o.introImage ? mediaTypeFromUrl(o.introImage) : null);
     o.descriptionMediaType = o.descriptionMediaType || (o.descriptionImage ? mediaTypeFromUrl(o.descriptionImage) : null);
+
+    o.publicationDate = formatDateYYYYMMDD(o.publicationDate);
+
     res.json(o);
   } catch (err) {
     next(err);
@@ -282,6 +315,7 @@ exports.updateBlog = async (req, res, next) => {
     next(err);
   }
 };
+
 
 
 // DELETE /api/blogs/:id  (admin)

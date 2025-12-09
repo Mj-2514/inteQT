@@ -24,6 +24,23 @@ function looksLikeUrl(s: string) {
   }
 }
 
+function urlLooksLikeVideo(url = "") {
+  return /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url);
+}
+
+function isVideoFile(f?: File | null) {
+  return !!(f && f.type && f.type.startsWith("video"));
+}
+
+function revokeIfBlobUrl(url?: string | null) {
+  if (!url) return;
+  try {
+    if (url.startsWith("blob:")) URL.revokeObjectURL(url);
+  } catch (e) {
+    // ignore
+  }
+}
+
 const CreateBlog: React.FC = () => {
   const navigate = useNavigate();
 
@@ -41,13 +58,17 @@ const CreateBlog: React.FC = () => {
   const [introImageFile, setIntroImageFile] = useState<File | null>(null);
   const [descImageFile, setDescImageFile] = useState<File | null>(null);
 
-  // external URL options (user can paste a hosted GIF/image)
+  // external URL options (user can paste a hosted GIF/image/video)
   const [introImageUrl, setIntroImageUrl] = useState<string>("");
   const [descImageUrl, setDescImageUrl] = useState<string>("");
 
   // preview (either object URL of file or the external URL)
   const [introPreview, setIntroPreview] = useState<string | null>(null);
   const [descPreview, setDescPreview] = useState<string | null>(null);
+
+  // whether each preview is a video (controls whether to render <video> vs <img>)
+  const [introIsVideo, setIntroIsVideo] = useState(false);
+  const [descIsVideo, setDescIsVideo] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -68,8 +89,11 @@ const CreateBlog: React.FC = () => {
     if (conclWords > 650) return `Conclusion exceeds 650 words (${conclWords}).`;
 
     // If user provided an external URL, ensure it's a valid URL
-    if (introImageUrl && !looksLikeUrl(introImageUrl)) return "Intro image URL is not valid.";
-    if (descImageUrl && !looksLikeUrl(descImageUrl)) return "Description image URL is not valid.";
+    if (introImageUrl && !looksLikeUrl(introImageUrl)) return "Intro image/video URL is not valid.";
+    if (descImageUrl && !looksLikeUrl(descImageUrl)) return "Description image/video URL is not valid.";
+
+    // description image/video is mandatory per your UI
+    if (!descImageFile && !descImageUrl) return "Description image or hosted video/image URL is required.";
 
     return null;
   };
@@ -77,35 +101,46 @@ const CreateBlog: React.FC = () => {
   // handle file selection (keeps file + clears the external URL for that slot)
   const handleFile = (
     f: File | null,
-    setterFile: typeof setIntroImageFile,
-    setterPreview: typeof setIntroPreview,
-    clearUrlSetter?: (v: string) => void
+    setterFile: (f: File | null) => void,
+    setterPreview: (p: string | null) => void,
+    clearUrlSetter?: (v: string) => void,
+    setIsVideo?: (b: boolean) => void
   ) => {
+    // revoke previous preview if it was a blob URL to avoid leaks
+    // we'll check the existing preview via the setter's companion state by reading the current preview (we don't have it here),
+    // so callers should revoke before calling handleFile if they know the preview. To keep it simple, we only set new and rely on revoke elsewhere.
+
     setterFile(f);
+
     if (!f) {
       setterPreview(null);
+      if (setIsVideo) setIsVideo(false);
       return;
     }
-    // revoke existing preview if it was an object URL (we can't reliably detect here; we just set new)
+
     const url = URL.createObjectURL(f);
     setterPreview(url);
     if (clearUrlSetter) clearUrlSetter("");
+    if (setIsVideo) setIsVideo(isVideoFile(f));
   };
 
   // when user types/pastes an external URL, clear file and set preview to that URL
   const handleUrlChange = (
     url: string,
-    setterUrl: typeof setIntroImageUrl,
+    setterUrl: (v: string) => void,
     clearFileSetter?: (f: File | null) => void,
-    setterPreview?: typeof setIntroPreview
+    setterPreview?: (p: string | null) => void,
+    setIsVideo?: (b: boolean) => void
   ) => {
     setterUrl(url);
     if (clearFileSetter) clearFileSetter(null);
     if (!url) {
       setterPreview && setterPreview(null);
+      if (setIsVideo) setIsVideo(false);
       return;
     }
     setterPreview && setterPreview(url);
+    if (setIsVideo) setIsVideo(urlLooksLikeVideo(url));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -147,7 +182,6 @@ const CreateBlog: React.FC = () => {
       if (introImageFile) {
         fd.append("introImage", introImageFile);
       } else if (introImageUrl && looksLikeUrl(introImageUrl)) {
-        // backend expects introImageUrl field for external URL
         fd.append("introImageUrl", introImageUrl.trim());
       }
 
@@ -187,8 +221,8 @@ const CreateBlog: React.FC = () => {
       setSubmitted(true);
 
       // revoke object URLs to avoid memory leaks
-      if (introPreview && introImageFile) URL.revokeObjectURL(introPreview);
-      if (descPreview && descImageFile) URL.revokeObjectURL(descPreview);
+      revokeIfBlobUrl(introPreview ?? null);
+      revokeIfBlobUrl(descPreview ?? null);
 
       setTimeout(() => navigate("/blogs"), 900);
     } catch (err: any) {
@@ -346,43 +380,62 @@ const CreateBlog: React.FC = () => {
                 />
               </div>
 
-              {/* Intro image (file or external URL) */}
+              {/* Intro image/video (file or external URL) */}
               <div className="grid gap-4 md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] md:items-center">
                 <div>
-                  <label className="mb-1 block text-sm font-medium">Intro Image</label>
+                  <label className="mb-1 block text-sm font-medium">Intro Image / Video</label>
 
-                  {/* file input */}
+                  {/* file input - allow images + videos */}
                   <input
                     type="file"
-                    accept="image/*"
+                    accept="image/*,video/*"
                     onChange={(e) =>
                       handleFile(
                         e.target.files?.[0] || null,
                         setIntroImageFile,
-                        setIntroPreview,
-                        setIntroImageUrl
+                        (p) => {
+                          // revoke old if it was a blob and different from new
+                          if (introPreview && introPreview.startsWith("blob:") && p !== introPreview) revokeIfBlobUrl(introPreview);
+                          setIntroPreview(p);
+                        },
+                        setIntroImageUrl,
+                        setIntroIsVideo
                       )
                     }
                     className="block w-full text-xs text-muted-foreground file:mr-3 file:rounded-full file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-primary-foreground hover:file:bg-primary/90"
                   />
-                  <p className="mt-1 text-[11px] text-muted-foreground">Ideal: 1200×630, under 5MB, clean header image.</p>
+                  <p className="mt-1 text-[11px] text-muted-foreground">Ideal: 1200×630, under 50MB for videos, clean header media.</p>
 
                   <div className="mt-2">
-                    <label className="mb-1 block text-[12px] font-medium">Or paste a hosted GIF / image URL</label>
+                    <label className="mb-1 block text-[12px] font-medium">Or paste a hosted GIF / image / video URL</label>
                     <input
                       value={introImageUrl}
-                      onChange={(e) => handleUrlChange(e.target.value, setIntroImageUrl, setIntroImageFile, setIntroPreview)}
-                      placeholder="https://media.giphy.com/..."
+                      onChange={(e) =>
+                        handleUrlChange(
+                          e.target.value,
+                          setIntroImageUrl,
+                          setIntroImageFile,
+                          (p) => {
+                            if (introPreview && introPreview.startsWith("blob:")) revokeIfBlobUrl(introPreview);
+                            setIntroPreview(p);
+                          },
+                          setIntroIsVideo
+                        )
+                      }
+                      placeholder="https://media.giphy.com/... or https://site.com/video.mp4"
                       className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none ring-0 placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/40"
                     />
-                    <p className="mt-1 text-[11px] text-muted-foreground">Tip: paste a Giphy/Tenor link to avoid large uploads — we will save the external URL.</p>
+                    <p className="mt-1 text-[11px] text-muted-foreground">Tip: paste a Giphy/Tenor link or hosted MP4 — we will save the external URL.</p>
                   </div>
                 </div>
 
                 {introPreview && (
                   <div className="overflow-hidden rounded-2xl border border-border bg-muted">
-                    {/* GIFs animate in an <img>; videos should be handled server-side or render as <video> on post page */}
-                    <img src={introPreview} alt="Intro preview" className="max-h-40 w-full object-cover" />
+                    {introIsVideo ? (
+                      <video src={introPreview} controls className="max-h-40 w-full object-cover" />
+                    ) : (
+                      <img src={introPreview} alt="Intro preview" className="max-h-40 w-full object-cover" />
+                    )}
                   </div>
                 )}
               </div>
@@ -404,39 +457,58 @@ const CreateBlog: React.FC = () => {
                 />
               </div>
 
-              {/* Description image (file or external URL) */}
+              {/* Description image/video (file or external URL) */}
               <div className="grid gap-4 md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] md:items-center">
                 <div>
-                  <label className="mb-1 block text-sm font-medium">Description Image (Mandatory)</label>
+                  <label className="mb-1 block text-sm font-medium">Description Image / Video (Mandatory)</label>
                   <input
                     type="file"
-                    accept="image/*"
+                    accept="image/*,video/*"
                     onChange={(e) =>
                       handleFile(
                         e.target.files?.[0] || null,
                         setDescImageFile,
-                        setDescPreview,
-                        setDescImageUrl
+                        (p) => {
+                          if (descPreview && descPreview.startsWith("blob:") && p !== descPreview) revokeIfBlobUrl(descPreview);
+                          setDescPreview(p);
+                        },
+                        setDescImageUrl,
+                        setDescIsVideo
                       )
                     }
                     className="block w-full text-xs text-muted-foreground file:mr-3 file:rounded-full file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-primary-foreground hover:file:bg-primary/90"
                   />
 
                   <div className="mt-2">
-                    <label className="mb-1 block text-[12px] font-medium">Or paste a hosted GIF / image URL</label>
+                    <label className="mb-1 block text-[12px] font-medium">Or paste a hosted GIF / image / video URL</label>
                     <input
                       value={descImageUrl}
-                      onChange={(e) => handleUrlChange(e.target.value, setDescImageUrl, setDescImageFile, setDescPreview)}
-                      placeholder="https://media.giphy.com/..."
+                      onChange={(e) =>
+                        handleUrlChange(
+                          e.target.value,
+                          setDescImageUrl,
+                          setDescImageFile,
+                          (p) => {
+                            if (descPreview && descPreview.startsWith("blob:")) revokeIfBlobUrl(descPreview);
+                            setDescPreview(p);
+                          },
+                          setDescIsVideo
+                        )
+                      }
+                      placeholder="https://media.giphy.com/... or https://site.com/video.mp4"
                       className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none ring-0 placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/40"
                     />
-                    <p className="mt-1 text-[11px] text-muted-foreground">Required: provide either a file or a hosted image/GIF URL.</p>
+                    <p className="mt-1 text-[11px] text-muted-foreground">Required: provide either a file or a hosted image/video URL.</p>
                   </div>
                 </div>
 
                 {descPreview && (
                   <div className="overflow-hidden rounded-2xl border border-border bg-muted">
-                    <img src={descPreview} alt="Description preview" className="max-h-40 w-full object-cover" />
+                    {descIsVideo ? (
+                      <video src={descPreview} controls className="max-h-40 w-full object-cover" />
+                    ) : (
+                      <img src={descPreview} alt="Description preview" className="max-h-40 w-full object-cover" />
+                    )}
                   </div>
                 )}
               </div>

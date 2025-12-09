@@ -14,7 +14,7 @@ const upload = multer({
   fileFilter: (req, file, cb) => {
     // Allow images (including gifs). If you want to allow video uploads too, uncomment the video check.
     if (file.mimetype.startsWith('image/')) return cb(null, true);
-    // if (file.mimetype.startsWith('video/')) return cb(null, true); // optional
+    if (file.mimetype.startsWith('video/')) return cb(null, true); // optional
     return cb(new Error('Only image files are allowed (GIF/JPG/PNG/etc).'), false);
   }
 });
