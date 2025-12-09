@@ -10,9 +10,12 @@ const blogSchema = new mongoose.Schema({
   slug: { type: String, index: true, unique: true },
   tags: [{ type: String }],
   introduction: { type: String },
+  // introImage and descriptionImage stay strings (URL). They can point to a still image or GIF or video URL.
   introImage: { type: String, required: true },
+  introMediaType: { type: String, enum: ['gif','image','video','external'], default: 'image' },
   description: { type: String },
-  descriptionImage: { type: String,required: true},
+  descriptionImage: { type: String, required: true },
+  descriptionMediaType: { type: String, enum: ['gif','image','video','external'], default: 'image' },
   conclusion: { type: String },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   published: { type: Boolean, default: true },
@@ -20,17 +23,13 @@ const blogSchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now },
 });
 
-// Synchronous pre-validate hook: NO `next` param, NO async.
-// This guarantees Mongoose won't pass a `next` callback and avoids the TypeError.
+// pre validate same as before
 blogSchema.pre('validate', function () {
-  // `this` is the document
   if (!this.slug && this.title) {
     const base = slugify(this.title, { lower: true, strict: true }).slice(0, 200);
     this.slug = `${base}-${Date.now().toString(36).slice(-6)}`;
   }
-  // publicationDate default handled by schema; update updatedAt
   this.updatedAt = Date.now();
-  // synchronous, so simply return (no next())
 });
 
 module.exports = mongoose.model('Blog', blogSchema);

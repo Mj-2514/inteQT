@@ -143,7 +143,7 @@ const Home = () => {
 
 
         >
-          <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/22 to-background/10" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/10 via-background/15 to-background/14" />
         </div>
         
         <div className="relative z-10 container mx-auto px-4 text-center">

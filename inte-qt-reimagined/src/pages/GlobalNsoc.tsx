@@ -65,11 +65,11 @@ const GlobalNsoc = () => {
         <Navbar />
 
       {/* HERO SECTION */}
-      <section className="relative h-[75vh] flex items-center justify-center text-center overflow-hidden">
+      <section className="relative h-[45vh] flex items-center justify-center text-center overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: `url("/nsoc.gif")`,
+            backgroundImage: `url("https://images.unsplash.com/vector-1759248692166-570a716aab82?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8b2ZmaWNlfGVufDB8MHwwfHx8Mg%3D%3D")`,
           }}
         />
         <div className="absolute inset-0 bg-black/60" />

@@ -13,7 +13,7 @@ const Afghanistan: React.FC = () => {
     name="description"
     content="Detailed overview of Afghanistan internet connectivity, fiber routes, ISPs, broadband statistics and inte-QT service capabilities in Kabul, Kandahar and Herat."
   />
-  <link rel="canonical" href="https://www.inte-qt.com/country/afghanistan" />
+  <link rel="canonical" href="https://www.inte-qt.com/coverage/asia/afghanistan" />
 </Helmet>
 
   return (

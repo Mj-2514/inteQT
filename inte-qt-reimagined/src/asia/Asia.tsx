@@ -26,7 +26,7 @@ const asianCountries: Country[] = [
   { name: "India", code: "in", link: "/coverage/asia/india" },
   { name: "Indonesia", code: "id", link: "/coverage/asia/indonesia" },
   { name: "Iran", code: "ir", link: "/coverage/asia/iran" },
-  { name: "Iraq", code: "iq", link: "/coverage/asia/ عراق" },
+  { name: "Iraq", code: "iq", link: "/coverage/asia/iraq" },
   { name: "Israel", code: "il", link: "/coverage/asia/israel" },
   { name: "Japan", code: "jp", link: "/coverage/asia/japan" },
   { name: "Jordan", code: "jo", link: "/coverage/asia/jordan" },

@@ -6,14 +6,22 @@ import { BookOpen, CheckCircle2, AlertTriangle } from "lucide-react";
 // adjust this path to your actual Navbar component
 import Navbar from "../components/Navbar";
 
-
 const API_BASE = import.meta.env.DEV
   ? "http://localhost:5000"
   : "https://inteqt.onrender.com";
 
-
 function countWords(text = "") {
   return text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
+}
+
+function looksLikeUrl(s: string) {
+  if (!s) return false;
+  try {
+    const u = new URL(s);
+    return u.protocol === "http:" || u.protocol === "https:";
+  } catch {
+    return false;
+  }
 }
 
 const CreateBlog: React.FC = () => {
@@ -29,9 +37,15 @@ const CreateBlog: React.FC = () => {
   const [conclusion, setConclusion] = useState("");
   const [published, setPublished] = useState(true);
 
-  // images
+  // images/files
   const [introImageFile, setIntroImageFile] = useState<File | null>(null);
   const [descImageFile, setDescImageFile] = useState<File | null>(null);
+
+  // external URL options (user can paste a hosted GIF/image)
+  const [introImageUrl, setIntroImageUrl] = useState<string>("");
+  const [descImageUrl, setDescImageUrl] = useState<string>("");
+
+  // preview (either object URL of file or the external URL)
   const [introPreview, setIntroPreview] = useState<string | null>(null);
   const [descPreview, setDescPreview] = useState<string | null>(null);
 
@@ -40,45 +54,58 @@ const CreateBlog: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   // word counts
-  const introWords = useMemo(
-    () => countWords(introduction),
-    [introduction]
-  );
-  const descWords = useMemo(
-    () => countWords(description),
-    [description]
-  );
-  const conclWords = useMemo(
-    () => countWords(conclusion),
-    [conclusion]
-  );
+  const introWords = useMemo(() => countWords(introduction), [introduction]);
+  const descWords = useMemo(() => countWords(description), [description]);
+  const conclWords = useMemo(() => countWords(conclusion), [conclusion]);
 
   const validate = () => {
     if (!title.trim()) return "Title is required.";
     if (!authorName.trim()) return "Author name is required.";
     if (!introduction.trim()) return "Introduction is required.";
     if (!description.trim()) return "Description is required.";
-    if (introWords > 330)
-      return `Introduction exceeds 330 words (${introWords}).`;
-    if (descWords > 1500)
-      return `Description exceeds 1500 words (${descWords}).`;
-    if (conclWords > 650)
-      return `Conclusion exceeds 650 words (${conclWords}).`;
+    if (introWords > 330) return `Introduction exceeds 330 words (${introWords}).`;
+    if (descWords > 1500) return `Description exceeds 1500 words (${descWords}).`;
+    if (conclWords > 650) return `Conclusion exceeds 650 words (${conclWords}).`;
+
+    // If user provided an external URL, ensure it's a valid URL
+    if (introImageUrl && !looksLikeUrl(introImageUrl)) return "Intro image URL is not valid.";
+    if (descImageUrl && !looksLikeUrl(descImageUrl)) return "Description image URL is not valid.";
+
     return null;
   };
 
+  // handle file selection (keeps file + clears the external URL for that slot)
   const handleFile = (
     f: File | null,
     setterFile: typeof setIntroImageFile,
-    setterPreview: typeof setIntroPreview
+    setterPreview: typeof setIntroPreview,
+    clearUrlSetter?: (v: string) => void
   ) => {
     setterFile(f);
     if (!f) {
       setterPreview(null);
       return;
     }
+    // revoke existing preview if it was an object URL (we can't reliably detect here; we just set new)
     const url = URL.createObjectURL(f);
     setterPreview(url);
+    if (clearUrlSetter) clearUrlSetter("");
+  };
+
+  // when user types/pastes an external URL, clear file and set preview to that URL
+  const handleUrlChange = (
+    url: string,
+    setterUrl: typeof setIntroImageUrl,
+    clearFileSetter?: (f: File | null) => void,
+    setterPreview?: typeof setIntroPreview
+  ) => {
+    setterUrl(url);
+    if (clearFileSetter) clearFileSetter(null);
+    if (!url) {
+      setterPreview && setterPreview(null);
+      return;
+    }
+    setterPreview && setterPreview(url);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -116,8 +143,19 @@ const CreateBlog: React.FC = () => {
       fd.append("conclusion", conclusion.trim());
       fd.append("published", String(published));
 
-      if (introImageFile) fd.append("introImage", introImageFile);
-      if (descImageFile) fd.append("descriptionImage", descImageFile);
+      // priority: if a file is present, send file; otherwise send external URL field
+      if (introImageFile) {
+        fd.append("introImage", introImageFile);
+      } else if (introImageUrl && looksLikeUrl(introImageUrl)) {
+        // backend expects introImageUrl field for external URL
+        fd.append("introImageUrl", introImageUrl.trim());
+      }
+
+      if (descImageFile) {
+        fd.append("descriptionImage", descImageFile);
+      } else if (descImageUrl && looksLikeUrl(descImageUrl)) {
+        fd.append("descriptionImageUrl", descImageUrl.trim());
+      }
 
       const res = await fetch(`${API_BASE}/api/blogs/add`, {
         method: "POST",
@@ -148,8 +186,9 @@ const CreateBlog: React.FC = () => {
 
       setSubmitted(true);
 
-      if (introPreview) URL.revokeObjectURL(introPreview);
-      if (descPreview) URL.revokeObjectURL(descPreview);
+      // revoke object URLs to avoid memory leaks
+      if (introPreview && introImageFile) URL.revokeObjectURL(introPreview);
+      if (descPreview && descImageFile) URL.revokeObjectURL(descPreview);
 
       setTimeout(() => navigate("/blogs"), 900);
     } catch (err: any) {
@@ -159,12 +198,7 @@ const CreateBlog: React.FC = () => {
     }
   };
 
-  const wordBar = (
-    used: number,
-    max: number,
-    colorActive: string,
-    label: string
-  ) => {
+  const wordBar = (used: number, max: number, colorActive: string, label: string) => {
     const ratio = Math.min(used / max, 1);
     const percent = Math.round(ratio * 100);
     const isOver = used > max;
@@ -173,19 +207,13 @@ const CreateBlog: React.FC = () => {
       <div className="space-y-1">
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>{label}</span>
-          <span
-            className={
-              isOver ? "text-destructive font-medium" : "text-muted-foreground"
-            }
-          >
+          <span className={isOver ? "text-destructive font-medium" : "text-muted-foreground"}>
             {used} / {max}
           </span>
         </div>
         <div className="h-1.5 w-full rounded-full bg-muted">
           <div
-            className={`h-1.5 rounded-full transition-all ${
-              isOver ? "bg-destructive" : colorActive
-            }`}
+            className={`h-1.5 rounded-full transition-all ${isOver ? "bg-destructive" : colorActive}`}
             style={{ width: `${percent}%` }}
           />
         </div>
@@ -220,12 +248,9 @@ const CreateBlog: React.FC = () => {
               <BookOpen className="h-3.5 w-3.5 text-sky-500" />
               <span>Admin · Blog Creator</span>
             </div>
-            <h1 className="text-2xl font-semibold md:text-3xl">
-              Create a new blog
-            </h1>
+            <h1 className="text-2xl font-semibold md:text-3xl">Create a new blog</h1>
             <p className="text-xs md:text-sm text-muted-foreground">
-              Write, attach visuals, and publish. You can later edit or delete
-              from the admin dashboard.
+              Write, attach visuals, and publish. You can later edit or delete from the admin dashboard.
             </p>
           </div>
 
@@ -283,9 +308,7 @@ const CreateBlog: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="mb-1 block text-sm font-medium">
-                    Author LinkedIn
-                  </label>
+                  <label className="mb-1 block text-sm font-medium">Author LinkedIn</label>
                   <input
                     value={authorLinkedin}
                     onChange={(e) => setAuthorLinkedin(e.target.value)}
@@ -297,9 +320,7 @@ const CreateBlog: React.FC = () => {
 
               {/* Tags */}
               <div>
-                <label className="mb-1 block text-sm font-medium">
-                  Tags (comma separated)
-                </label>
+                <label className="mb-1 block text-sm font-medium">Tags (comma separated)</label>
                 <input
                   value={tags}
                   onChange={(e) => setTags(e.target.value)}
@@ -314,9 +335,7 @@ const CreateBlog: React.FC = () => {
                   <label className="mb-1 block text-sm font-medium">
                     Introduction <span className="text-destructive">*</span>
                   </label>
-                  <p className="text-[11px] text-muted-foreground">
-                    Max 330 words — keep it crisp and clear.
-                  </p>
+                  <p className="text-[11px] text-muted-foreground">Max 330 words — keep it crisp and clear.</p>
                 </div>
                 <textarea
                   value={introduction}
@@ -327,12 +346,12 @@ const CreateBlog: React.FC = () => {
                 />
               </div>
 
-              {/* Intro image */}
+              {/* Intro image (file or external URL) */}
               <div className="grid gap-4 md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] md:items-center">
                 <div>
-                  <label className="mb-1 block text-sm font-medium">
-                    Intro Image
-                  </label>
+                  <label className="mb-1 block text-sm font-medium">Intro Image</label>
+
+                  {/* file input */}
                   <input
                     type="file"
                     accept="image/*"
@@ -340,22 +359,30 @@ const CreateBlog: React.FC = () => {
                       handleFile(
                         e.target.files?.[0] || null,
                         setIntroImageFile,
-                        setIntroPreview
+                        setIntroPreview,
+                        setIntroImageUrl
                       )
                     }
                     className="block w-full text-xs text-muted-foreground file:mr-3 file:rounded-full file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-primary-foreground hover:file:bg-primary/90"
                   />
-                  <p className="mt-1 text-[11px] text-muted-foreground">
-                    Ideal: 1200×630, under 5MB, clean header image.
-                  </p>
+                  <p className="mt-1 text-[11px] text-muted-foreground">Ideal: 1200×630, under 5MB, clean header image.</p>
+
+                  <div className="mt-2">
+                    <label className="mb-1 block text-[12px] font-medium">Or paste a hosted GIF / image URL</label>
+                    <input
+                      value={introImageUrl}
+                      onChange={(e) => handleUrlChange(e.target.value, setIntroImageUrl, setIntroImageFile, setIntroPreview)}
+                      placeholder="https://media.giphy.com/..."
+                      className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none ring-0 placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/40"
+                    />
+                    <p className="mt-1 text-[11px] text-muted-foreground">Tip: paste a Giphy/Tenor link to avoid large uploads — we will save the external URL.</p>
+                  </div>
                 </div>
+
                 {introPreview && (
                   <div className="overflow-hidden rounded-2xl border border-border bg-muted">
-                    <img
-                      src={introPreview}
-                      alt="Intro preview"
-                      className="max-h-40 w-full object-cover"
-                    />
+                    {/* GIFs animate in an <img>; videos should be handled server-side or render as <video> on post page */}
+                    <img src={introPreview} alt="Intro preview" className="max-h-40 w-full object-cover" />
                   </div>
                 )}
               </div>
@@ -366,9 +393,7 @@ const CreateBlog: React.FC = () => {
                   <label className="mb-1 block text-sm font-medium">
                     Description <span className="text-destructive">*</span>
                   </label>
-                  <p className="text-[11px] text-muted-foreground">
-                    Max 1500 words — main body of your article.
-                  </p>
+                  <p className="text-[11px] text-muted-foreground">Max 1500 words — main body of your article.</p>
                 </div>
                 <textarea
                   value={description}
@@ -379,12 +404,10 @@ const CreateBlog: React.FC = () => {
                 />
               </div>
 
-              {/* Description image */}
+              {/* Description image (file or external URL) */}
               <div className="grid gap-4 md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] md:items-center">
                 <div>
-                  <label className="mb-1 block text-sm font-medium">
-                    Description Image (Mandatory)
-                  </label>
+                  <label className="mb-1 block text-sm font-medium">Description Image (Mandatory)</label>
                   <input
                     type="file"
                     accept="image/*"
@@ -392,19 +415,28 @@ const CreateBlog: React.FC = () => {
                       handleFile(
                         e.target.files?.[0] || null,
                         setDescImageFile,
-                        setDescPreview
+                        setDescPreview,
+                        setDescImageUrl
                       )
                     }
                     className="block w-full text-xs text-muted-foreground file:mr-3 file:rounded-full file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-primary-foreground hover:file:bg-primary/90"
                   />
+
+                  <div className="mt-2">
+                    <label className="mb-1 block text-[12px] font-medium">Or paste a hosted GIF / image URL</label>
+                    <input
+                      value={descImageUrl}
+                      onChange={(e) => handleUrlChange(e.target.value, setDescImageUrl, setDescImageFile, setDescPreview)}
+                      placeholder="https://media.giphy.com/..."
+                      className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none ring-0 placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/40"
+                    />
+                    <p className="mt-1 text-[11px] text-muted-foreground">Required: provide either a file or a hosted image/GIF URL.</p>
+                  </div>
                 </div>
+
                 {descPreview && (
                   <div className="overflow-hidden rounded-2xl border border-border bg-muted">
-                    <img
-                      src={descPreview}
-                      alt="Description preview"
-                      className="max-h-40 w-full object-cover"
-                    />
+                    <img src={descPreview} alt="Description preview" className="max-h-40 w-full object-cover" />
                   </div>
                 )}
               </div>
@@ -412,12 +444,8 @@ const CreateBlog: React.FC = () => {
               {/* Conclusion */}
               <div>
                 <div className="flex items-center justify-between">
-                  <label className="mb-1 block text-sm font-medium">
-                    Conclusion(Mandatory)
-                  </label>
-                  <p className="text-[11px] text-muted-foreground">
-                    Max 650 words — key takeaways & CTA.
-                  </p>
+                  <label className="mb-1 block text-sm font-medium">Conclusion(Mandatory)</label>
+                  <p className="text-[11px] text-muted-foreground">Max 650 words — key takeaways & CTA.</p>
                 </div>
                 <textarea
                   value={conclusion}
@@ -450,11 +478,7 @@ const CreateBlog: React.FC = () => {
                   disabled={loading || submitted}
                   className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {loading
-                    ? "Submitting..."
-                    : submitted
-                    ? "Submitted"
-                    : "Publish blog"}
+                  {loading ? "Submitting..." : submitted ? "Submitted" : "Publish blog"}
                 </button>
 
                 <button
@@ -474,71 +498,36 @@ const CreateBlog: React.FC = () => {
             <div className="rounded-3xl border border-border bg-card p-4 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                    Publish status
-                  </p>
-                  <p className="mt-1 text-sm">
-                    {published ? "Will be live after submit" : "Saved as draft"}
-                  </p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Publish status</p>
+                  <p className="mt-1 text-sm">{published ? "Will be live after submit" : "Saved as draft"}</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setPublished((p) => !p)}
                   className={`relative inline-flex h-7 w-12 items-center rounded-full border transition ${
-                    published
-                      ? "border-emerald-500 bg-emerald-500/30"
-                      : "border-muted bg-muted"
+                    published ? "border-emerald-500 bg-emerald-500/30" : "border-muted bg-muted"
                   }`}
                 >
-                  <span
-                    className={`inline-block h-5 w-5 transform rounded-full bg-background transition ${
-                      published ? "translate-x-6" : "translate-x-1"
-                    }`}
-                  />
+                  <span className={`inline-block h-5 w-5 transform rounded-full bg-background transition ${published ? "translate-x-6" : "translate-x-1"}`} />
                 </button>
               </div>
-              <p className="mt-2 text-[11px] text-muted-foreground">
-                Toggle this to quickly switch between published and draft
-                without losing your content.
-              </p>
+              <p className="mt-2 text-[11px] text-muted-foreground">Toggle this to quickly switch between published and draft without losing your content.</p>
             </div>
 
             {/* Word counters */}
             <div className="space-y-4 rounded-3xl border border-border bg-card p-4 shadow-sm">
-              <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                Content health
-              </p>
-              {wordBar(
-                introWords,
-                330,
-                "bg-sky-500",
-                "Introduction words"
-              )}
-              {wordBar(
-                descWords,
-                1500,
-                "bg-indigo-500",
-                "Description words"
-              )}
-              {wordBar(
-                conclWords,
-                650,
-                "bg-emerald-500",
-                "Conclusion words"
-              )}
+              <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Content health</p>
+              {wordBar(introWords, 330, "bg-sky-500", "Introduction words")}
+              {wordBar(descWords, 1500, "bg-indigo-500", "Description words")}
+              {wordBar(conclWords, 650, "bg-emerald-500", "Conclusion words")}
             </div>
 
             {/* Tips */}
             <div className="rounded-3xl border border-border bg-card p-4 text-xs text-muted-foreground shadow-sm">
-              <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                Writing tips
-              </p>
+              <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Writing tips</p>
               <ul className="list-disc space-y-1 pl-4">
                 <li>Use headings and short paragraphs in the description.</li>
-                <li>
-                  Make intro clear enough that even non-networking people
-                  understand it.
-                </li>
+                <li>Make intro clear enough that even non-networking people understand it.</li>
                 <li>End conclusion with a clear CTA or next step.</li>
               </ul>
             </div>

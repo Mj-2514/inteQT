@@ -17,7 +17,7 @@ const DominicanRepublic: React.FC = () => {
         />
         <link
           rel="canonical"
-          href="https://www.inte-qt.com/coverage/dominicanrepublic"
+          href="https://www.inte-qt.com/coverage/europe/dominicanrepublic"
         />
       </Helmet>
   return (
@@ -358,12 +358,40 @@ const DominicanRepublic: React.FC = () => {
                   Santo Domingo, Santiago, resort areas and regional cities.
                 </p>
 
-                <p className="text-muted-foreground leading-relaxed text-sm">
-                  Redundancy across subsea systems and terrestrial routes helps
-                  maintain service continuity for carriers, enterprises and
-                  critical infrastructure such as airports, ports and data
-                  centres.
-                </p>
+                {/* Submarine Cable Systems */}
+<div className="mt-6">
+  <h3 className="text-xl font-semibold mb-3">Major Submarine Cable Systems</h3>
+
+  <ul className="list-disc pl-5 text-muted-foreground text-sm space-y-1">
+    <li>AMERICAS-I (Americas Region Cable System)</li>
+    <li>ARCOS-1 (Americas Region Caribbean Ring)</li>
+    <li>Antillas 1</li>
+    <li>CARCIP Fiber Infrastructure</li>
+    <li>EmeraldExpress (regional routes)</li>
+    <li>South America – Caribbean Cable System (SAC)</li>
+    <li>Global Caribbean Network (GCN)</li>
+  </ul>
+
+  {/* Submarine Cable Map */}
+  <div className="mt-5">
+    
+    <div className="flex justify-center">
+    <a
+                    href="https://www.submarinecablemap.com/country/dominican-republic"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block"
+                  >
+      <img
+        src="/Dominican.png"
+        alt="Submarine Cable Map Dominican Republic"
+        className="rounded-xl shadow-lg border border-white/20 w-full max-w-3xl mx-auto"
+      />
+      </a>
+    </div>
+  </div>
+</div>
+
               </CardContent>
             </Card>
 
@@ -446,11 +474,54 @@ const DominicanRepublic: React.FC = () => {
             </p>
 
             <h4 className="mb-3 font-semibold">Suggested References</h4>
-            <ul className="text-muted-foreground space-y-1 text-sm">
-              <li>World Bank / ITU — Dominican Republic ICT indicators</li>
-              <li>Digital &amp; telecom reports for the Dominican Republic</li>
-              <li>National telecom regulator &amp; statistics portals</li>
-            </ul>
+<ul className="text-muted-foreground space-y-1 text-sm">
+
+  <li>
+    <a
+      href="https://data.worldbank.org/country/dominican-republic"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-primary underline font-semibold"
+    >
+      World Bank – Dominican Republic ICT Indicators
+    </a>
+  </li>
+
+  <li>
+    <a
+      href="https://www.itu.int/en/ITU-D/Statistics/Pages/stat/default.aspx"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-primary underline font-semibold"
+    >
+      ITU – Telecom & Digital Reports for Dominican Republic
+    </a>
+  </li>
+
+  <li>
+    <a
+      href="https://indotel.gob.do/"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-primary underline font-semibold"
+    >
+      INDOTEL – National Telecom Regulator (Dominican Republic)
+    </a>
+  </li>
+
+  <li>
+    <a
+      href="https://www.submarinecablemap.com"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-primary underline font-semibold"
+    >
+      Submarine Cable Map – Global Subsea Systems
+    </a>
+  </li>
+
+</ul>
+
           </div>
         </section>
       </main>

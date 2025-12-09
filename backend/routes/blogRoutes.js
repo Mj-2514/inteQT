@@ -6,15 +6,19 @@ const auth = require('../Middleware/authMiddleware');
 const admin = require('../Middleware/adminMiddleware');
 const blogController = require('../controllers/blogController');
 
+// routes/blogRoutes.js
 const storage = multer.memoryStorage();
 const upload = multer({
   storage,
-  limits: { fileSize: 6 * 1024 * 1024 },
+  limits: { fileSize: 30 * 1024 * 1024 }, // 30MB for GIFs (adjust as needed)
   fileFilter: (req, file, cb) => {
-    if (!file.mimetype.startsWith('image/')) return cb(new Error('Only images allowed'), false);
-    cb(null, true);
+    // Allow images (including gifs). If you want to allow video uploads too, uncomment the video check.
+    if (file.mimetype.startsWith('image/')) return cb(null, true);
+    // if (file.mimetype.startsWith('video/')) return cb(null, true); // optional
+    return cb(new Error('Only image files are allowed (GIF/JPG/PNG/etc).'), false);
   }
 });
+
 
 // Public endpoints (no auth)
 router.get('/all', blogController.getBlogs);

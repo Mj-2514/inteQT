@@ -13,11 +13,14 @@ const connectDB = require("./utils/db");
 // routes
 const authRoutes = require("./routes/authRoutes");
 const blogRoutes = require("./routes/blogRoutes");
+// const formRoutes= require("./routes/formRoutes")
+const socialRoutes = require('./routes/socialRoutes');
 
 // middleware
 const errorHandler = require("./Middleware/errorMiddleware");
 
 const app = express();
+app.use(express.urlencoded({ extended: true }));
 const PORT = process.env.PORT || 5000;
 
 // ---------- Ensure uploads directory exists ----------
@@ -76,7 +79,8 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // ---------- Routes ----------
 app.use("/api/auth", authRoutes);   // login/register
 app.use("/api/blogs", blogRoutes);  // blog routes
-
+// app.use("/api/forms", formRoutes); //form routes
+app.use('/api/social', socialRoutes); //linkedin
 // Health check
 app.get("/api/health", (req, res) => {
   res.json({ up: true, time: new Date().toISOString() });
@@ -89,3 +93,5 @@ app.use(errorHandler);
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+

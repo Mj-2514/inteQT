@@ -20,6 +20,7 @@ const europeanCountries: Country[] = [
   { name: "Bosnia and Herzegovina", code: "ba", link: "/coverage/europe/bosnia-and-herzegovina" },
   { name: "Bulgaria", code: "bg", link: "/coverage/europe/bulgaria" },
   { name: "Croatia", code: "hr", link: "/coverage/europe/croatia" },
+  { name: "Cyprus", code: "cy", link: "/coverage/europe/cyprus" },
   { name: "Czechia", code: "cz", link: "/coverage/europe/czechia" },
   { name: "Denmark", code: "dk", link: "/coverage/europe/denmark" },
   { name: "Estonia", code: "ee", link: "/coverage/europe/estonia" },
