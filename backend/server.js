@@ -13,7 +13,7 @@ const connectDB = require("./utils/db");
 // routes
 const authRoutes = require("./routes/authRoutes");
 const blogRoutes = require("./routes/blogRoutes");
-// const formRoutes= require("./routes/formRoutes")
+const formRoutes= require("./routes/formRoutes")
 const socialRoutes = require('./routes/socialRoutes');
 
 // middleware
@@ -79,7 +79,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // ---------- Routes ----------
 app.use("/api/auth", authRoutes);   // login/register
 app.use("/api/blogs", blogRoutes);  // blog routes
-// app.use("/api/forms", formRoutes); //form routes
+app.use("/api/forms", formRoutes); //form routes
 app.use('/api/social', socialRoutes); //linkedin
 // Health check
 app.get("/api/health", (req, res) => {

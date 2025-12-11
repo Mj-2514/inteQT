@@ -69,7 +69,7 @@ const GlobalNsoc = () => {
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: `url("https://images.unsplash.com/vector-1759248692166-570a716aab82?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8b2ZmaWNlfGVufDB8MHwwfHx8Mg%3D%3D")`,
+            backgroundImage: `url("https://images.unsplash.com/vector-1762275212334-bd13fce3c41e?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8dGVhbXxlbnwwfDB8MHx8fDI%3D")`,
           }}
         />
         <div className="absolute inset-0 bg-black/60" />
@@ -221,10 +221,10 @@ const GlobalNsoc = () => {
       {/* CTA */}
       <section className="py-20 gradient-hero text-primary-foreground">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-4">
+          <h2 className="text-black text-4xl font-bold mb-4">
             Ready to secure your global network?
           </h2>
-          <p className="text-lg mb-8 opacity-90">
+          <p className="text-black text-lg mb-8 opacity-90">
             Speak with our NSOC specialists today.
           </p>
 

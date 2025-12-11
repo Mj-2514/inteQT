@@ -1,11 +1,13 @@
 import { Link } from "react-router-dom";
 import { Mail, Phone, MapPin, Wifi, Linkedin, Twitter, Instagram, Facebook } from "lucide-react";
+import { useTheme } from "@/context/ThemeContext";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const { theme, toggleTheme } = useTheme();
 
   return (
-  <footer className="bg-gradient-to-br from-primary to-primary/90 text-primary-foreground">
+  <footer className="bg-gradient-to-br from-blue-700 to-blue-400  text-primary-foreground">
       <div className="container mx-auto px-4 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           {/* Company Info */}
@@ -13,7 +15,7 @@ const Footer = () => {
             <div className="flex items-center space-x-2 mb-4">
               {/* <Wifi className="w-8 h-8" /> */}
               <img
-      src="/logo1.png"
+      src={theme === "dark" ? "/logo1.png" : "/logo-dark.png"}
       alt="inte-QT"
       className="w-13 h-12 object-contain transition-transform group-hover:scale-105"
     />

@@ -91,6 +91,31 @@ import Djibouti from "./africa/Djibouti";
 import Dominica from "./north-america/Dominica";
 import EastTimor from "./asia/EastTimor";
 import Ecuador from "./southAmerica/Ecuador";
+import Egypt from "./africa/Egypt";
+import ElSalvador from "./north-america/ElSalvador";
+import EquatorialGuinea from "./africa/EquatorialGuinea";
+import Eritrea from "./africa/Eritrea";
+import Estonia from "./europe/Estonia";
+import Eswatini from "./africa/Eswatini";
+import Ethiopia from "./africa/Ethiopia";
+import Fiji from "./ocenia/Fiji";
+import Finland from "./europe/Finland";
+import France from "./europe/France";
+import Gabon from "./africa/Gabon";
+import Gambia from "./africa/Gambia";
+import Georgia from "./europe/Georgia";
+import Germany from "./europe/Germany";
+import Ghana from "./africa/Ghana";
+import Greece from "./europe/Greece";
+import Grenada from "./north-america/Grenada";
+import Guatemala from "./north-america/Guatemala";
+import Guinea from "./africa/Guinea";
+import GuineaBissau from "./africa/GuineaBissau";
+import Guyana from "./southAmerica/Guyana";
+import Haiti from "./north-america/Haiti";
+import Honduras from "./north-america/Honduras";
+import Hungary from "./europe/Hungary";
+import Iceland from "./europe/Iceland";
 
 const queryClient = new QueryClient();
 
@@ -107,7 +132,11 @@ const App = () => (
           <Route path="/coverage/asia/china" element={<China />} />
           <Route path="/coverage/asia/vietnam" element={<Vietnam />} />
           <Route path="/coverage/africa/cameroon" element={<Cameroon />} />
+          <Route path="/coverage/africa/guinea" element={<Guinea />} />
+          <Route path="/coverage/south-america/guyana" element={<Guyana />} />
+          <Route path="/coverage/africa/guinea-bissau" element={<GuineaBissau />} />
           <Route path="/coverage/africa/chad" element={<Chad />} />
+          <Route path="/coverage/africa/ethiopia" element={<Ethiopia />} />
           <Route path="/coverage/africa/comoros" element={<Comoros />} />
           <Route path="/coverage/africa/congo" element={<Congo />} />
           <Route path="/coverage/africa/central-african-republic" element={<CentralAfricanRepublic />} />
@@ -117,12 +146,17 @@ const App = () => (
           <Route path="/create" element={<CreateBlog />} />
           <Route path="/admin/blogs" element={<AdminBlogList />} />
           <Route path="/coverage/europe/albania" element={<Albania />} />
+          <Route path="/coverage/europe/greece" element={<Greece />} />
           <Route path="/coverage/north-america" element={<NorthAmericaList />} />
+          <Route path="/coverage/north-america/haiti" element={<Haiti />} />
           <Route path="/coverage/north-america/bahamas" element={<Bahamas />} />
           <Route path="/coverage/north-america/costa-rica" element={<CostaRica />} />
           <Route path="/coverage/north-america/cuba" element={<Cuba />} />
+          <Route path="/coverage/north-america/guatemala" element={<Guatemala />} />
           <Route path="/coverage/north-america/barbados" element={<Barbados />} />
+          <Route path="/coverage/north-america/honduras" element={<Honduras />} />
           <Route path="/coverage/north-america/belize" element={<Belize />} />
+          <Route path="/coverage/north-america/grenada" element={<Grenada />} />
           <Route path="/coverage/south-america/argentina" element={<Argentina />} />
           <Route path="/coverage/south-america/ecuador" element={<Ecuador />} />
           <Route path="/coverage/south-america/brazil" element={<Brazil />} />
@@ -132,27 +166,43 @@ const App = () => (
           <Route path="/coverage/north-america/canada" element={<Canada />} />
           <Route path="/coverage/north-america/mexico" element={<Mexico />} />
           <Route path="/coverage/north-america/dominica" element={<Dominica />} />
+          <Route path="/coverage/north-america/el-salvador" element={<ElSalvador />} />
           <Route path="/coverage/north-america/dominican-republic" element={<DominicanRepublic />} />
           <Route path="/coverage/north-america/antigua-and-barbuda" element={<AntiguaAndBarbuda />} />
           <Route path="/coverage/south-america" element={<SouthAmericaList />} />
           <Route path="/coverage/africa" element={<AfricaList />} />
           <Route path="/coverage/africa/algeria" element={<Algeria />} />
+          <Route path="/coverage/africa/eritrea" element={<Eritrea />} />
+          <Route path="/coverage/africa/equatorial-guinea" element={<EquatorialGuinea />} />
           <Route path="/coverage/africa/burundi" element={<Burundi />} />
           <Route path="/coverage/africa/cabo-verde" element={<CaboVerde />} />
           <Route path="/coverage/africa/burkina-faso" element={<BurkinaFaso />} />
           <Route path="/coverage/africa/angola" element={<Angola />} />
           <Route path="/coverage/africa/botswana" element={<Botswana />} />
           <Route path="/coverage/africa/benin" element={<Benin />} />
+          <Route path="/coverage/africa/ghana" element={<Ghana />} />
+          <Route path="/coverage/africa/eswatini" element={<Eswatini />} />
+          <Route path="/coverage/africa/gabon" element={<Gabon />} />
           <Route path="/coverage/africa/djibouti" element={<Djibouti />} />
           <Route path="/coverage/africa/mozambique" element={<Mozambique />} />
           <Route path="/coverage/africa/nigeria" element={<Nigeria />} />
+          <Route path="/coverage/africa/egypt" element={<Egypt />} />
+          <Route path="/coverage/africa/gambia" element={<Gambia />} />
           <Route path="/coverage/africa/south-africa" element={<SouthAfrica />} />
           <Route path="/coverage/oceania" element={<OceaniaList />} />
           <Route path="/coverage/oceania/australia" element={<Australia />} />
+          <Route path="/coverage/oceania/fiji" element={<Fiji />} />
           <Route path="/coverage/europe/belgium" element={<Belgium />} />
           <Route path="/coverage/europe/Bosnia-and-Herzegovina" element={<BosniaAndHerzegovina />} />
           <Route path="/coverage/europe/austria" element={<Austria />} />
           <Route path="/coverage/europe/belarus" element={<Belarus />} />
+          <Route path="/coverage/europe/hungary" element={<Hungary />} />
+          <Route path="/coverage/europe/france" element={<France />} />
+          <Route path="/coverage/europe/georgia" element={<Georgia />} />
+          <Route path="/coverage/europe/iceland" element={<Iceland />} />
+          <Route path="/coverage/europe/finland" element={<Finland />} />
+          <Route path="/coverage/europe/germany" element={<Germany />} />
+          <Route path="/coverage/europe/estonia" element={<Estonia />} />
           <Route path="/coverage/europe/bulgaria" element={<Bulgaria />} />
           <Route path="/coverage/europe/cyprus" element={<Cyprus />} />
           <Route path="/coverage/europe/czechia" element={<CzechRepublic />} />

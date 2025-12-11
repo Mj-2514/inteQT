@@ -41,7 +41,7 @@ const Services = () => {
     icon: Zap,
     link: "/services/business-broadband",
     image:
-      "https://cdn.dribbble.com/userupload/29647510/file/original-6c41bc159984aa848eec332e1d774c8d.gif", // replace
+      "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExZ21nczA4Nmk2bzY4OXV5bmI4enh6ajFmYWV5eGR2cm5qYW01aXB1NyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/QX2GjdRqR0vVAS5wgP/giphy.gif", // replace
     features: [
       "High-speed connectivity",
       "Scalable bandwidth",
