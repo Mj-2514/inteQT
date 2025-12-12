@@ -1,10 +1,21 @@
+// src/main.tsx (example)
+import React from "react";
 import { createRoot } from "react-dom/client";
-import App from "./App.tsx";
-import "./index.css";
-import { ThemeProvider } from "./context/ThemeContext";
+import { HelmetProvider } from "react-helmet-async";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+// other providers you use...
+import ThemeProvider from "./context/ThemeContext"; // <- path may vary
+import App from "./App";
+import "./index.css"
+
+const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")!).render(
-  <ThemeProvider>
-    <App />
-  </ThemeProvider>
+  <HelmetProvider>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <App />
+      </QueryClientProvider>
+    </ThemeProvider>
+  </HelmetProvider>
 );

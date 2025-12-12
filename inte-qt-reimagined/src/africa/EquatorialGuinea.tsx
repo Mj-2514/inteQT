@@ -7,7 +7,33 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const EquatorialGuinea: React.FC = () => {
-    <Helmet>
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Internet in Equatorial Guinea | Connectivity, ISPs & Broadband Overview",
+    description:
+      "Overview of Equatorial Guinea's internet connectivity, submarine/terrestrial routes, ISPs, broadband statistics and inte-QT service capabilities in Malabo, Bata, and other key centres.",
+    url: "https://www.inte-qt.com/coverage/africa/equatorial-guinea",
+    about: {
+      "@type": "Country",
+      name: "Equatorial Guinea",
+      population: 1950000,
+      currency: "XAF (Central African CFA franc)",
+      languages: ["Spanish", "French", "Portuguese", "Fang", "Bubi"],
+      neighbouringCountries: ["Cameroon", "Gabon"],
+      majorCities: ["Malabo", "Bata", "Ebebiyín", "Mongomo", "Luba"],
+      majorAirports: [
+        "Malabo International Airport (SSG)",
+        "Bata Airport (BSG)",
+        "San Antonio de Annobón Airport (NDO)"
+      ],
+      url: "https://en.wikipedia.org/wiki/Equatorial_Guinea"
+    }
+  };
+
+  return (
+    <>
+      <Helmet>
         <title>
           Internet in Equatorial Guinea | Connectivity, ISPs & Broadband Overview
         </title>
@@ -19,31 +45,25 @@ const EquatorialGuinea: React.FC = () => {
           rel="canonical"
           href="https://www.inte-qt.com/coverage/africa/equatorial-guinea"
         />
+        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       </Helmet>
-  return (
-    <>
-      
 
       <Navbar />
 
       {/* HERO */}
-      <section
-        className="relative py-28 overflow-hidden"
-        aria-labelledby="hero-title"
-      >
+      <section className="relative py-28 overflow-hidden" aria-labelledby="hero-title">
         <motion.div
           initial={{ opacity: 0, scale: 1.1 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.2 }}
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            // swap with your own Malabo / coastline screenshot
-            backgroundImage: 'url("https://images.unsplash.com/photo-1700144068853-671567b77ea8?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8ZXF1YXRvcmlhbCUyMGd1aW5lYXxlbnwwfDB8MHx8fDI%3D")',
+            backgroundImage:
+              'url("https://images.unsplash.com/photo-1700144068853-671567b77ea8?w=1200&auto=format&fit=crop&q=80")'
           }}
+          aria-hidden
         />
-
-        <div className="absolute inset-0 bg-black/55 backdrop-blur-[1.5px]" />
-
+        <div className="absolute inset-0 bg-black/55 backdrop-blur-[1.5px]" aria-hidden />
         <div className="relative z-10 text-center px-6 container mx-auto">
           <motion.h1
             id="hero-title"
@@ -61,10 +81,8 @@ const EquatorialGuinea: React.FC = () => {
             transition={{ duration: 1 }}
             className="text-white/90 max-w-3xl mx-auto text-lg md:text-xl mt-4 leading-relaxed"
           >
-            A small Gulf of Guinea state with island and mainland territories;
-            connectivity centers on Malabo (Bioko Island) and Bata (mainland),
-            with submarine and regional terrestrial links shaping international
-            capacity.
+            A small Gulf of Guinea state with island and mainland territories; connectivity centers on Malabo (Bioko Island)
+            and Bata (mainland), with submarine and regional terrestrial links shaping international capacity.
           </motion.p>
         </div>
       </section>
@@ -90,16 +108,16 @@ const EquatorialGuinea: React.FC = () => {
                         <strong>Official Name:</strong> Republic of Equatorial Guinea
                       </li>
                       <li>
-                        <strong>Population:</strong> ~1.9–2.0 million (2025 est.). 
+                        <strong>Population:</strong> ~1.9–2.0 million (2025 est.)
                       </li>
                       <li>
-                        <strong>Capital &amp; Main Cities:</strong> Malabo (seat on Bioko Island), Bata (largest on the mainland), plus Ebebiyín, Mongomo and Luba. 
+                        <strong>Capital &amp; Main Cities:</strong> Malabo (Bioko Island), Bata (mainland), Ebebiyín, Mongomo, Luba
                       </li>
                       <li>
-                        <strong>Languages:</strong> Spanish (primary official), French and Portuguese are also official; many local languages (Fang, Bubi, etc.). 
+                        <strong>Languages:</strong> Spanish (primary official), French, Portuguese; local languages include Fang &amp; Bubi
                       </li>
                       <li>
-                        <strong>Currency:</strong> Central African CFA franc (XAF). 
+                        <strong>Currency:</strong> Central African CFA franc (XAF)
                       </li>
                     </ul>
 
@@ -111,6 +129,7 @@ const EquatorialGuinea: React.FC = () => {
                         src="https://flagcdn.com/w320/gq.png"
                         alt="Equatorial Guinea Flag"
                         className="mx-auto rounded-lg shadow-lg border border-white/40"
+                        loading="lazy"
                       />
                     </div>
                   </CardContent>
@@ -130,24 +149,14 @@ const EquatorialGuinea: React.FC = () => {
                     <h2 className="text-3xl font-bold mb-4">A Brief Overview</h2>
 
                     <p className="text-muted-foreground mb-4 leading-relaxed">
-                      Equatorial Guinea comprises a mainland region (Río Muni) plus
-                      islands (Bioko, Annobón). The capital, Malabo, sits on Bioko
-                      Island while Bata is the country’s principal commercial
-                      centre on the mainland. The economy is dominated by oil and
-                      gas production, which has driven infrastructure projects and
-                      regional connectivity initiatives — though development is
-                      uneven across rural areas.
+                      Equatorial Guinea comprises a mainland region (Río Muni) plus islands (Bioko, Annobón). Malabo sits on Bioko Island while Bata is the principal commercial centre on the mainland. The economy is dominated by oil &amp; gas production, which has driven targeted infrastructure projects.
                     </p>
 
                     <p className="text-muted-foreground mb-6 leading-relaxed">
-                      Internet access is concentrated around Malabo and Bata; the
-                      small domestic market relies on a mix of submarine cable
-                      landings, limited national fibre and mobile broadband for
-                      most residential users. Political and regulatory factors
-                      affect market dynamics and wholesale transit arrangements.
+                      Internet access is concentrated around Malabo and Bata; submarine cable landings, limited national fibre and mobile broadband form the backbone of consumer and enterprise access. Wholesale transit and colocation activity is concentrated around port and oil infrastructure.
                     </p>
 
-                    {/* Map — GOOGLE MAPS */}
+                    {/* Map */}
                     <div>
                       <h3 className="font-semibold mb-3 text-lg">Map</h3>
                       <div className="rounded-2xl overflow-hidden shadow-lg border border-white/20">
@@ -171,9 +180,9 @@ const EquatorialGuinea: React.FC = () => {
                     <CardContent className="p-6">
                       <h3 className="text-xl font-bold mb-3">Main Airports</h3>
                       <ul className="list-disc pl-5 text-muted-foreground space-y-1">
-                        <li>Malabo International Airport (SSG) — primary international gateway. </li>
-                        <li>Bata Airport (BSG) — major mainland airport and second-largest. </li>
-                        <li>Smaller airfields include Ebebiyín and regional strips.</li>
+                        <li>Malabo International Airport (SSG)</li>
+                        <li>Bata Airport (BSG)</li>
+                        <li>San Antonio de Annobón Airport (NDO) — Annobón Island</li>
                       </ul>
                     </CardContent>
                   </Card>
@@ -183,13 +192,7 @@ const EquatorialGuinea: React.FC = () => {
                       <h3 className="text-xl font-bold mb-4">Connectivity Overview</h3>
 
                       <p className="text-muted-foreground mb-6 leading-relaxed">
-                        The country hosts landing stations for regional submarine
-                        cables serving the Gulf of Guinea region; these links plus
-                        limited terrestrial backhaul shape international capacity.
-                        Because of the nation’s small market and political
-                        structure, wholesale transit and colocation activity tends
-                        to be concentrated and opportunistic around port and oil
-                        infrastructure.
+                        The coastal position places Equatorial Guinea within Gulf of Guinea undersea network activity; landing stations and regional hubs provide international connectivity while national backhaul links connect island and mainland territories where possible. Mobile-first access is the norm for most residents.
                       </p>
 
                       <div className="overflow-x-auto">
@@ -205,7 +208,7 @@ const EquatorialGuinea: React.FC = () => {
                             <tr className="border-t border-muted/40">
                               <td className="py-3 px-4">Population (2025 est.)</td>
                               <td className="py-3 px-4">≈ 1.9–2.0 million</td>
-                              <td className="py-3 px-4">Small market concentrated in a few urban centres. </td>
+                              <td className="py-3 px-4">Market concentrated in a few urban centres.</td>
                             </tr>
 
                             <tr className="border-t border-muted/40">
@@ -217,7 +220,7 @@ const EquatorialGuinea: React.FC = () => {
                             <tr className="border-t border-muted/40">
                               <td className="py-3 px-4">Currency</td>
                               <td className="py-3 px-4">Central African CFA franc (XAF)</td>
-                              <td className="py-3 px-4">Common currency with regional BEAC members. </td>
+                              <td className="py-3 px-4">Shared currency within BEAC region.</td>
                             </tr>
                           </tbody>
                         </table>
@@ -238,7 +241,7 @@ const EquatorialGuinea: React.FC = () => {
                 <h2 className="text-3xl font-bold mb-4">Submarine Cables & International Routes</h2>
 
                 <p className="text-muted-foreground mb-6 leading-relaxed text-center max-w-3xl mx-auto">
-                  Equatorial Guinea’s coastal position in the Gulf of Guinea makes it part of regional undersea networks. Landing stations and nearby hubs provide regional connectivity into West and Central Africa and onward international transit; national backbone links connect Malabo and Bata where possible, with additional reliance on satellite and microwave in remote areas.
+                  Regional undersea networks and nearby landing stations feed Equatorial Guinea’s international connectivity. National backbone links connect Malabo and Bata where feasible; remote areas rely more on microwave and satellite.
                 </p>
 
                 <div className="flex justify-center">
@@ -252,6 +255,7 @@ const EquatorialGuinea: React.FC = () => {
                       src="/Equatorial-Guinea.png"
                       alt="Submarine cables and international routes serving Equatorial Guinea"
                       className="rounded-xl shadow-lg border border-white/20 w-full max-w-3xl mx-auto"
+                      loading="lazy"
                     />
                   </a>
                 </div>
@@ -264,21 +268,21 @@ const EquatorialGuinea: React.FC = () => {
                 <h2 className="text-3xl font-bold mb-4">Internet Providers & Market</h2>
 
                 <p className="text-muted-foreground mb-4 leading-relaxed">
-                  The market is relatively small and often dominated by state-linked operators and companies that service oil & gas, government and port infrastructure. Retail mobile operators provide the bulk of consumer access while wholesale and transit arrangements are concentrated in a few hubs.
+                  Market activity is often concentrated among state-linked or specialist operators servicing oil &amp; gas, government and port infrastructure; retail mobile operators deliver most consumer access.
                 </p>
 
                 <h3 className="text-xl font-semibold mb-4">Our Capabilities</h3>
 
                 <div className="grid sm:grid-cols-2 gap-4">
                   {[
-                    "Feasibility and advisory for enterprise connectivity in Malabo and Bata",
-                    "DIA / IP transit options where landing station access and peering exist",
-                    "Hybrid last-mile (4G/LTE + fixed-wireless) for sites without fibre",
-                    "CPE / Router staging, configuration and ongoing management",
-                    "SLA-backed services with local escalation and NOC monitoring",
-                    "Traffic engineering towards nearby regional hubs for latency-sensitive paths",
-                    "Security services (VPN, firewalling, DDoS mitigation) for enterprise workloads",
-                    "Regional SD-WAN overlay designs for multi-island / multi-site deployments"
+                    "Feasibility & advisory for enterprise connectivity in Malabo & Bata",
+                    "DIA / IP transit where landing / peering exists",
+                    "Hybrid last-mile (4G/LTE + fixed-wireless)",
+                    "CPE / Router staging, configuration & managed services",
+                    "SLA-backed services with local escalation & NOC monitoring",
+                    "Traffic engineering toward nearby regional hubs",
+                    "Security services (VPN, firewalling, DDoS mitigation)",
+                    "Regional SD-WAN overlays for multi-site deployments"
                   ].map((cap) => (
                     <div
                       key={cap}
@@ -298,14 +302,12 @@ const EquatorialGuinea: React.FC = () => {
         <section className="py-16">
           <div className="container mx-auto px-4 max-w-4xl text-center">
             <p className="text-lg leading-relaxed mb-6 text-muted-foreground">
-              Contact us to receive a{" "}
-              <mark className="bg-yellow-200 px-1 rounded">Commercial Offer in 2–4 working days</mark>.
-              We support connectivity planning around Malabo, Bata and other feasible sites subject to local infrastructure and regulatory constraints.
+              Contact us to receive a <mark className="bg-yellow-200 px-1 rounded">Commercial Offer in 2–4 working days</mark>. We support connectivity planning around Malabo, Bata and other feasible sites subject to local infrastructure and regulatory constraints.
             </p>
 
             <p className="mb-6">
               <a
-                href="mailto:sales@inte-QT.com?subject=Equatorial%20Guinea%20Connectivity%20Inquiry"
+                href="mailto:sales@inte-qt.com?subject=Equatorial%20Guinea%20Connectivity%20Inquiry"
                 className="text-primary underline font-semibold"
               >
                 Email Us
@@ -314,11 +316,12 @@ const EquatorialGuinea: React.FC = () => {
 
             <h4 className="mb-3 font-semibold">References</h4>
             <ul className="text-muted-foreground">
-              <li><a href="https://www.worldometers.info/world-population/equatorial-guinea-population/" target="_blank" rel="noopener noreferrer" className="underline">Worldometers — Population estimates (2025)</a></li>
-              <li><a href="https://www.cia.gov/the-world-factbook/countries/equatorial-guinea/" target="_blank" rel="noopener noreferrer" className="underline">CIA / GOV.UK factfile — country overview (administrative notes)</a></li>
-              <li><a href="https://en.wikipedia.org/wiki/Equatorial_Guinea" target="_blank" rel="noopener noreferrer" className="underline">Wikipedia — Equatorial Guinea (languages, demographics)</a></li>
-              <li><a href="https://en.wikipedia.org/wiki/Malabo_International_Airport" target="_blank" rel="noopener noreferrer" className="underline">Malabo International Airport — details</a></li>
-              <li><a href="https://en.wikipedia.org/wiki/Bata_Airport" target="_blank" rel="noopener noreferrer" className="underline">Bata Airport — details</a></li>
+              <li>
+                <a href="https://en.wikipedia.org/wiki/Equatorial_Guinea" target="_blank" rel="noopener noreferrer" className="underline">Wikipedia — Equatorial Guinea</a>
+              </li>
+              <li>
+                <a href="https://www.submarinecablemap.com/country/equatorial-guinea" target="_blank" rel="noopener noreferrer" className="underline">Submarine Cable Map — Equatorial Guinea</a>
+              </li>
             </ul>
           </div>
         </section>

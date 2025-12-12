@@ -143,15 +143,15 @@ const Blogs = () => {
     fetchBlogs();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-<Helmet>
+
+  return (
+    <div className="min-h-screen pt-20">
+      <Helmet>
         <title>Blogs & Insights | Telecom, SD-WAN, Internet Access, Automation – inte-QT</title>
         <meta name="description" content="Explore blogs and insights on SD-WAN, MPLS, NSOC operations, network monitoring, global connectivity, IoT, automation, SLA management, and enterprise internet solutions from inte-QT." />
         <meta name="keywords" content="SD-WAN blogs, MPLS insights, telecom articles, NSOC operations, enterprise internet blog, global connectivity insights, 5G, automation blogs, SLA importance, networking articles" />
         <link rel="canonical" href="https://www.inte-qt.com/blog" />
       </Helmet>
-  return (
-    <div className="min-h-screen pt-20">
-      
 
       {/* HERO */}
       <section

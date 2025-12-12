@@ -207,8 +207,8 @@ const WirelessConnection = () => {
         {/* CTA */}
         <section className="py-20 gradient-hero text-primary-foreground">
           <div className="container mx-auto px-4 text-center">
-            <h2 className="text-4xl font-bold mb-4">Ready for Wireless XC?</h2>
-            <p className="text-lg mb-8 opacity-90 max-w-2xl mx-auto">
+            <h2 className="text-4xl font-bold mb-4 text-white">Ready for Wireless XC?</h2>
+            <p className="text-lg mb-8 opacity-90 max-w-2xl mx-auto text-white">
               Connect with our specialists and bring secure, high-speed wireless
               connectivity to any location on the globe.
             </p>

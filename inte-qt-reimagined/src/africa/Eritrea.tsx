@@ -7,17 +7,41 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Eritrea: React.FC = () => {
-    <Helmet>
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Internet in Eritrea | Connectivity, ISPs & Broadband Overview",
+    description:
+      "Overview of Eritrea's internet connectivity, terrestrial links, ISPs, broadband statistics and inte-QT service capabilities in Asmara, Massawa and other key centres.",
+    url: "https://www.inte-qt.com/coverage/africa/eritrea",
+    about: {
+      "@type": "Country",
+      name: "Eritrea",
+      population: 3600000,
+      currency: "ERN (Eritrean nakfa)",
+      languages: ["Tigrinya", "Tigre", "Arabic", "English"],
+      neighbouringCountries: ["Sudan", "Ethiopia", "Djibouti"],
+      majorCities: ["Asmara", "Massawa", "Keren", "Assab"],
+      majorAirports: [
+        "Asmara International Airport (ASM)",
+        "Massawa International Airport (MSW)",
+        "Assab Airport (ASA)"
+      ],
+      url: "https://en.wikipedia.org/wiki/Eritrea"
+    }
+  };
+
+  return (
+    <>
+      <Helmet>
         <title>Internet in Eritrea | Connectivity, ISPs & Broadband Overview</title>
         <meta
           name="description"
           content="Overview of Eritrea's internet connectivity, terrestrial links, ISPs, broadband statistics and inte-QT service capabilities in Asmara, Massawa and other key centres."
         />
         <link rel="canonical" href="https://www.inte-qt.com/coverage/africa/eritrea" />
+        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       </Helmet>
-  return (
-    <>
-      
 
       <Navbar />
 
@@ -29,13 +53,12 @@ const Eritrea: React.FC = () => {
           transition={{ duration: 1.2 }}
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            // swap with your own Asmara / Red Sea coastline screenshot
-            backgroundImage: 'url("https://images.unsplash.com/photo-1629633127060-b6286afe8b90?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZXJpdHJlYXxlbnwwfDB8MHx8fDI%3D")',
+            backgroundImage:
+              'url("https://images.unsplash.com/photo-1629633127060-b6286afe8b90?w=1200&auto=format&fit=crop&q=80")'
           }}
+          aria-hidden
         />
-
-        <div className="absolute inset-0 bg-black/55 backdrop-blur-[1.5px]" />
-
+        <div className="absolute inset-0 bg-black/55 backdrop-blur-[1.5px]" aria-hidden />
         <div className="relative z-10 text-center px-6 container mx-auto">
           <motion.h1
             id="hero-title"
@@ -53,10 +76,7 @@ const Eritrea: React.FC = () => {
             transition={{ duration: 1 }}
             className="text-white/90 max-w-3xl mx-auto text-lg md:text-xl mt-4 leading-relaxed"
           >
-            A Red Sea nation with highland and coastal zones; connectivity is
-            concentrated around Asmara and the Red Sea ports with a domestic
-            market that relies heavily on state operators, mobile networks and
-            satellite/backhaul links.
+            A Red Sea nation with highland and coastal zones; connectivity is concentrated around Asmara and the Red Sea ports with a domestic market that relies heavily on state operators, mobile networks and satellite/backhaul links.
           </motion.p>
         </div>
       </section>
@@ -85,10 +105,10 @@ const Eritrea: React.FC = () => {
                         <strong>Population:</strong> ≈ 3.6 million (2025 est.)
                       </li>
                       <li>
-                        <strong>Capital &amp; Main Cities:</strong> Asmara (capital), Massawa (port), Keren, Assab.
+                        <strong>Capital &amp; Main Cities:</strong> Asmara (capital), Massawa (port), Keren, Assab
                       </li>
                       <li>
-                        <strong>Languages:</strong> Tigrinya, Tigre, Arabic; English widely used as a working language.
+                        <strong>Languages:</strong> Tigrinya, Tigre, Arabic; English widely used as a working language
                       </li>
                       <li>
                         <strong>Currency:</strong> Eritrean nakfa (ERN)
@@ -103,6 +123,7 @@ const Eritrea: React.FC = () => {
                         src="https://flagcdn.com/w320/er.png"
                         alt="Eritrea Flag"
                         className="mx-auto rounded-lg shadow-lg border border-white/40"
+                        loading="lazy"
                       />
                     </div>
                   </CardContent>
@@ -122,20 +143,11 @@ const Eritrea: React.FC = () => {
                     <h2 className="text-3xl font-bold mb-4">A Brief Overview</h2>
 
                     <p className="text-muted-foreground mb-4 leading-relaxed">
-                      Eritrea occupies a strategic position on the Red Sea with
-                      highlands centred on Asmara and lowland ports such as
-                      Massawa and Assab. The telecommunications sector is
-                      comparatively small and historically tightly regulated;
-                      state-linked operators and the national telecom provider play
-                      an outsized role in wholesale and retail connectivity.
+                      Eritrea occupies a strategic position on the Red Sea with highlands centred on Asmara and lowland ports such as Massawa and Assab. The telecommunications sector is comparatively small and historically tightly regulated; state-linked operators and the national telecom provider play an outsized role in wholesale and retail connectivity.
                     </p>
 
                     <p className="text-muted-foreground mb-6 leading-relaxed">
-                      Consumer access is largely mobile-first with fixed broadband
-                      penetration limited. International capacity has been
-                      constrained by the absence of a domestic submarine cable
-                      landing, making Eritrea more dependent on regional and
-                      satellite/backhaul arrangements for international transit.
+                      Consumer access is largely mobile-first with fixed broadband penetration limited. International capacity has been constrained by the absence of a domestic submarine cable landing, making Eritrea more dependent on regional and satellite/backhaul arrangements for international transit.
                     </p>
 
                     {/* Map — GOOGLE MAPS */}
@@ -162,9 +174,9 @@ const Eritrea: React.FC = () => {
                     <CardContent className="p-6">
                       <h3 className="text-xl font-bold mb-3">Main Airports</h3>
                       <ul className="list-disc pl-5 text-muted-foreground space-y-1">
-                        <li>Asmara International Airport (ASM) — primary international gateway.</li>
-                        <li>Massawa International Airport — key Red Sea port airport (services vary).</li>
-                        <li>Assab Airport — gateway for the south and port facilities.</li>
+                        <li>Asmara International Airport (ASM)</li>
+                        <li>Massawa International Airport (MSW)</li>
+                        <li>Assab Airport (ASA)</li>
                       </ul>
                     </CardContent>
                   </Card>
@@ -174,13 +186,7 @@ const Eritrea: React.FC = () => {
                       <h3 className="text-xl font-bold mb-4">Connectivity Overview</h3>
 
                       <p className="text-muted-foreground mb-6 leading-relaxed">
-                        Eritrea does not host a major international submarine cable
-                        landing as of current public mappings; international
-                        connectivity therefore relies on neighbouring country
-                        transit, microwave links and satellite systems. Mobile
-                        networks provide the majority of consumer access, while
-                        limited fixed-line and enterprise services exist through
-                        national carriers.
+                        Eritrea does not host a major international submarine cable landing in public maps; international connectivity therefore relies on neighbouring country transit, microwave links and satellite systems. Mobile networks provide the majority of consumer access, while limited fixed-line and enterprise services exist through national carriers.
                       </p>
 
                       <div className="overflow-x-auto">
@@ -229,16 +235,12 @@ const Eritrea: React.FC = () => {
                 <h2 className="text-3xl font-bold mb-4">Submarine Cables & International Routes</h2>
 
                 <p className="text-muted-foreground mb-6 leading-relaxed text-center max-w-3xl mx-auto">
-                  Eritrea's Red Sea coastline gives it strategic proximity to undersea
-                  networks, but public mappings show no active submarine cable
-                  landings directly in Eritrea; regional hubs (Djibouti, Sudan,
-                  Yemen) and satellite/backhaul links provide the main
-                  international transit options.
+                  Eritrea's Red Sea coastline gives it strategic proximity to undersea networks, but public mappings show no active submarine cable landings directly in Eritrea; regional hubs (Djibouti, Sudan, Yemen) and satellite/backhaul links provide the main international transit options.
                 </p>
 
                 <div className="flex justify-center">
                   <a
-                    href="https://www.submarinecablemap.com/country/djibouti"
+                    href="https://www.submarinecablemap.com/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-block"
@@ -247,6 +249,7 @@ const Eritrea: React.FC = () => {
                       src="/Eritrea.png"
                       alt="Submarine cables and international routes serving Eritrea (regional view)"
                       className="rounded-xl shadow-lg border border-white/20 w-full max-w-3xl mx-auto"
+                      loading="lazy"
                     />
                   </a>
                 </div>
@@ -259,11 +262,7 @@ const Eritrea: React.FC = () => {
                 <h2 className="text-3xl font-bold mb-4">Internet Providers & Market</h2>
 
                 <p className="text-muted-foreground mb-4 leading-relaxed">
-                  The market is small and historically dominated by state-linked
-                  operators such as EriTel and Eritel, which provide a mix of
-                  mobile, fixed and VSAT services. Enterprise connectivity is
-                  typically arranged through national carriers and occasional
-                  regional partners.
+                  The market is small and historically dominated by state-linked operators such as EriTel and Eritel, which provide a mix of mobile, fixed and VSAT services. Enterprise connectivity is typically arranged through national carriers and occasional regional partners.
                 </p>
 
                 <h3 className="text-xl font-semibold mb-4">Our Capabilities</h3>
@@ -297,13 +296,14 @@ const Eritrea: React.FC = () => {
         <section className="py-16">
           <div className="container mx-auto px-4 max-w-4xl text-center">
             <p className="text-lg leading-relaxed mb-6 text-muted-foreground">
-              Contact us to receive a <mark className="bg-yellow-200 px-1 rounded">Commercial Offer in 2–4 working days</mark>.
+              Contact us to receive a{" "}
+              <mark className="bg-yellow-200 px-1 rounded">Commercial Offer in 2–4 working days</mark>.
               We support connectivity planning around Asmara, Massawa and other feasible sites subject to local infrastructure and regulatory constraints.
             </p>
 
             <p className="mb-6">
               <a
-                href="mailto:sales@inte-QT.com?subject=Eritrea%20Connectivity%20Inquiry"
+                href="mailto:sales@inte-qt.com?subject=Eritrea%20Connectivity%20Inquiry"
                 className="text-primary underline font-semibold"
               >
                 Email Us
@@ -312,11 +312,15 @@ const Eritrea: React.FC = () => {
 
             <h4 className="mb-3 font-semibold">References</h4>
             <ul className="text-muted-foreground">
-              <li><a href="https://www.worldometers.info/world-population/eritrea-population/" target="_blank" rel="noopener noreferrer" className="underline">Worldometers — Population estimates (2025)</a></li>
-              <li><a href="https://en.wikipedia.org/wiki/Eritrea" target="_blank" rel="noopener noreferrer" className="underline">Wikipedia — Eritrea (overview)</a></li>
-              <li><a href="https://en.wikipedia.org/wiki/Asmara_International_Airport" target="_blank" rel="noopener noreferrer" className="underline">Asmara International Airport — details</a></li>
-              <li><a href="https://www.submarinecablemap.com/" target="_blank" rel="noopener noreferrer" className="underline">Submarine Cable Map — regional cable overview</a></li>
-              <li><a href="https://eritel.com.er/" target="_blank" rel="noopener noreferrer" className="underline">Eritel — local ISP / services (corporate site)</a></li>
+              <li>
+                <a href="https://en.wikipedia.org/wiki/Eritrea" target="_blank" rel="noopener noreferrer" className="underline">Wikipedia — Eritrea</a>
+              </li>
+              <li>
+                <a href="https://www.submarinecablemap.com/" target="_blank" rel="noopener noreferrer" className="underline">Submarine Cable Map — regional overview</a>
+              </li>
+              <li>
+                <a href="https://eritel.com.er/" target="_blank" rel="noopener noreferrer" className="underline">Eritel — local ISP / services</a>
+              </li>
             </ul>
           </div>
         </section>

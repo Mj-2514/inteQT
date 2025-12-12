@@ -7,44 +7,59 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Comoros: React.FC = () => {
-    <Helmet>
-        <title>
-          Internet in Comoros | Connectivity, ISPs & Broadband Overview
-        </title>
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Internet in Comoros | Connectivity, ISPs & Broadband Overview",
+    description:
+      "Detailed overview of Comoros' internet connectivity, submarine and terrestrial routes, telecom operators, broadband statistics and inte-QT service capabilities in Moroni, Mutsamudu, Fomboni and other key locations.",
+    url: "https://www.inte-qt.com/coverage/africa/comoros",
+    about: {
+      "@type": "Country",
+      name: "Comoros",
+      population: 850000,
+      currency: "KMF (Comorian franc)",
+      languages: ["Shikomori (Comorian)", "Arabic", "French"],
+      neighbouringCountriesMaritime: ["Mozambique", "Tanzania", "Madagascar", "Seychelles", "Mayotte (France)"],
+      majorCities: ["Moroni", "Mutsamudu", "Fomboni", "Iconi", "Mitsamiouli"],
+      majorAirports: [
+        "Prince Said Ibrahim International Airport (HAH) — Moroni, Grande Comore",
+        "Ouani Airport (AJN) — Anjouan (Nzwani)",
+        "Mohéli Bandar Es Salam Airport (NWA) — Mohéli (Mwali)",
+        "Dzaoudzi–Pamandzi International Airport (DZA) — Mayotte (nearby regional hub)"
+      ],
+      url: "https://en.wikipedia.org/wiki/Comoros"
+    }
+  };
+
+  return (
+    <>
+      <Helmet>
+        <title>Internet in Comoros | Connectivity, ISPs & Broadband Overview</title>
         <meta
           name="description"
           content="Detailed overview of Comoros' internet connectivity, submarine and terrestrial routes, telecom operators, broadband statistics and inte-QT service capabilities in Moroni, Mutsamudu, Fomboni and other key locations."
         />
-        <link
-          rel="canonical"
-          href="https://www.inte-qt.com/coverage/africa/comoros"
-        />
+        <link rel="canonical" href="https://www.inte-qt.com/coverage/africa/comoros" />
+        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       </Helmet>
-  return (
-    <>
-      
 
       <Navbar />
 
       {/* HERO */}
-      <section
-        className="relative py-28 overflow-hidden"
-        aria-labelledby="hero-title"
-      >
+      <section className="relative py-28 overflow-hidden" aria-labelledby="hero-title">
         <motion.div
           initial={{ opacity: 0, scale: 1.1 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.2 }}
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            // 🔁 swap this with your own Moroni / islands screenshot
             backgroundImage:
-              'url("https://images.unsplash.com/photo-1717551725335-5e1dcd57a491?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y29tb3Jvc3xlbnwwfHwwfHx8Mg%3D%3D")',
+              'url("https://images.unsplash.com/photo-1717551725335-5e1dcd57a491?w=1200&auto=format&fit=crop&q=80")',
           }}
+          aria-hidden
         />
-
-        <div className="absolute inset-0 bg-black/55 backdrop-blur-[1.5px]" />
-
+        <div className="absolute inset-0 bg-black/55 backdrop-blur-[1.5px]" aria-hidden />
         <div className="relative z-10 text-center px-6 container mx-auto">
           <motion.h1
             id="hero-title"
@@ -62,10 +77,8 @@ const Comoros: React.FC = () => {
             transition={{ duration: 1 }}
             className="text-white/90 max-w-3xl mx-auto text-lg md:text-xl mt-4 leading-relaxed"
           >
-            A small Indian Ocean archipelago at the top of the Mozambique
-            Channel where connectivity depends on a handful of submarine cables,
-            limited fibre and heavily used mobile networks around Moroni and the
-            main islands.
+            A small Indian Ocean archipelago where connectivity depends on a
+            handful of submarine cables, limited domestic fibre and heavily used mobile networks around Moroni and the main islands.
           </motion.p>
         </div>
       </section>
@@ -76,36 +89,17 @@ const Comoros: React.FC = () => {
           <div className="container mx-auto px-4 max-w-6xl">
             <div className="grid lg:grid-cols-3 gap-10">
               {/* LEFT — KEY FACTS */}
-              <motion.aside
-                initial={{ opacity: 0, x: -40 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6 }}
-                className="w-full"
-              >
+              <motion.aside initial={{ opacity: 0, x: -40 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }} className="w-full">
                 <Card className="backdrop-blur-xl bg-white/70 dark:bg-black/30 rounded-3xl border border-white/20 shadow-xl">
                   <CardContent className="p-8">
                     <h2 className="text-2xl font-bold mb-5">Key Facts</h2>
 
                     <ul className="space-y-3 text-sm text-muted-foreground leading-relaxed">
-                      <li>
-                        <strong>Population:</strong> ~0.85 million (2025 est.)
-                      </li>
-                      <li>
-                        <strong>Neighbors (maritime):</strong> Mozambique,
-                        Tanzania, Madagascar, Seychelles; close to Mayotte
-                        (France)
-                      </li>
-                      <li>
-                        <strong>Languages:</strong> Comorian (Shikomori),
-                        Arabic, French (all official)
-                      </li>
-                      <li>
-                        <strong>Currency:</strong> Comorian franc (KMF)
-                      </li>
-                      <li>
-                        <strong>Major Towns:</strong> Moroni (capital),
-                        Mutsamudu, Fomboni, Iconi, Mitsamiouli
-                      </li>
+                      <li><strong>Population:</strong> ~0.85 million (2025 est.)</li>
+                      <li><strong>Maritime neighbours:</strong> Mozambique, Tanzania, Madagascar, Seychelles; close to Mayotte (France)</li>
+                      <li><strong>Languages:</strong> Shikomori (Comorian), Arabic, French</li>
+                      <li><strong>Currency:</strong> Comorian franc (KMF)</li>
+                      <li><strong>Major towns:</strong> Moroni, Mutsamudu, Fomboni, Iconi, Mitsamiouli</li>
                     </ul>
 
                     <div className="text-center mt-6">
@@ -116,6 +110,7 @@ const Comoros: React.FC = () => {
                         src="https://flagcdn.com/w320/km.png"
                         alt="Comoros Flag"
                         className="mx-auto rounded-lg shadow-lg border border-white/40"
+                        loading="lazy"
                       />
                     </div>
                   </CardContent>
@@ -123,41 +118,19 @@ const Comoros: React.FC = () => {
               </motion.aside>
 
               {/* RIGHT — MAIN CONTENT */}
-              <motion.article
-                initial={{ opacity: 0, x: 40 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6 }}
-                className="lg:col-span-2 space-y-10"
-              >
+              <motion.article initial={{ opacity: 0, x: 40 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }} className="lg:col-span-2 space-y-10">
                 {/* Overview */}
                 <Card className="rounded-3xl shadow-xl border border-white/10">
                   <CardContent className="p-8">
-                    <h2 className="text-3xl font-bold mb-4">
-                      A Brief Overview
-                    </h2>
+                    <h2 className="text-3xl font-bold mb-4">A Brief Overview</h2>
 
                     <p className="text-muted-foreground mb-4 leading-relaxed">
-                      The Union of the Comoros is a volcanic island state in
-                      the northern Mozambique Channel between mainland East
-                      Africa and Madagascar. The three main islands — Grande
-                      Comore (Ngazidja), Mohéli (Mwali) and Anjouan (Nzwani) —
-                      are spread along a northwest–southeast axis. Moroni on
-                      Grande Comore is the political and economic centre, with
-                      Mutsamudu and Fomboni acting as secondary hubs on the
-                      other islands.
+                      The Union of the Comoros is a volcanic island state in the northern Mozambique Channel. The three main islands—
+                      Grande Comore (Ngazidja), Mohéli (Mwali) and Anjouan (Nzwani)—are spread across the channel. Moroni on Grande Comore is the political and economic centre.
                     </p>
 
                     <p className="text-muted-foreground mb-6 leading-relaxed">
-                      Connectivity is constrained by geography, limited domestic
-                      fibre and a small, low-income market. Mobile networks are
-                      the default access method and 3G/4G coverage is focused
-                      around the towns and coastal areas. Fixed broadband is
-                      very shallow, mainly serving government, banks and a small
-                      number of businesses, while many citizens rely on shared
-                      access points or basic mobile data bundles. International
-                      bandwidth comes through a small number of subsea systems
-                      with landing points on Grande Comore and the neighbouring
-                      French territory of Mayotte.
+                      Connectivity is constrained by geography and a small market. Mobile networks are the primary access method; fixed broadband is very shallow and concentrated in government/business locations. International bandwidth comes through a small set of subsea systems and regional interconnects (Mayotte, Madagascar).
                     </p>
 
                     {/* Map */}
@@ -183,101 +156,51 @@ const Comoros: React.FC = () => {
                     <CardContent className="p-6">
                       <h3 className="text-xl font-bold mb-3">Main Airports</h3>
                       <ul className="list-disc pl-5 text-muted-foreground space-y-1">
-                        <li>
-                          Prince Said Ibrahim International Airport (HAH) —
-                          primary gateway near Moroni, Grande Comore
-                        </li>
-                        <li>
-                          Ouani Airport (AJN) — serving Anjouan (Nzwani)
-                        </li>
-                        <li>
-                          Mohéli Bandar Es Salam Airport (NWA) — serving Mohéli
-                          (Mwali)
-                        </li>
-                        <li>
-                          Nearby: Dzaoudzi–Pamandzi International Airport on
-                          Mayotte (French territory) — important for regional
-                          traffic
-                        </li>
+                        <li>Prince Said Ibrahim International Airport (HAH) — Moroni, Grande Comore</li>
+                        <li>Ouani Airport (AJN) — Anjouan (Nzwani)</li>
+                        <li>Mohéli Bandar Es Salam Airport (NWA) — Mohéli (Mwali)</li>
+                        <li>Nearby regional hub: Dzaoudzi–Pamandzi Intl. (Mayotte)</li>
                       </ul>
                     </CardContent>
                   </Card>
 
                   <Card className="rounded-3xl border border-white/10 shadow-lg">
                     <CardContent className="p-6">
-                      <h3 className="text-xl font-bold mb-4">
-                        Connectivity Overview
-                      </h3>
+                      <h3 className="text-xl font-bold mb-4">Connectivity Overview</h3>
 
                       <p className="text-muted-foreground mb-6 leading-relaxed">
-                        Comoros is a very small and relatively low-ARPU market.
-                        Mobile networks are dominated by Comores Télécom and Telma
-                        Comores. Most internet users access services via
-                        smartphones; fixed broadband penetration is minimal and
-                        largely enterprise or government. Capacity constraints,
-                        international transit costs and power issues can result
-                        in variable performance and higher prices compared with
-                        larger African markets.
+                        A small, lower-ARPU market where Comores Télécom and Telma Comores dominate mobile services. Fixed broadband is minimal; many users rely on shared access or mobile bundles. International transit costs and power reliability affect service levels and pricing.
                       </p>
 
                       <div className="overflow-x-auto">
                         <table className="w-full border-collapse text-sm">
                           <thead>
                             <tr className="bg-muted/30 border border-muted">
-                              <th className="py-3 px-4 text-left font-semibold">
-                                Type
-                              </th>
-                              <th className="py-3 px-4 text-left font-semibold">
-                                Users / Lines
-                              </th>
-                              <th className="py-3 px-4 text-left font-semibold">
-                                Penetration
-                              </th>
+                              <th className="py-3 px-4 text-left font-semibold">Type</th>
+                              <th className="py-3 px-4 text-left font-semibold">Users / Lines</th>
+                              <th className="py-3 px-4 text-left font-semibold">Penetration</th>
                             </tr>
                           </thead>
                           <tbody>
                             <tr className="border-t border-muted/40">
-                              <td className="py-3 px-4">
-                                Internet Users (mid-2025 est.)
-                              </td>
+                              <td className="py-3 px-4">Internet Users (mid-2025 est.)</td>
                               <td className="py-3 px-4">≈ 0.36–0.40 million</td>
-                              <td className="py-3 px-4">
-                                ~42–47% of population
-                              </td>
+                              <td className="py-3 px-4">~42–47%</td>
                             </tr>
-
                             <tr className="border-t border-muted/40">
-                              <td className="py-3 px-4">
-                                Mobile Connections
-                              </td>
-                              <td className="py-3 px-4">
-                                ≈ 1.0–1.1 million SIMs
-                              </td>
-                              <td className="py-3 px-4">
-                                ~115–125% (multi-SIM common)
-                              </td>
+                              <td className="py-3 px-4">Mobile Connections</td>
+                              <td className="py-3 px-4">≈ 1.0–1.1 million SIMs</td>
+                              <td className="py-3 px-4">~115–125%</td>
                             </tr>
-
                             <tr className="border-t border-muted/40">
-                              <td className="py-3 px-4">
-                                Social Media Identities
-                              </td>
+                              <td className="py-3 px-4">Social Media Identities</td>
                               <td className="py-3 px-4">≈ 0.25 million</td>
-                              <td className="py-3 px-4">
-                                ~30% (primarily youth &amp; urban)
-                              </td>
+                              <td className="py-3 px-4">~30%</td>
                             </tr>
-
                             <tr className="border-t border-muted/40">
-                              <td className="py-3 px-4">
-                                Fixed Broadband (2024 est.)
-                              </td>
-                              <td className="py-3 px-4">
-                                &lt; 5,000–10,000 lines
-                              </td>
-                              <td className="py-3 px-4">
-                                &lt; 1 per 100 inhabitants
-                              </td>
+                              <td className="py-3 px-4">Fixed Broadband (2024 est.)</td>
+                              <td className="py-3 px-4">&lt; 5,000–10,000 lines</td>
+                              <td className="py-3 px-4">&lt;1 per 100 inhabitants</td>
                             </tr>
                           </tbody>
                         </table>
@@ -295,32 +218,25 @@ const Comoros: React.FC = () => {
           <div className="container mx-auto px-4 max-w-6xl space-y-10">
             <Card className="rounded-3xl border border-white/10 shadow-xl">
               <CardContent className="p-6 text-center">
-                <h2 className="text-3xl font-bold mb-4">
-                  Submarine Cables & International Routes
-                </h2>
+                <h2 className="text-3xl font-bold mb-4">Submarine Cables & International Routes</h2>
 
                 <p className="text-muted-foreground mb-6 leading-relaxed text-center max-w-3xl mx-auto">
-                  Comoros connects to the global internet mainly through the
-                  EASSy (Eastern Africa Submarine System) and FLY-LION3
-                  subsea cables, with landing infrastructure on Grande Comore
-                  and regional interconnection via Mayotte and Madagascar. These
-                  systems feed into a limited domestic backbone that links
-                  Moroni with key coastal towns and the other islands, often
-                  following power and road corridors.
+                  Comoros connects to the global internet via regional submarine systems (examples: EASSy, FLY-LION3 and nearby landings via Mayotte/Madagascar). Those cables backhaul into a limited domestic backbone linking Moroni with other islands and coastal towns.
                 </p>
 
                 <div className="flex justify-center">
-                  {/* 👉 Replace href/src with your own submarine-cable screenshot */}
                   <a
                     href="https://www.submarinecablemap.com/country/comoros"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-block"
+                    aria-label="Open submarine cable map (Comoros)"
                   >
                     <img
                       src="/Comoros.png"
                       alt="Submarine cables and international routes serving Comoros"
                       className="rounded-xl shadow-lg border border-white/20 w-full max-w-3xl mx-auto"
+                      loading="lazy"
                     />
                   </a>
                 </div>
@@ -333,34 +249,23 @@ const Comoros: React.FC = () => {
                 <h2 className="text-3xl font-bold mb-4">Internet Providers</h2>
 
                 <p className="text-muted-foreground mb-4 leading-relaxed">
-                  The ISP and mobile market is small and dominated by Comores
-                  Télécom and Telma Comores, with some niche and enterprise
-                  providers. Services are largely mobile data (3G/4G) with
-                  limited fibre or fixed wireless solutions in and around
-                  Moroni, Mutsamudu and Fomboni. International transit costs,
-                  power quality and the limited local ecosystem are key factors
-                  shaping performance and pricing.
+                  Market is small and dominated by Comores Télécom and Telma Comores, with some niche enterprise providers. Services are mainly mobile (3G/4G); limited fibre/fixed wireless exists in Moroni and select sites.
                 </p>
 
-                <h3 className="text-xl font-semibold mb-4">
-                  Our Capabilities
-                </h3>
+                <h3 className="text-xl font-semibold mb-4">Our Capabilities</h3>
 
                 <div className="grid sm:grid-cols-2 gap-4">
                   {[
-                    "Dedicated Internet Access (DIA) in Moroni and selected enterprise sites",
-                    "Business Broadband / fixed wireless for offices, banks and public sector",
-                    "4G / LTE and microwave last-mile with redundant paths where available",
-                    "SLA-backed Services with monitoring adapted to local power conditions",
-                    "CPE / Router supply, configuration and managed services",
-                    "Layer-3 VPNs and SD-WAN overlays for multi-site organisations",
-                    "Traffic engineered across EASSy / FLY-LION3 and regional partners",
-                    "Managed Security, VPN termination and basic DDoS protection at the edge",
+                    "Dedicated Internet Access (DIA) in Moroni and enterprise sites",
+                    "Business Broadband / fixed wireless for hotels, banks and government",
+                    "4G / LTE last-mile and microwave backup where available",
+                    "SLA-backed services with monitoring adapted to local power conditions",
+                    "CPE / Router supply, configuration & managed services",
+                    "MPLS / SD-WAN overlays for multi-site organisations",
+                    "Traffic engineering across EASSy / FLY-LION3 via regional partners",
+                    "Managed Security, VPN termination and basic DDoS protection"
                   ].map((cap) => (
-                    <div
-                      key={cap}
-                      className="flex items-start space-x-3 bg-card/40 backdrop-blur-md p-3 rounded-xl border border-white/10 shadow"
-                    >
+                    <div key={cap} className="flex items-start space-x-3 bg-card/40 backdrop-blur-md p-3 rounded-xl border border-white/10 shadow">
                       <CheckCircle className="w-5 h-5 text-primary mt-1" />
                       <div className="text-sm">{cap}</div>
                     </div>
@@ -375,76 +280,19 @@ const Comoros: React.FC = () => {
         <section className="py-16">
           <div className="container mx-auto px-4 max-w-4xl text-center">
             <p className="text-lg leading-relaxed mb-6 text-muted-foreground">
-              Contact us to receive a{" "}
-              <mark className="bg-yellow-200 px-1 rounded">
-                Commercial Offer in 2–4 working days
-              </mark>
-              . We can support connectivity in and around Moroni, and on
-              selected sites on Anjouan and Mohéli, subject to local
-              infrastructure and last-mile feasibility.
+              Contact us to receive a <mark className="bg-yellow-200 px-1 rounded">Commercial Offer in 2–4 working days</mark>. We can support connectivity in and around Moroni and selected sites on Anjouan and Mohéli, subject to last-mile feasibility.
             </p>
 
             <p className="mb-6">
-              <a
-                href="mailto:sales@inte-QT.com?subject=Comoros%20Connectivity%20Inquiry"
-                className="text-primary underline font-semibold"
-              >
-                Email Us
-              </a>
+              <a href="mailto:sales@inte-QT.com?subject=Comoros%20Connectivity%20Inquiry" className="text-primary underline font-semibold">Email Us</a>
             </p>
 
             <h4 className="mb-3 font-semibold">References</h4>
-            <ul className="text-muted-foreground">
-              <li>
-                <a
-                  href="https://www.worldatlas.com/maps/comoros"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline"
-                >
-                  WorldAtlas — Maps &amp; Facts: Comoros
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://ontheworldmap.com/comoros/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline"
-                >
-                  OnTheWorldMap — Comoros Maps
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://en.wikipedia.org/wiki/Comoros"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline"
-                >
-                  Wikipedia — Comoros
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://en.wikipedia.org/wiki/Telecommunications_in_the_Comoros"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline"
-                >
-                  Telecommunications in the Comoros
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://www.submarinecablemap.com/country/comoros"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline"
-                >
-                  Submarine Cable Map — Comoros Landings
-                </a>
-              </li>
+            <ul className="text-muted-foreground space-y-1">
+              <li><a href="https://en.wikipedia.org/wiki/Comoros" target="_blank" rel="noopener noreferrer" className="underline">Wikipedia — Comoros</a></li>
+              <li><a href="https://www.submarinecablemap.com/country/comoros" target="_blank" rel="noopener noreferrer" className="underline">Submarine Cable Map — Comoros</a></li>
+              <li><a href="https://www.worldatlas.com/maps/comoros" target="_blank" rel="noopener noreferrer" className="underline">WorldAtlas — Comoros facts & map</a></li>
+              <li><a href="https://en.wikipedia.org/wiki/Telecommunications_in_the_Comoros" target="_blank" rel="noopener noreferrer" className="underline">Telecommunications in the Comoros — Wikipedia</a></li>
             </ul>
           </div>
         </section>

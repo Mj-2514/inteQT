@@ -55,7 +55,7 @@ const Services = () => {
     description:
       "Cutting-edge wireless connectivity solutions for rapid deployment and flexible networking. Ideal for temporary sites and hard-to-reach locations.",
     icon: Wifi,
-    link: "/services/wireless-connection",
+    link: "/services/wireless-connect",
     image:
       "https://www.gadgetmatch.com/wp-content/uploads/2018/12/GadgetMatch-20181219-5G-Explainer-03.gif", // replace
     features: [

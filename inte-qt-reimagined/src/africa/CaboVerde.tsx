@@ -7,43 +7,63 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const CaboVerde: React.FC = () => {
-    <Helmet>
-        <title>
-          Internet in Cabo Verde | Connectivity, ISPs & Broadband Overview
-        </title>
+  // --- JSON-LD (SEO) ---
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Internet in Cabo Verde | Connectivity, ISPs & Broadband Overview",
+    description:
+      "Detailed overview of Cabo Verde's internet connectivity, submarine and domestic cables, ISPs, broadband statistics and inte-QT service capabilities in Praia, Mindelo, Sal, Boa Vista and other islands.",
+    url: "https://www.inte-qt.com/coverage/africa/cabo-verde",
+    about: {
+      "@type": "Country",
+      name: "Cabo Verde",
+      population: 527000,
+      currency: "CVE (Cape Verdean escudo)",
+      languages: ["Portuguese", "Cape Verdean Creole (Kriolu)"],
+      neighbouringCountries: [
+        "Senegal (closest mainland)",
+        "The Gambia",
+        "Mauritania",
+        "Guinea-Bissau",
+      ],
+      majorCities: ["Praia", "Mindelo", "Santa Maria", "Espargos", "Assomada"],
+      majorAirports: [
+        "Amílcar Cabral International Airport (SID) — Sal",
+        "Nelson Mandela International Airport (RAI) — Praia, Santiago",
+        "Cesária Évora International Airport (VXE) — São Vicente",
+        "Aristides Pereira International Airport (BVC) — Boa Vista",
+      ],
+      url: "https://en.wikipedia.org/wiki/Cape_Verde",
+    },
+  };
+
+  return (
+    <>
+      <Helmet>
+        <title>Internet in Cabo Verde | Connectivity, ISPs & Broadband Overview</title>
         <meta
           name="description"
           content="Detailed overview of Cabo Verde's internet connectivity, submarine and domestic cables, ISPs, broadband statistics and inte-QT service capabilities in Praia, Mindelo, Sal, Boa Vista and other islands."
         />
-        <link
-          rel="canonical"
-          href="https://www.inte-qt.com/coverage/africa/cabo-verde"
-        />
+        <link rel="canonical" href="https://www.inte-qt.com/coverage/africa/cabo-verde" />
+        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       </Helmet>
-  return (
-    <>
-      
 
       <Navbar />
 
       {/* HERO */}
-      <section
-        className="relative py-28 overflow-hidden"
-        aria-labelledby="hero-title"
-      >
+      <section className="relative py-28 overflow-hidden" aria-labelledby="hero-title">
         <motion.div
           initial={{ opacity: 0, scale: 1.1 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.2 }}
           className="absolute inset-0 bg-cover bg-center"
-          style={{
-            // swap this with your own hero screenshot if you want
-            backgroundImage:
-              'url("https://i.imgur.com/pXSWfEx.jpeg")',
-          }}
+          style={{ backgroundImage: 'url("https://i.imgur.com/pXSWfEx.jpeg")' }}
+          aria-hidden
         />
 
-        <div className="absolute inset-0 bg-black/55 backdrop-blur-[1.5px]" />
+        <div className="absolute inset-0 bg-black/55 backdrop-blur-[1.5px]" aria-hidden />
 
         <div className="relative z-10 text-center px-6 container mx-auto">
           <motion.h1
@@ -62,10 +82,7 @@ const CaboVerde: React.FC = () => {
             transition={{ duration: 1 }}
             className="text-white/90 max-w-3xl mx-auto text-lg md:text-xl mt-4 leading-relaxed"
           >
-            An Atlantic island hub where submarine cables land, mobile and
-            broadband penetration are among Africa&apos;s highest, and the
-            government aims to turn the archipelago into a digital gateway
-            between Africa, Europe and the Americas.
+            An Atlantic island hub where submarine cables land, mobile and broadband penetration are among Africa's highest, and the government aims to turn the archipelago into a digital gateway between Africa, Europe and the Americas.
           </motion.p>
         </div>
       </section>
@@ -91,20 +108,17 @@ const CaboVerde: React.FC = () => {
                         <strong>Population:</strong> ~527,000 (2025 est.)
                       </li>
                       <li>
-                        <strong>Neighbors:</strong> No land borders; closest
-                        mainland is Senegal, with The Gambia, Mauritania and
-                        Guinea-Bissau in the wider maritime neighborhood
+                        <strong>Neighbors:</strong> No land borders; closest mainland:
+                        Senegal, plus The Gambia, Mauritania, Guinea-Bissau
                       </li>
                       <li>
-                        <strong>Languages:</strong> Portuguese (official),
-                        Cape Verdean Creole (Kriolu) widely spoken
+                        <strong>Languages:</strong> Portuguese (official), Cape Verdean Creole (Kriolu)
                       </li>
                       <li>
                         <strong>Currency:</strong> Cape Verdean escudo (CVE)
                       </li>
                       <li>
-                        <strong>Major Cities:</strong> Praia, Mindelo,
-                        Santa Maria, Espargos, Assomada
+                        <strong>Major Cities:</strong> Praia, Mindelo, Santa Maria, Espargos, Assomada
                       </li>
                     </ul>
 
@@ -116,6 +130,7 @@ const CaboVerde: React.FC = () => {
                         src="https://flagcdn.com/w320/cv.png"
                         alt="Cabo Verde Flag"
                         className="mx-auto rounded-lg shadow-lg border border-white/40"
+                        loading="lazy"
                       />
                     </div>
                   </CardContent>
@@ -132,28 +147,14 @@ const CaboVerde: React.FC = () => {
                 {/* Overview */}
                 <Card className="rounded-3xl shadow-xl border border-white/10">
                   <CardContent className="p-8">
-                    <h2 className="text-3xl font-bold mb-4">
-                      A Brief Overview
-                    </h2>
+                    <h2 className="text-3xl font-bold mb-4">A Brief Overview</h2>
 
                     <p className="text-muted-foreground mb-4 leading-relaxed">
-                      Cabo Verde is a volcanic archipelago of ten islands in
-                      the central Atlantic Ocean, roughly 570&nbsp;km off the
-                      coast of Senegal. Praia on Santiago Island is the
-                      political and economic capital, while Mindelo on
-                      São Vicente is the cultural hub, with Sal and Boa Vista
-                      acting as major tourism gateways.
+                      Cabo Verde is a volcanic archipelago of ten islands in the central Atlantic Ocean, roughly 570 km off the coast of Senegal. Praia on Santiago Island is the political and economic capital, while Mindelo on São Vicente is the cultural hub, with Sal and Boa Vista acting as major tourism gateways.
                     </p>
 
                     <p className="text-muted-foreground mb-6 leading-relaxed">
-                      For its size, Cabo Verde is extremely well-connected.
-                      Multiple international submarine cables land in Praia and
-                      Sal, a domestic submarine system ties the islands
-                      together, and mobile and fixed broadband penetration are
-                      far above the African average. The government&apos;s
-                      &quot;Cyber Island&quot; and blue-economy strategies aim
-                      to position the country as a resilient digital hub
-                      linking Africa, Europe and the Americas.
+                      For its size, Cabo Verde is extremely well-connected. Multiple international submarine cables land in Praia and Sal, a domestic submarine system ties the islands together, and mobile and fixed broadband penetration are far above the African average. The government's "Cyber Island" and blue-economy strategies aim to position the country as a resilient digital hub linking Africa, Europe and the Americas.
                     </p>
 
                     {/* Map */}
@@ -180,19 +181,16 @@ const CaboVerde: React.FC = () => {
                       <h3 className="text-xl font-bold mb-3">Main Airports</h3>
                       <ul className="list-disc pl-5 text-muted-foreground space-y-1">
                         <li>
-                          Amílcar Cabral International (SID) — Sal Island,
-                          largest airport and intercontinental hub
+                          Amílcar Cabral International (SID) — Sal Island, largest airport and intercontinental hub
                         </li>
                         <li>
                           Nelson Mandela International (RAI) — Praia, Santiago
                         </li>
                         <li>
-                          Cesária Évora International (VXE) — São Vicente,
-                          serving Mindelo
+                          Cesária Évora International (VXE) — São Vicente, serving Mindelo
                         </li>
                         <li>
-                          Aristides Pereira Intl. / Rabil (BVC) — Boa Vista
-                          tourism hub
+                          Aristides Pereira Intl. / Rabil (BVC) — Boa Vista tourism hub
                         </li>
                       </ul>
                     </CardContent>
@@ -200,70 +198,44 @@ const CaboVerde: React.FC = () => {
 
                   <Card className="rounded-3xl border border-white/10 shadow-lg">
                     <CardContent className="p-6">
-                      <h3 className="text-xl font-bold mb-4">
-                        Connectivity Overview
-                      </h3>
+                      <h3 className="text-xl font-bold mb-4">Connectivity Overview</h3>
 
                       <p className="text-muted-foreground mb-6 leading-relaxed">
-                        Cabo Verde is one of Africa&apos;s most connected small
-                        states. As of early 2025, internet penetration is above
-                        70%, mobile connections exceed the population, and
-                        social media adoption is close to half the population.
-                        Fixed broadband is still concentrated in urban and
-                        tourist centres, but speeds and coverage are improving
-                        as new cables and backbones go live.
+                        Cabo Verde is one of Africa's most connected small states. As of early 2025, internet penetration is above 70%, mobile connections exceed the population, and social media adoption is close to half the population. Fixed broadband is still concentrated in urban and tourist centres, but speeds and coverage are improving as new cables and backbones go live.
                       </p>
 
                       <div className="overflow-x-auto">
                         <table className="w-full border-collapse text-sm">
                           <thead>
                             <tr className="bg-muted/30 border border-muted">
-                              <th className="py-3 px-4 text-left font-semibold">
-                                Type
-                              </th>
-                              <th className="py-3 px-4 text-left font-semibold">
-                                Users / Lines
-                              </th>
-                              <th className="py-3 px-4 text-left font-semibold">
-                                Penetration
-                              </th>
+                              <th className="py-3 px-4 text-left font-semibold">Type</th>
+                              <th className="py-3 px-4 text-left font-semibold">Users / Lines</th>
+                              <th className="py-3 px-4 text-left font-semibold">Penetration</th>
                             </tr>
                           </thead>
                           <tbody>
                             <tr className="border-t border-muted/40">
-                              <td className="py-3 px-4">
-                                Internet Users (Jan 2025)
-                              </td>
+                              <td className="py-3 px-4">Internet Users (Jan 2025)</td>
                               <td className="py-3 px-4">≈ 387,000</td>
                               <td className="py-3 px-4">~73.5% of population</td>
                             </tr>
 
                             <tr className="border-t border-muted/40">
-                              <td className="py-3 px-4">
-                                Mobile Connections
-                              </td>
+                              <td className="py-3 px-4">Mobile Connections</td>
                               <td className="py-3 px-4">≈ 604,000 SIMs</td>
-                              <td className="py-3 px-4">
-                                ~115% (many users have multiple SIMs)
-                              </td>
+                              <td className="py-3 px-4">~115% (many users have multiple SIMs)</td>
                             </tr>
 
                             <tr className="border-t border-muted/40">
-                              <td className="py-3 px-4">
-                                Social Media Users
-                              </td>
+                              <td className="py-3 px-4">Social Media Users</td>
                               <td className="py-3 px-4">≈ 262,000 IDs</td>
                               <td className="py-3 px-4">~50% of population</td>
                             </tr>
 
                             <tr className="border-t border-muted/40">
-                              <td className="py-3 px-4">
-                                Fixed Broadband (2023 est.)
-                              </td>
+                              <td className="py-3 px-4">Fixed Broadband (2023 est.)</td>
                               <td className="py-3 px-4">≈ 38,000 lines</td>
-                              <td className="py-3 px-4">
-                                ~7.2 per 100 inhabitants
-                              </td>
+                              <td className="py-3 px-4">~7.2 per 100 inhabitants</td>
                             </tr>
                           </tbody>
                         </table>
@@ -281,18 +253,10 @@ const CaboVerde: React.FC = () => {
           <div className="container mx-auto px-4 max-w-6xl space-y-10">
             <Card className="rounded-3xl border border-white/10 shadow-xl">
               <CardContent className="p-6 text-center">
-                <h2 className="text-3xl font-bold mb-4">
-                  Submarine Cables & Island Backbone
-                </h2>
+                <h2 className="text-3xl font-bold mb-4">Submarine Cables & Island Backbone</h2>
 
                 <p className="text-muted-foreground mb-6 leading-relaxed text-center max-w-3xl mx-auto">
-                  Cabo Verde punches far above its weight in subsea
-                  connectivity. Multiple international systems such as
-                  Atlantis-2, WACS, EllaLink, Equiano and others land in Praia,
-                  while a domestic submarine cable network links the main
-                  islands. New regional projects continue to add capacity and
-                  redundancy, underpinning the country&apos;s ambition to serve
-                  as a neutral Atlantic hub for data and cloud traffic.
+                  Cabo Verde punches far above its weight in subsea connectivity. Multiple international systems such as Atlantis-2, WACS, EllaLink, Equiano and others land in Praia and Sal, while a domestic submarine cable network links the main islands. New regional projects continue to add capacity and redundancy, underpinning the country's ambition to serve as a neutral Atlantic hub for data and cloud traffic.
                 </p>
 
                 <div className="flex justify-center">
@@ -307,6 +271,7 @@ const CaboVerde: React.FC = () => {
                       src="/Cabo.png"
                       alt="Submarine cables and domestic backbone serving Cabo Verde"
                       className="rounded-xl shadow-lg border border-white/20 w-full max-w-3xl mx-auto"
+                      loading="lazy"
                     />
                   </a>
                 </div>
@@ -319,16 +284,10 @@ const CaboVerde: React.FC = () => {
                 <h2 className="text-3xl font-bold mb-4">Internet Providers</h2>
 
                 <p className="text-muted-foreground mb-4 leading-relaxed">
-                  The market is led by CVTelecom/CVMóvel and Unitel T+, alongside
-                  smaller ISPs and cable operators. Mobile 4G and fixed fiber or
-                  hybrid access are widely available in urban areas and tourism
-                  zones, while outer islands and rural communities rely more on
-                  wireless and microwave links.
+                  The market is led by CVTelecom/CVMóvel and Unitel T+, alongside smaller ISPs and cable operators. Mobile 4G and fixed fiber or hybrid access are widely available in urban areas and tourism zones, while outer islands and rural communities rely more on wireless and microwave links.
                 </p>
 
-                <h3 className="text-xl font-semibold mb-4">
-                  Our Capabilities
-                </h3>
+                <h3 className="text-xl font-semibold mb-4">Our Capabilities</h3>
 
                 <div className="grid sm:grid-cols-2 gap-4">
                   {[
@@ -360,12 +319,8 @@ const CaboVerde: React.FC = () => {
           <div className="container mx-auto px-4 max-w-4xl text-center">
             <p className="text-lg leading-relaxed mb-6 text-muted-foreground">
               Contact us to receive a{" "}
-              <mark className="bg-yellow-200 px-1 rounded">
-                Commercial Offer in 2–4 working days
-              </mark>
-              . We can deliver connectivity across Praia, Mindelo, Sal, Boa
-              Vista and other islands, subject to local infrastructure and
-              last-mile feasibility.
+              <mark className="bg-yellow-200 px-1 rounded">Commercial Offer in 2–4 working days</mark>.
+              We can deliver connectivity across Praia, Mindelo, Sal, Boa Vista and other islands, subject to local infrastructure and last-mile feasibility.
             </p>
 
             <p className="mb-6">

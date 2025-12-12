@@ -4,10 +4,20 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Helmet } from "react-helmet-async";
+import Seo from "@/components/Seo";
+
+const canonical = "https://www.inte-qt.com/services/dedicated-lines";
+const pageTitle = "Dedicated Lines (DIA) | Enterprise Leased Lines – inte-QT";
+const pageDescription = "Ultra-reliable Dedicated Internet Access (DIA) with uncontended bandwidth, symmetrical speeds, low latency, global availability in 190+ countries, and 24×7 NSOC monitoring — powered by inte-QT.";
+const ogImage = "https://www.inte-qt.com/og/dedicated-lines-1200x630.jpg";
 
 
 const DedicatedLines = () => {
-  <Helmet>
+  
+
+  return (
+    <>
+    <Helmet>
   <title>Dedicated Lines (DIA) | Enterprise Leased Lines & Guaranteed Bandwidth – inte-QT</title>
 
   <meta
@@ -66,9 +76,7 @@ const DedicatedLines = () => {
     `}
   </script>
 </Helmet>
-
-  return (
-    <>
+    
       <Navbar />
 
       <div className="min-h-screen pt-24">

@@ -137,7 +137,7 @@ const App = () => (
           <Route path="/coverage/africa/chad" element={<Chad />} />
           <Route path="/coverage/africa/ethiopia" element={<Ethiopia />} />
           <Route path="/coverage/africa/comoros" element={<Comoros />} />
-          <Route path="/coverage/africa/congo" element={<Congo />} />
+          <Route path="/coverage/africa/republic-of-the-congo" element={<Congo />} />
           <Route path="/coverage/africa/central-african-republic" element={<CentralAfricanRepublic />} />
           <Route path="/coverage/asia/cambodia" element={<Cambodia />} />
           <Route path="/coverage/asia/brunei" element={<Brunei />} />

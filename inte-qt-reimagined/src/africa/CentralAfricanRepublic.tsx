@@ -7,31 +7,54 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const CentralAfricanRepublic: React.FC = () => {
-    <Helmet>
-        <title>
-          Internet in Central African Republic | Connectivity, ISPs & Broadband
-          Overview
-        </title>
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Internet in Central African Republic | Connectivity, ISPs & Broadband Overview",
+    description:
+      "Detailed overview of Central African Republic internet connectivity, fiber routes, ISPs, broadband statistics and inte-QT service capabilities in Bangui, Bimbo, Berbérati, Bambari and other key locations.",
+    url: "https://www.inte-qt.com/coverage/africa/central-african-republic",
+    about: {
+      "@type": "Country",
+      name: "Central African Republic",
+      population: 5600000,
+      currency: "XAF (Central African CFA franc)",
+      languages: ["French", "Sango"],
+      neighbouringCountries: [
+        "Cameroon",
+        "Chad",
+        "Sudan",
+        "South Sudan",
+        "Democratic Republic of the Congo",
+        "Republic of the Congo"
+      ],
+      majorCities: ["Bangui", "Bimbo", "Berbérati", "Carnot", "Bambari", "Bouar"],
+      majorAirports: [
+        "Bangui M'Poko International Airport (BGF)",
+        "Bambari Airport (BBY)",
+        "Berbérati Airport (BBT)",
+        "Bouar Airport (BOP)"
+      ],
+      url: "https://en.wikipedia.org/wiki/Central_African_Republic"
+    }
+  };
+
+  return (
+    <>
+      <Helmet>
+        <title>Internet in Central African Republic | Connectivity, ISPs & Broadband Overview</title>
         <meta
           name="description"
           content="Detailed overview of Central African Republic internet connectivity, fiber routes, ISPs, broadband statistics and inte-QT service capabilities in Bangui, Bimbo, Berbérati, Bambari and other key locations."
         />
-        <link
-          rel="canonical"
-          href="https://www.inte-qt.com/coverage/africa/central-african-republic"
-        />
+        <link rel="canonical" href="https://www.inte-qt.com/coverage/africa/central-african-republic" />
+        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       </Helmet>
-  return (
-    <>
-      
 
       <Navbar />
 
       {/* HERO */}
-      <section
-        className="relative py-28 overflow-hidden"
-        aria-labelledby="hero-title"
-      >
+      <section className="relative py-28 overflow-hidden" aria-labelledby="hero-title">
         <motion.div
           initial={{ opacity: 0, scale: 1.1 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -39,12 +62,11 @@ const CentralAfricanRepublic: React.FC = () => {
           className="absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage:
-              'url("https://images.unsplash.com/photo-1641072906027-0e2d12120b9a?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Y2VudHJhbCUyMGFmcmljYW4lMjByZXB1YmxpY3xlbnwwfHwwfHx8Mg%3D%3D")',
+              'url("https://images.unsplash.com/photo-1641072906027-0e2d12120b9a?w=1200&auto=format&fit=crop&q=80")',
           }}
+          aria-hidden
         />
-
-        <div className="absolute inset-0 bg-black/55 backdrop-blur-[1.5px]" />
-
+        <div className="absolute inset-0 bg-black/55 backdrop-blur-[1.5px]" aria-hidden />
         <div className="relative z-10 text-center px-6 container mx-auto">
           <motion.h1
             id="hero-title"
@@ -62,9 +84,7 @@ const CentralAfricanRepublic: React.FC = () => {
             transition={{ duration: 1 }}
             className="text-white/90 max-w-3xl mx-auto text-lg md:text-xl mt-4 leading-relaxed"
           >
-            A landlocked nation of savannas, rivers, and forests — where
-            bandwidth flows in from the coasts via fiber, and mobile networks
-            carry most of the country’s connectivity.
+            A landlocked nation of savannas, rivers and forests — bandwidth flows via regional fiber, while mobile networks carry most connectivity.
           </motion.p>
         </div>
       </section>
@@ -75,37 +95,17 @@ const CentralAfricanRepublic: React.FC = () => {
           <div className="container mx-auto px-4 max-w-6xl">
             <div className="grid lg:grid-cols-3 gap-10">
               {/* LEFT — KEY FACTS */}
-              <motion.aside
-                initial={{ opacity: 0, x: -40 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6 }}
-                className="w-full"
-              >
+              <motion.aside initial={{ opacity: 0, x: -40 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }} className="w-full">
                 <Card className="backdrop-blur-xl bg-white/70 dark:bg-black/30 rounded-3xl border border-white/20 shadow-xl">
                   <CardContent className="p-8">
                     <h2 className="text-2xl font-bold mb-5">Key Facts</h2>
 
                     <ul className="space-y-3 text-sm text-muted-foreground leading-relaxed">
-                      <li>
-                        <strong>Population:</strong> ~5.6 million (Oct 2025 est.)
-                      </li>
-                      <li>
-                        <strong>Neighbors:</strong> Cameroon, Chad, Sudan, South
-                        Sudan, Democratic Republic of the Congo, Republic of the
-                        Congo
-                      </li>
-                      <li>
-                        <strong>Languages:</strong> French (official), Sango
-                        (co-official, lingua franca)
-                      </li>
-                      <li>
-                        <strong>Currency:</strong> Central African CFA franc
-                        (XAF)
-                      </li>
-                      <li>
-                        <strong>Major Cities:</strong> Bangui, Bimbo, Berbérati,
-                        Carnot, Bambari, Bouar
-                      </li>
+                      <li><strong>Population:</strong> ~5.6 million (Oct 2025 est.)</li>
+                      <li><strong>Neighbors:</strong> Cameroon, Chad, Sudan, South Sudan, DR Congo, Republic of the Congo</li>
+                      <li><strong>Languages:</strong> French (official), Sango (co-official)</li>
+                      <li><strong>Currency:</strong> Central African CFA franc (XAF)</li>
+                      <li><strong>Major Cities:</strong> Bangui, Bimbo, Berbérati, Carnot, Bambari, Bouar</li>
                     </ul>
 
                     <div className="text-center mt-6 space-y-4">
@@ -116,13 +116,11 @@ const CentralAfricanRepublic: React.FC = () => {
                         src="https://flagcdn.com/w320/cf.png"
                         alt="Central African Republic Flag"
                         className="mx-auto rounded-lg shadow-lg border border-white/40"
+                        loading="lazy"
                       />
 
                       <p className="text-[0.78rem] text-muted-foreground leading-relaxed">
-                        The Central African Republic is a landlocked country in{" "}
-                        Central Africa. Its capital and largest city is Bangui,
-                        sitting on the Ubangi River and acting as the main hub
-                        for politics, trade, and telecom infrastructure.
+                        The Central African Republic (CAR) is landlocked in Central Africa. Bangui sits on the Ubangi River and is the country’s main hub for politics, trade and telecoms.
                       </p>
                     </div>
                   </CardContent>
@@ -130,37 +128,17 @@ const CentralAfricanRepublic: React.FC = () => {
               </motion.aside>
 
               {/* RIGHT — MAIN CONTENT */}
-              <motion.article
-                initial={{ opacity: 0, x: 40 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6 }}
-                className="lg:col-span-2 space-y-10"
-              >
-                {/* Overview */}
+              <motion.article initial={{ opacity: 0, x: 40 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }} className="lg:col-span-2 space-y-10">
                 <Card className="rounded-3xl shadow-xl border border-white/10">
                   <CardContent className="p-8">
-                    <h2 className="text-3xl font-bold mb-4">
-                      A Brief Overview
-                    </h2>
+                    <h2 className="text-3xl font-bold mb-4">A Brief Overview</h2>
 
                     <p className="text-muted-foreground mb-4 leading-relaxed">
-                      The Central African Republic (CAR) sits in the heart of
-                      Africa, bordered by six countries and spanning vast
-                      savanna and rainforest zones. Despite rich natural
-                      resources, years of political instability and conflict
-                      have held back infrastructure investment, keeping
-                      connectivity levels among the lowest in the world.
+                      CAR spans savanna and rainforest zones and is rich in natural resources, but persistent instability has limited infrastructure investment and left connectivity among the lowest globally.
                     </p>
 
                     <p className="text-muted-foreground mb-6 leading-relaxed">
-                      Because CAR is landlocked, it has no direct access to
-                      submarine cables. International capacity typically
-                      backhauls over terrestrial fiber links through Cameroon,
-                      the Republic of the Congo, and the Democratic Republic of
-                      the Congo, all of which are connected to major West and
-                      Central African cable systems. Mobile networks dominate
-                      internet use, while fixed broadband remains extremely
-                      limited outside Bangui and a few regional centers.
+                      Being landlocked, CAR relies on terrestrial fiber routes through Cameroon, the Republic of the Congo and the DR Congo to access submarine cable capacity. Mobile networks provide the bulk of consumer access; fixed broadband is scarce outside Bangui.
                     </p>
 
                     {/* Map */}
@@ -187,77 +165,53 @@ const CentralAfricanRepublic: React.FC = () => {
                     <CardContent className="p-6">
                       <h3 className="text-xl font-bold mb-3">Main Airports</h3>
                       <p className="text-muted-foreground text-sm mb-3 leading-relaxed">
-                        CAR has a single primary international gateway in
-                        Bangui, with a network of regional airfields supporting
-                        humanitarian and domestic movements.
+                        CAR has a primary international gateway in Bangui plus regional airfields used for domestic and humanitarian flights.
                       </p>
                       <ul className="list-disc pl-5 text-muted-foreground space-y-1 text-sm">
-                        <li>
-                          Bangui — Bangui M&apos;Poko International Airport
-                          (BGF)
-                        </li>
+                        <li>Bangui — Bangui M'Poko International Airport (BGF)</li>
                         <li>Bambari Airport (BBY)</li>
                         <li>Berbérati Airport (BBT)</li>
                         <li>Bouar Airport (BOP)</li>
-                        <li>Bangassou, Bria and other regional airstrips</li>
+                        <li>Regional airstrips: Bangassou, Bria, etc.</li>
                       </ul>
                     </CardContent>
                   </Card>
 
                   <Card className="rounded-3xl border border-white/10 shadow-lg">
                     <CardContent className="p-6">
-                      <h3 className="text-xl font-bold mb-4">
-                        Connectivity Overview
-                      </h3>
+                      <h3 className="text-xl font-bold mb-4">Connectivity Overview</h3>
 
                       <p className="text-muted-foreground mb-6 leading-relaxed text-sm">
-                        Digital adoption is growing but still early stage.
-                        Mobile is the primary access method, with a relatively
-                        small share of the population online and an even smaller
-                        share using social media. Large parts of the country
-                        remain offline and underserved.
+                        Digital adoption is early-stage. Mobile accounts for most access; large rural populations remain offline. Backbone initiatives and cross-border projects are critical to expand capacity.
                       </p>
 
                       <div className="overflow-x-auto">
                         <table className="w-full border-collapse text-sm">
                           <thead>
                             <tr className="bg-muted/30 border border-muted">
-                              <th className="py-3 px-4 text-left font-semibold">
-                                Type
-                              </th>
-                              <th className="py-3 px-4 text-left font-semibold">
-                                Users / Connections
-                              </th>
-                              <th className="py-3 px-4 text-left font-semibold">
-                                Penetration
-                              </th>
+                              <th className="py-3 px-4 text-left font-semibold">Type</th>
+                              <th className="py-3 px-4 text-left font-semibold">Users / Connections</th>
+                              <th className="py-3 px-4 text-left font-semibold">Penetration</th>
                             </tr>
                           </thead>
                           <tbody>
                             <tr className="border-t border-muted/40">
-                              <td className="py-3 px-4">
-                                Mobile Connections
-                              </td>
+                              <td className="py-3 px-4">Mobile Connections</td>
                               <td className="py-3 px-4">2.49 million</td>
-                              <td className="py-3 px-4">44.8% of population</td>
+                              <td className="py-3 px-4">44.8%</td>
                             </tr>
-
                             <tr className="border-t border-muted/40">
                               <td className="py-3 px-4">Internet Users</td>
                               <td className="py-3 px-4">670,000</td>
                               <td className="py-3 px-4">12.0%</td>
                             </tr>
-
                             <tr className="border-t border-muted/40">
                               <td className="py-3 px-4">Social Media Users</td>
                               <td className="py-3 px-4">230,000</td>
                               <td className="py-3 px-4">4.1%</td>
                             </tr>
-
                             <tr className="border-t border-muted/40">
-                              <td className="py-3 px-4">
-                                Offline Population
-                              </td>
+                              <td className="py-3 px-4">Offline Population</td>
                               <td className="py-3 px-4">~4.9 million</td>
                               <td className="py-3 px-4">88.0%</td>
                             </tr>
@@ -266,9 +220,7 @@ const CentralAfricanRepublic: React.FC = () => {
                       </div>
 
                       <p className="text-[0.78rem] text-muted-foreground mt-3 leading-relaxed">
-                        Figures for late 2025 based on Digital 2026:
-                        Central African Republic (DataReportal / Kepios, UN &
-                        GSMA sources).
+                        Figures (late 2025 / early 2026) are estimates based on DataReportal / GSMA / World Bank sources.
                       </p>
                     </CardContent>
                   </Card>
@@ -283,18 +235,10 @@ const CentralAfricanRepublic: React.FC = () => {
           <div className="container mx-auto px-4 max-w-6xl space-y-10">
             <Card className="rounded-3xl border border-white/10 shadow-xl">
               <CardContent className="p-6 text-center">
-                <h2 className="text-3xl font-bold mb-4">
-                  Submarine Cables & Internet Backbone
-                </h2>
+                <h2 className="text-3xl font-bold mb-4">Submarine Cables & Internet Backbone</h2>
 
                 <p className="text-muted-foreground mb-6 leading-relaxed text-center max-w-3xl mx-auto">
-                  As a landlocked country, the Central African Republic relies
-                  on regional terrestrial fiber to reach submarine cable landing
-                  stations in neighboring states. Routes through Cameroon, the
-                  Republic of the Congo, and the Democratic Republic of the
-                  Congo connect CAR to systems like WACS, ACE, and 2Africa,
-                  while initiatives such as the Central African Backbone aim to
-                  improve redundancy and capacity.
+                  CAR relies on regional terrestrial fiber to reach submarine cable landings in neighbouring coastal states. Routes through Cameroon, the Republic of the Congo and the DR Congo connect the country to systems like WACS, ACE and 2Africa. Programs such as the Central African Backbone aim to improve capacity and redundancy.
                 </p>
 
                 <div className="flex justify-center">
@@ -304,11 +248,11 @@ const CentralAfricanRepublic: React.FC = () => {
                     rel="noopener noreferrer"
                     className="inline-block"
                   >
-                    {/* you’ll replace this image with your own screenshot */}
                     <img
                       src="/CentralAfrica.png"
                       alt="Regional Submarine Cables & Terrestrial Backbones – Central African Republic"
                       className="rounded-xl shadow-lg border border-white/20 w-full max-w-3xl mx-auto"
+                      loading="lazy"
                     />
                   </a>
                 </div>
@@ -321,18 +265,15 @@ const CentralAfricanRepublic: React.FC = () => {
                 <h2 className="text-3xl font-bold mb-4">Internet Providers</h2>
 
                 <p className="text-muted-foreground mb-4 leading-relaxed">
-                  The mobile and broadband market in CAR is compact but
-                  competitive, with a handful of operators driving digital
-                  access, especially in and around Bangui and key regional
-                  towns.
+                  The market is served by a small set of operators focused on Bangui and regional towns; mobile operators deliver most consumer access, while the incumbent provides backbone services.
                 </p>
 
                 <ul className="list-disc pl-5 text-muted-foreground space-y-1 text-sm mb-4">
                   <li>Orange Centrafrique (Orange CAR)</li>
-                  <li>Telecel Centrafrique (Telecel CAR)</li>
+                  <li>Telecel Centrafrique</li>
                   <li>Moov Africa Centrafrique</li>
                   <li>Azur Centrafrique</li>
-                  <li>Socatel (state-owned incumbent, fixed & backbone)</li>
+                  <li>Socatel (state incumbent)</li>
                 </ul>
 
                 <h3 className="text-xl font-semibold mb-4">Our Capabilities</h3>
@@ -346,12 +287,9 @@ const CentralAfricanRepublic: React.FC = () => {
                     "Managed CPE / Router Deployment",
                     "SLA-backed Enterprise Services",
                     "Redundant Cross-Border Routing",
-                    "DDoS Protection & Traffic Scrubbing",
+                    "DDoS Protection & Traffic Scrubbing"
                   ].map((cap) => (
-                    <div
-                      key={cap}
-                      className="flex items-start space-x-3 bg-card/40 backdrop-blur-md p-3 rounded-xl border border-white/10 shadow"
-                    >
+                    <div key={cap} className="flex items-start space-x-3 bg-card/40 backdrop-blur-md p-3 rounded-xl border border-white/10 shadow">
                       <CheckCircle className="w-5 h-5 text-primary mt-1" />
                       <div className="text-sm">{cap}</div>
                     </div>
@@ -366,66 +304,19 @@ const CentralAfricanRepublic: React.FC = () => {
         <section className="py-16">
           <div className="container mx-auto px-4 max-w-4xl text-center">
             <p className="text-lg leading-relaxed mb-6 text-muted-foreground">
-              Contact us to receive a{" "}
-              <mark className="bg-yellow-200 px-1 rounded">
-                Commercial Offer in 2–4 working days
-              </mark>
-              . Our local and regional partners can deliver connectivity across
-              Bangui, as well as selected routes to Bimbo, Berbérati, Bambari,
-              Bouar and other strategic sites, subject to feasibility.
+              Contact us to receive a <mark className="bg-yellow-200 px-1 rounded">Commercial Offer in 2–4 working days</mark>. Our partners can deliver connectivity across Bangui and selected regional routes, subject to feasibility.
             </p>
 
             <p className="mb-6">
-              <a
-                href="mailto:sales@inte-QT.com?subject=Mail from Our Site"
-                className="text-primary underline font-semibold"
-              >
-                Email Us
-              </a>
+              <a href="mailto:sales@inte-QT.com?subject=Central%20African%20Republic%20Connectivity%20Inquiry" className="text-primary underline font-semibold">Email Us</a>
             </p>
 
             <h4 className="mb-3 font-semibold">References</h4>
             <ul className="text-muted-foreground space-y-1 text-sm">
-              <li>
-                <a
-                  href="https://datareportal.com/reports/digital-2026-central-african-republic"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="underline"
-                >
-                  DataReportal — Digital 2026: Central African Republic
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://en.wikipedia.org/wiki/Central_African_Republic"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="underline"
-                >
-                  Wikipedia — Central African Republic
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://en.wikipedia.org/wiki/Telecommunications_in_the_Central_African_Republic"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="underline"
-                >
-                  Telecommunications in the Central African Republic
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://documents1.worldbank.org/curated/en/271291649102938232/pdf/Eastern-Africa-Central-African-Backbone-SOP5-Project.pdf"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="underline"
-                >
-                  World Bank — Central African Backbone (CAB) Programme
-                </a>
-              </li>
+              <li><a href="https://datareportal.com/reports/digital-2026-central-african-republic" target="_blank" rel="noreferrer" className="underline">DataReportal — Digital 2026: Central African Republic</a></li>
+              <li><a href="https://en.wikipedia.org/wiki/Central_African_Republic" target="_blank" rel="noreferrer" className="underline">Wikipedia — Central African Republic</a></li>
+              <li><a href="https://en.wikipedia.org/wiki/Telecommunications_in_the_Central_African_Republic" target="_blank" rel="noreferrer" className="underline">Telecommunications in the Central African Republic — Wikipedia</a></li>
+              <li><a href="https://documents1.worldbank.org/curated/en/271291649102938232/pdf/Eastern-Africa-Central-African-Backbone-SOP5-Project.pdf" target="_blank" rel="noreferrer" className="underline">World Bank — Central African Backbone (CAB)</a></li>
             </ul>
           </div>
         </section>

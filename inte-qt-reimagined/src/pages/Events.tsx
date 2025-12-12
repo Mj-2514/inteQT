@@ -287,7 +287,7 @@ const Events = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold mb-4">Events</h2>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-xl text-muted-foreground text-gray">
               Connect with us at these upcoming industry events
             </p>
           </div>
