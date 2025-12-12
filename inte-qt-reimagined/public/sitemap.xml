@@ -1,130 +1,131 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
-  <!-- HOME -->
+  <!-- =====================
+       CORE PAGES
+  ====================== -->
   <url>
-    <loc>https://inte-qt-reimagined.vercel.app/</loc>
-    <changefreq>daily</changefreq>
+    <loc>https://inte-qt.com/</loc>
     <priority>1.0</priority>
   </url>
-
-  <!-- CORE PAGES -->
   <url>
-    <loc>https://inte-qt-reimagined.vercel.app/global-nsoc</loc>
-    <changefreq>weekly</changefreq>
+    <loc>https://inte-qt.com/coverage</loc>
     <priority>0.9</priority>
   </url>
-
   <url>
-    <loc>https://inte-qt-reimagined.vercel.app/services</loc>
-    <changefreq>weekly</changefreq>
+    <loc>https://inte-qt.com/services</loc>
     <priority>0.9</priority>
   </url>
-
   <url>
-    <loc>https://inte-qt-reimagined.vercel.app/partner-center</loc>
-    <changefreq>weekly</changefreq>
+    <loc>https://inte-qt.com/partner-center</loc>
     <priority>0.8</priority>
   </url>
-
   <url>
-    <loc>https://inte-qt-reimagined.vercel.app/cases</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://inte-qt-reimagined.vercel.app/events</loc>
-    <changefreq>weekly</changefreq>
+    <loc>https://inte-qt.com/cases</loc>
     <priority>0.8</priority>
   </url>
-
   <url>
-    <loc>https://inte-qt-reimagined.vercel.app/blogs</loc>
-    <changefreq>weekly</changefreq>
+    <loc>https://inte-qt.com/events</loc>
     <priority>0.8</priority>
   </url>
-
-
-  <!-- ASIA LIST PAGE -->
   <url>
-    <loc>https://inte-qt-reimagined.vercel.app/coverage/asia</loc>
-    <changefreq>weekly</changefreq>
+    <loc>https://inte-qt.com/blogs</loc>
     <priority>0.8</priority>
   </url>
-
-
-  <!-- COUNTRY PAGES (ASIA) -->
   <url>
-    <loc>https://inte-qt-reimagined.vercel.app/coverage/asia/india</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <loc>https://inte-qt.com/contact</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://inte-qt.com/privacy-policy</loc>
+    <priority>0.5</priority>
   </url>
 
-  <url>
-    <loc>https://inte-qt-reimagined.vercel.app/coverage/asia/afghanistan</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
+  <!-- =====================
+       REGIONS
+  ====================== -->
+  <url><loc>https://inte-qt.com/coverage/asia</loc></url>
+  <url><loc>https://inte-qt.com/coverage/europe</loc></url>
+  <url><loc>https://inte-qt.com/coverage/africa</loc></url>
+  <url><loc>https://inte-qt.com/coverage/north-america</loc></url>
+  <url><loc>https://inte-qt.com/coverage/south-america</loc></url>
+  <url><loc>https://inte-qt.com/coverage/oceania</loc></url>
 
-  <url>
-    <loc>https://inte-qt-reimagined.vercel.app/coverage/asia/azerbaijan</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
+  <!-- =====================
+       ASIA
+  ====================== -->
+  <url><loc>https://inte-qt.com/coverage/asia/afghanistan</loc></url>
+  <url><loc>https://inte-qt.com/coverage/asia/armenia</loc></url>
+  <url><loc>https://inte-qt.com/coverage/asia/azerbaijan</loc></url>
+  <url><loc>https://inte-qt.com/coverage/asia/bahrain</loc></url>
+  <url><loc>https://inte-qt.com/coverage/asia/bangladesh</loc></url>
+  <url><loc>https://inte-qt.com/coverage/asia/bhutan</loc></url>
+  <url><loc>https://inte-qt.com/coverage/asia/brunei</loc></url>
+  <url><loc>https://inte-qt.com/coverage/asia/cambodia</loc></url>
+  <url><loc>https://inte-qt.com/coverage/asia/china</loc></url>
+  <url><loc>https://inte-qt.com/coverage/asia/indonesia</loc></url>
+  <url><loc>https://inte-qt.com/coverage/asia/japan</loc></url>
+  <url><loc>https://inte-qt.com/coverage/asia/qatar</loc></url>
+  <url><loc>https://inte-qt.com/coverage/asia/turkey</loc></url>
+  <url><loc>https://inte-qt.com/coverage/asia/vietnam</loc></url>
+  <url><loc>https://inte-qt.com/coverage/asia/timor-leste</loc></url>
 
-  <url>
-    <loc>https://inte-qt-reimagined.vercel.app/coverage/asia/bhutan</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
+  <!-- =====================
+       EUROPE
+  ====================== -->
+  <url><loc>https://inte-qt.com/coverage/europe/albania</loc></url>
+  <url><loc>https://inte-qt.com/coverage/europe/andorra</loc></url>
+  <url><loc>https://inte-qt.com/coverage/europe/austria</loc></url>
+  <url><loc>https://inte-qt.com/coverage/europe/belarus</loc></url>
+  <url><loc>https://inte-qt.com/coverage/europe/belgium</loc></url>
+  <url><loc>https://inte-qt.com/coverage/europe/bosnia-and-herzegovina</loc></url>
+  <url><loc>https://inte-qt.com/coverage/europe/bulgaria</loc></url>
+  <url><loc>https://inte-qt.com/coverage/europe/cyprus</loc></url>
+  <url><loc>https://inte-qt.com/coverage/europe/czechia</loc></url>
+  <url><loc>https://inte-qt.com/coverage/europe/denmark</loc></url>
+  <url><loc>https://inte-qt.com/coverage/europe/estonia</loc></url>
+  <url><loc>https://inte-qt.com/coverage/europe/finland</loc></url>
+  <url><loc>https://inte-qt.com/coverage/europe/france</loc></url>
+  <url><loc>https://inte-qt.com/coverage/europe/georgia</loc></url>
+  <url><loc>https://inte-qt.com/coverage/europe/germany</loc></url>
+  <url><loc>https://inte-qt.com/coverage/europe/greece</loc></url>
+  <url><loc>https://inte-qt.com/coverage/europe/hungary</loc></url>
+  <url><loc>https://inte-qt.com/coverage/europe/iceland</loc></url>
 
-  <url>
-    <loc>https://inte-qt-reimagined.vercel.app/coverage/asia/bangladesh</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
+  <!-- =====================
+       AFRICA
+  ====================== -->
+  <url><loc>https://inte-qt.com/coverage/africa/algeria</loc></url>
+  <url><loc>https://inte-qt.com/coverage/africa/angola</loc></url>
+  <url><loc>https://inte-qt.com/coverage/africa/benin</loc></url>
+  <url><loc>https://inte-qt.com/coverage/africa/botswana</loc></url>
+  <url><loc>https://inte-qt.com/coverage/africa/burkina-faso</loc></url>
+  <url><loc>https://inte-qt.com/coverage/africa/burundi</loc></url>
+  <url><loc>https://inte-qt.com/coverage/africa/cabo-verde</loc></url>
+  <url><loc>https://inte-qt.com/coverage/africa/cameroon</loc></url>
+  <url><loc>https://inte-qt.com/coverage/africa/central-african-republic</loc></url>
+  <url><loc>https://inte-qt.com/coverage/africa/chad</loc></url>
+  <url><loc>https://inte-qt.com/coverage/africa/comoros</loc></url>
+  <url><loc>https://inte-qt.com/coverage/africa/republic-of-the-congo</loc></url>
+  <url><loc>https://inte-qt.com/coverage/africa/djibouti</loc></url>
+  <url><loc>https://inte-qt.com/coverage/africa/egypt</loc></url>
+  <url><loc>https://inte-qt.com/coverage/africa/equatorial-guinea</loc></url>
+  <url><loc>https://inte-qt.com/coverage/africa/eritrea</loc></url>
+  <url><loc>https://inte-qt.com/coverage/africa/eswatini</loc></url>
+  <url><loc>https://inte-qt.com/coverage/africa/ethiopia</loc></url>
+  <url><loc>https://inte-qt.com/coverage/africa/gabon</loc></url>
+  <url><loc>https://inte-qt.com/coverage/africa/gambia</loc></url>
+  <url><loc>https://inte-qt.com/coverage/africa/ghana</loc></url>
+  <url><loc>https://inte-qt.com/coverage/africa/guinea</loc></url>
+  <url><loc>https://inte-qt.com/coverage/africa/guinea-bissau</loc></url>
+  <url><loc>https://inte-qt.com/coverage/africa/mozambique</loc></url>
+  <url><loc>https://inte-qt.com/coverage/africa/nigeria</loc></url>
+  <url><loc>https://inte-qt.com/coverage/africa/south-africa</loc></url>
 
-  <url>
-    <loc>https://inte-qt-reimagined.vercel.app/coverage/asia/japan</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-
-  <url>
-    <loc>https://inte-qt-reimagined.vercel.app/coverage/asia/china</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-
-  <url>
-    <loc>https://inte-qt-reimagined.vercel.app/coverage/asia/south-korea</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-
-  <url>
-    <loc>https://inte-qt-reimagined.vercel.app/coverage/asia/malaysia</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-
-  <url>
-    <loc>https://inte-qt-reimagined.vercel.app/coverage/asia/thailand</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-
-  <url>
-    <loc>https://inte-qt-reimagined.vercel.app/coverage/asia/singapore</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-
-  <url>
-    <loc>https://inte-qt-reimagined.vercel.app/coverage/asia/uae</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
+  <!-- =====================
+       OCEANIA
+  ====================== -->
+  <url><loc>https://inte-qt.com/coverage/oceania/australia</loc></url>
+  <url><loc>https://inte-qt.com/coverage/oceania/fiji</loc></url>
 
 </urlset>
