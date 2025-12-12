@@ -13,6 +13,10 @@ const API_BASE_URL = import.meta.env.DEV
   ? "http://localhost:5000"
   : "https://inteqt.onrender.com";
 
+  // simple client-side email validation
+const isValidEmail = (email) => {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || "").trim());
+};
 const Contact = () => {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [loading, setLoading] = useState(false);
@@ -22,37 +26,48 @@ const Contact = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  e.preventDefault();
+  setLoading(true);
 
-    if (!form.name || !form.email || !form.message) {
-      toast.error("Please fill all fields.");
-      setLoading(false);
-      return;
+  if (!form.name || !form.email || !form.message) {
+    toast.error("Please fill all fields.");
+    setLoading(false);
+    return;
+  }
+
+  if (!isValidEmail(form.email)) {
+    toast.error("Please enter a valid email address.");
+    setLoading(false);
+    return;
+  }
+
+  // optional: get captcha token here (reCAPTCHA/hCaptcha)
+  // const captchaToken = await getCaptchaToken(); // implement if you add captcha
+  const payload = { ...form /*, captchaToken */ };
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/forms/general`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.success) {
+      toast.success(`Message sent — we'll reply to ${form.email}`);
+      setForm({ name: "", email: "", message: "" });
+    } else {
+      toast.error(data.message || "Something went wrong. Please try again.");
     }
+  } catch (err) {
+    console.error(err);
+    toast.error("Network error. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
 
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/forms/general`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-
-      const data = await res.json();
-
-      if (res.ok && data.success) {
-        toast.success("Your message has been sent!");
-        setForm({ name: "", email: "", message: "" });
-      } else {
-        toast.error(data.message || "Something went wrong. Please try again.");
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error("Network error. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
 <Helmet>
         <title>Contact inte-QT | Sales, Support & Enterprise Connectivity Assistance</title>
         <meta name="description" content="Reach out to inte-QT for global connectivity solutions, enterprise internet, SD-WAN, NSOC support, pricing requests, and technical assistance." />

@@ -5,7 +5,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Coverage from "./pages/Coverage";
-// import LoginPage, { RegisterPage } from './pages/Auth';
 import AuthPage from "./pages/Auth";
 import Services from "./pages/Services";
 import PartnerCenter from "./pages/PartnerCenter";
@@ -230,7 +229,7 @@ const App = () => (
           <Route path="/support" element={<Support />} />
           <Route path="/services/dedicated-lines" element={<DedicatedLines />} />
           <Route path="/sales" element={<Sales />} />
-          <Route path="/services/wireless-connection" element={<WirelessConnection />} />
+          <Route path="/services/wireless-connect" element={<WirelessConnection />} />
           <Route path="/services/business-broadband" element={<BusinessBroadband />} />
           <Route path="*" element={<NotFound />} />
           <Route path="/blog" element={<BlogPage />} />

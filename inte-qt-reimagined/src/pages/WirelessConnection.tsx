@@ -145,7 +145,7 @@ const WirelessConnection = () => {
                     className="w-full h-[260px] bg-cover bg-center"
                     style={{
                       backgroundImage:
-                        "url(https://cdn.dribbble.com/userupload/15561299/file/original-1c5fb50abb3e0fc1c343ec660babc1af.gif)",
+                        "url(https://images.unsplash.com/vector-1761074483084-ec628a7624b6?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8d2lyZWxlc3MlMjBjb25uZWN0aW9ufGVufDB8MHwwfHx8Mg%3D%3D)",
                     }}
                   ></div>
                 </CardContent>

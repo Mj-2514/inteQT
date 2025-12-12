@@ -24,6 +24,10 @@ const Sales = () => {
     ip: "",
     message: "",
   });
+  // simple client-side email validation
+const isValidEmail = (email) => {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || "").trim());
+};
 
   const [loading, setLoading] = useState(false);
 
@@ -34,65 +38,72 @@ const Sales = () => {
   };
 
   const submitForm = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  e.preventDefault();
+  setLoading(true);
 
-    const requiredFields: (keyof typeof form)[] = [
-      "company",
-      "fullName",
-      "email",
-      "phone",
-      "address",
-      "postal",
-      "product",
-      "contractYear",
-      "ip",
-      "message",
-    ];
+  const requiredFields = [
+    "company",
+    "fullName",
+    "email",
+    "phone",
+    "address",
+    "postal",
+    "product",
+    "contractYear",
+    "ip",
+    "message",
+  ];
 
-    for (const field of requiredFields) {
-      if (!form[field]) {
-        toast.error("Please fill all required fields.");
-        setLoading(false);
-        return;
-      }
-    }
-
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/forms/sales`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
-      });
-
-      const data = await res.json();
-
-      if (res.ok && data.success) {
-        toast.success("Your sales enquiry has been submitted!");
-        setForm({
-          company: "",
-          fullName: "",
-          email: "",
-          phone: "",
-          address: "",
-          postal: "",
-          product: "",
-          contractYear: "",
-          ip: "",
-          message: "",
-        });
-      } else {
-        toast.error(data.message || "Something went wrong. Please try again.");
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error("Network error. Please try again.");
-    } finally {
+  for (const field of requiredFields) {
+    if (!form[field]) {
+      toast.error("Please fill all required fields.");
       setLoading(false);
+      return;
     }
-  };
+  }
+
+  if (!isValidEmail(form.email)) {
+    toast.error("Please enter a valid email address.");
+    setLoading(false);
+    return;
+  }
+
+  // optionally: const captchaToken = await getCaptchaToken();
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/forms/sales`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...form /*, captchaToken */ }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.success) {
+      toast.success(`Enquiry submitted — we’ll contact ${form.email} shortly.`);
+      setForm({
+        company: "",
+        fullName: "",
+        email: "",
+        phone: "",
+        address: "",
+        postal: "",
+        product: "",
+        contractYear: "",
+        ip: "",
+        message: "",
+      });
+    } else {
+      toast.error(data.message || "Something went wrong. Please try again.");
+    }
+  } catch (err) {
+    console.error(err);
+    toast.error("Network error. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
+
 <Helmet>
         <title>Sales Enquiry | Buy Dedicated Line, Broadband & Wireless – inte-QT</title>
         <meta name="description" content="Submit a sales enquiry for Dedicated Lines, Business Broadband, and Wireless Connectivity." />

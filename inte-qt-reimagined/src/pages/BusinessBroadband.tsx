@@ -148,7 +148,7 @@ const BusinessBroadband = () => {
                     className="w-full h-[260px] bg-cover bg-center"
                     style={{
                       backgroundImage:
-                        "url(https://cdn.dribbble.com/userupload/12401517/file/original-e410e68345bfa66a8c4a89745041cc28.gif)",
+                        "url(https://images.unsplash.com/photo-1531668383211-64743e924c66?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8YnJvYWRiYW5kfGVufDB8MHwwfHx8Mg%3D%3D)",
                     }}
                   ></div>
                 </CardContent>

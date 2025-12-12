@@ -12,7 +12,41 @@ import Footer from "@/components/Footer";
 
 
 const continents = ["Asia", "Europe", "North America", "South America", "Africa", "Australia", "Antarctica"];
-const countryCodes = ["+1", "+44", "+91", "+61", "+81", "+33", "+49", "+971", "+86"];
+const countryCodes = [
+  "+213","+244","+229","+267","+226","+257","+237","+238","+236","+235","+269","+225",
+  "+243","+253","+291","+268","+251","+241","+220","+233","+224","+245","+254",
+  "+266","+231","+218","+261","+265","+223","+222","+230","+212","+258","+264",
+  "+227","+234","+250","+239","+221","+248","+232","+252","+27","+211","+249",
+  "+255","+228","+216","+256","+260","+263",
+
+  "+93","+374","+994","+973","+880","+975","+673","+855","+86","+357","+995",
+  "+852","+91","+62","+98","+964","+972","+81","+962","+7","+965","+996","+856",
+  "+961","+60","+960","+976","+95","+977","+850","+968","+92","+970","+63",
+  "+974","+966","+65","+82","+94","+963","+886","+992","+66","+670","+90","+993",
+  "+971","+998","+84","+967",
+
+  "+355","+376","+43","+375","+32","+387","+359","+385","+420","+45","+372",
+  "+298","+358","+33","+49","+350","+30","+299","+36","+354","+353","+39",
+  "+371","+423","+370","+352","+356","+373","+377","+382","+31","+389","+47",
+  "+48","+351","+40","+7","+378","+381","+421","+386","+34","+46","+41","+380",
+  "+44","+379",
+
+  "+1-268","+1-242","+1-246","+501","+1-441","+1","+506","+53","+1-767",
+  "+1-809","+1-829","+1-849","+503","+299","+1-473","+502","+509","+504",
+  "+1-876","+52","+505","+507","+1-869","+1-758","+1-784","+1-868","+1",
+
+  "+54","+591","+55","+56","+57","+593","+500","+592","+595","+51","+597",
+  "+598","+58",
+
+  "+61","+679","+686","+692","+691","+674","+64","+680","+675","+685","+677",
+  "+676","+688","+678"
+]
+;
+// simple client-side email validation
+const isValidEmail = (email) => {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || "").trim());
+};
+
 const API_BASE_URL = import.meta.env.DEV
   ? "http://localhost:5000"
   : "https://inteqt.onrender.com";
@@ -23,59 +57,69 @@ const Support = () => {
   const [countryCode, setCountryCode] = useState("+91");
 
   const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    setLoading(true);
+  e.preventDefault();
+  setLoading(true);
 
-    const formData = new FormData(e.target);
+  const formData = new FormData(e.target);
 
-    // Ensure our Select values are included
-    formData.set("region", region);
-    formData.set("countryCode", countryCode);
+  // Ensure our Select values are included
+  formData.set("region", region);
+  formData.set("countryCode", countryCode);
 
-    const payload: any = Object.fromEntries(formData.entries());
+  const payload: any = Object.fromEntries(formData.entries());
 
-    const requiredFields = [
-      "firstName",
-      "lastName",
-      "companyName",
-      "serviceId",
-      "email",
-      "phone",
-      "region",
-      "concern",
-    ];
+  // required fields
+  const requiredFields = [
+    "firstName",
+    "lastName",
+    "companyName",
+    "serviceId",
+    "email",
+    "phone",
+    "region",
+    "concern",
+  ];
 
-    for (let field of requiredFields) {
-      if (!payload[field]) {
-        toast.error("Please fill all required fields.");
-        setLoading(false);
-        return;
-      }
-    }
-
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/forms/support`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      const result = await res.json();
-      if (res.ok && result.success) {
-        toast.success("Your request has been submitted!");
-        (e.target as HTMLFormElement).reset();
-        setRegion("");
-        setCountryCode("+91");
-      } else {
-        toast.error(result.message || "Something went wrong. Try again.");
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error("Network error. Please try again.");
-    } finally {
+  for (let field of requiredFields) {
+    if (!payload[field]) {
+      toast.error("Please fill all required fields.");
       setLoading(false);
+      return;
     }
-  };
+  }
+
+  if (!isValidEmail(payload.email)) {
+    toast.error("Please enter a valid email address.");
+    setLoading(false);
+    return;
+  }
+
+  // optional: payload.captchaToken = await getCaptchaToken();
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/forms/support`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const result = await res.json();
+    if (res.ok && result.success) {
+      toast.success(`Request submitted — we'll reply to ${payload.email}`);
+      (e.target as HTMLFormElement).reset();
+      setRegion("");
+      setCountryCode("+91");
+    } else {
+      toast.error(result.message || "Something went wrong. Try again.");
+    }
+  } catch (err) {
+    console.error(err);
+    toast.error("Network error. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
+
 <Helmet>
         <title>Support Form | 24×7 Global Network Support – inte-QT</title>
         <meta name="description" content="Raise a support request with inte-QT. Our NSOC experts are available 24×7." />

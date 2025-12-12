@@ -103,7 +103,7 @@ const Cases = () => {
       <section
         className="relative h-[70vh] flex items-center justify-center"
         style={{
-          backgroundImage: `url(${nsocImage})`,
+          backgroundImage: `url(${"https://images.unsplash.com/vector-1762275212334-bd13fce3c41e?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8dGVhbXxlbnwwfDB8MHx8fDI%3D"})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}

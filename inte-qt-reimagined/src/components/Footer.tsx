@@ -105,11 +105,7 @@ const Footer = () => {
                   Privacy Policy
                 </a>
               </li>
-              <li>
-                <a href="#" className="text-sm opacity-90 hover:text-secondary transition-colors">
-                  Terms of Service
-                </a>
-              </li>
+              
             </ul>
           </div>
 
