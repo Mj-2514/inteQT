@@ -7,19 +7,59 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Turkey: React.FC = () => {
-    <Helmet>
-        <title>Internet in Türkiye (Turkey) | Connectivity, ISPs & Broadband Overview</title>
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Internet in Türkiye (Turkey) | Connectivity, ISPs & Broadband Overview",
+    url: "https://www.inte-qt.com/coverage/turkey",
+    description:
+      "Detailed overview of Türkiye’s (Turkey’s) internet connectivity, submarine cables, ISPs, broadband statistics and inte-QT service capabilities in Ankara, Istanbul, Antalya and key port cities.",
+    publisher: {
+      "@type": "Organization",
+      name: "inte-QT",
+      url: "https://www.inte-qt.com",
+    },
+  };
+
+  return (
+    <>
+      <Helmet>
+        <title>
+          Internet in Türkiye (Turkey) | Connectivity, ISPs & Broadband Overview
+        </title>
+
         <meta
           name="description"
           content="Detailed overview of Türkiye’s (Turkey’s) internet connectivity, submarine cables, ISPs, broadband statistics and inte-QT service capabilities in Ankara, Istanbul, Antalya and key port cities."
         />
-        <link
-          rel="canonical"
-          href="https://www.inte-qt.com/coverage/turkey"
+        <link rel="canonical" href="https://www.inte-qt.com/coverage/turkey" />
+
+        {/* Open Graph */}
+        <meta
+          property="og:title"
+          content="Internet in Türkiye (Turkey) | Connectivity, ISPs & Broadband Overview"
         />
+        <meta
+          property="og:description"
+          content="Detailed overview of Türkiye’s internet connectivity, submarine cables, ISPs and enterprise capabilities."
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://www.inte-qt.com/coverage/turkey" />
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta
+          name="twitter:title"
+          content="Internet in Türkiye (Turkey) | inte-QT"
+        />
+        <meta
+          name="twitter:description"
+          content="Connectivity, ISPs and submarine cable overview for Türkiye."
+        />
+
+        {/* Structured data */}
+        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       </Helmet>
-  return (
-    <>
 
       <Navbar />
 
@@ -34,13 +74,16 @@ const Turkey: React.FC = () => {
           transition={{ duration: 1.2 }}
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            // Istanbul skyline – swap with your own asset if needed
             backgroundImage:
               'url("https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=1600&q=80")',
           }}
+          aria-hidden="true"
         />
 
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-[1.5px]" />
+        <div
+          className="absolute inset-0 bg-black/50 backdrop-blur-[1.5px]"
+          aria-hidden="true"
+        />
 
         <div className="relative z-10 text-center px-6 container mx-auto">
           <motion.h1
@@ -124,10 +167,9 @@ const Turkey: React.FC = () => {
                       </h3>
                       <p className="text-xs text-muted-foreground mb-2">
                         Turkey is officially known as the Republic of Türkiye.
-                        In 2022, authorities rebranded the country&apos;s
-                        international name from &quot;Turkey&quot; to
-                        &quot;Türkiye&quot; to better reflect its national
-                        identity and language.
+                        In 2022, authorities rebranded the country's international
+                        name from "Turkey" to "Türkiye" to better reflect its
+                        national identity and language.
                       </p>
                       <p className="text-xs text-muted-foreground">
                         As a bridge between Europe and Asia, Türkiye has long
@@ -160,21 +202,19 @@ const Turkey: React.FC = () => {
                 {/* Overview & Tourism */}
                 <Card className="rounded-3xl shadow-xl border border-white/10">
                   <CardContent className="p-8">
-                    <h2 className="text-3xl font-bold mb-4">
-                      A Brief Overview
-                    </h2>
+                    <h2 className="text-3xl font-bold mb-4">A Brief Overview</h2>
 
                     <p className="text-muted-foreground mb-4 leading-relaxed">
                       Türkiye sits at the crossroads of Europe and Asia,
                       combining a diverse industrial base with a strong services
                       and tourism sector. It is a major player in machinery,
                       textiles, automotive, construction, defence, mining, and
-                      food processing, with Istanbul acting as the country&apos;s
+                      food processing, with Istanbul acting as the country's
                       primary commercial hub.
                     </p>
 
                     <p className="text-muted-foreground mb-4 leading-relaxed">
-                      The country&apos;s geography spans Mediterranean coasts,
+                      The country's geography spans Mediterranean coasts,
                       Anatolian plateaus, and Black Sea shores, resulting in a
                       mix of subtropical and temperate climates with notable
                       Mediterranean influence along the south and west.
@@ -184,12 +224,11 @@ const Turkey: React.FC = () => {
                       Tourism in Türkiye
                     </h3>
                     <p className="text-muted-foreground mb-6 leading-relaxed">
-                      Turkey recorded around <strong>52 million</strong>{" "}
-                      tourists in 2019*, ranking 11th globally in absolute
-                      visitor numbers. Travellers are drawn to its coastal
-                      resorts, historical sites, cultural heritage, and
-                      city-break destinations like Istanbul, Antalya, and
-                      Cappadocia.
+                      Turkey recorded around <strong>52 million</strong> tourists
+                      in 2019*, ranking 11th globally in absolute visitor
+                      numbers. Travellers are drawn to its coastal resorts,
+                      historical sites, cultural heritage, and city-break
+                      destinations like Istanbul, Antalya, and Cappadocia.
                     </p>
 
                     {/* Map */}
@@ -202,6 +241,7 @@ const Turkey: React.FC = () => {
                           height="420"
                           style={{ border: 0 }}
                           loading="lazy"
+                          title="Map of Turkey"
                         />
                       </div>
                     </div>
@@ -284,27 +324,19 @@ const Turkey: React.FC = () => {
                               </td>
                             </tr>
                             <tr className="border-t border-muted/40">
-                              <td className="py-3 px-4">
-                                Mobile Broadband Users
-                              </td>
+                              <td className="py-3 px-4">Mobile Broadband Users</td>
                               <td className="py-3 px-4">69.7 million</td>
-                              <td className="py-3 px-4">
-                                ~83.4% population penetration rate.
-                              </td>
+                              <td className="py-3 px-4">~83.4% population penetration rate.</td>
                             </tr>
                             <tr className="border-t border-muted/40">
                               <td className="py-3 px-4">Average Download</td>
                               <td className="py-3 px-4">30.31 Mbps</td>
-                              <td className="py-3 px-4">
-                                Average measured speed.
-                              </td>
+                              <td className="py-3 px-4">Average measured speed.</td>
                             </tr>
                             <tr className="border-t border-muted/40">
                               <td className="py-3 px-4">Average Upload</td>
                               <td className="py-3 px-4">8.31 Mbps</td>
-                              <td className="py-3 px-4">
-                                Average measured speed.
-                              </td>
+                              <td className="py-3 px-4">Average measured speed.</td>
                             </tr>
                           </tbody>
                         </table>
@@ -312,7 +344,7 @@ const Turkey: React.FC = () => {
 
                       <p className="text-muted-foreground mt-4 text-xs leading-relaxed">
                         Fixed broadband growth has been supported by Türk
-                        Telekom&apos;s infrastructure rollout since 2005, while
+                        Telekom's infrastructure rollout since 2005, while
                         4G and newer mobile technologies underpin strong mobile
                         broadband adoption.
                       </p>
@@ -330,25 +362,15 @@ const Turkey: React.FC = () => {
             <Card className="rounded-3xl border border-white/10 shadow-xl">
               <CardContent className="p-6 grid md:grid-cols-2 gap-6">
                 <div>
-                  <h2 className="text-2xl font-bold mb-3">
-                    National Sport of Türkiye
-                  </h2>
+                  <h2 className="text-2xl font-bold mb-3">National Sport of Türkiye</h2>
                   <p className="text-muted-foreground leading-relaxed text-sm">
-                    Oil wrestling (<em>&quot;Yağlı güreş&quot;</em>) has been
-                    the traditional national sport since Ottoman times, with
-                    wrestlers competing covered in olive oil in open-air
-                    festivals that blend sport with deep cultural heritage.
+                    Oil wrestling (<em>"Yağlı güreş"</em>) has been the traditional national sport since Ottoman times, with wrestlers competing covered in olive oil in open-air festivals that blend sport with deep cultural heritage.
                   </p>
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold mb-3">
-                    Typical Turkish Food
-                  </h2>
+                  <h2 className="text-2xl font-bold mb-3">Typical Turkish Food</h2>
                   <p className="text-muted-foreground leading-relaxed text-sm">
-                    Turkey&apos;s national dish is <strong>döner kebap</strong>.
-                    The cuisine favors roasting and grilling, producing a wide
-                    variety of kebaps and regional specialties that are popular
-                    both domestically and internationally.
+                    Turkey's national dish is <strong>döner kebap</strong>. The cuisine favors roasting and grilling, producing a wide variety of kebaps and regional specialties that are popular both domestically and internationally.
                   </p>
                 </div>
               </CardContent>
@@ -362,21 +384,13 @@ const Turkey: React.FC = () => {
             {/* Submarine Cables */}
             <Card className="rounded-3xl border border-white/10 shadow-xl">
               <CardContent className="p-6">
-                <h2 className="text-3xl font-bold mb-4">
-                  Submarine Cables in Türkiye
-                </h2>
+                <h2 className="text-3xl font-bold mb-4">Submarine Cables in Türkiye</h2>
 
                 <p className="text-muted-foreground mb-4 leading-relaxed">
-                  Türkiye plays a strategic role in regional connectivity,
-                  sitting at the intersection of Europe, the Middle East, and
-                  the Caucasus. Several key submarine cable systems land in the
-                  country, supporting international transit and domestic
-                  backhaul.
+                  Türkiye plays a strategic role in regional connectivity, sitting at the intersection of Europe, the Middle East, and the Caucasus. Several key submarine cable systems land in the country, supporting international transit and domestic backhaul.
                 </p>
 
-                <h3 className="font-semibold mb-3 text-lg">
-                  Key Submarine Cable Systems
-                </h3>
+                <h3 className="font-semibold mb-3 text-lg">Key Submarine Cable Systems</h3>
                 <ul className="list-disc pl-5 text-muted-foreground text-sm space-y-1">
                   <li>KAFOS</li>
                   <li>MedNautilus Submarine System</li>
@@ -387,9 +401,7 @@ const Turkey: React.FC = () => {
                 </ul>
 
                 <p className="text-muted-foreground mt-4 text-sm leading-relaxed">
-                  These systems link Türkiye with Europe, the Eastern
-                  Mediterranean, and Middle Eastern hubs, enabling diverse,
-                  low-latency routes for content, cloud, and enterprise traffic.
+                  These systems link Türkiye with Europe, the Eastern Mediterranean, and Middle Eastern hubs, enabling diverse, low-latency routes for content, cloud, and enterprise traffic.
                 </p>
               </CardContent>
             </Card>
@@ -397,16 +409,10 @@ const Turkey: React.FC = () => {
             {/* Our Capabilities */}
             <Card className="rounded-3xl border border-white/10 shadow-xl">
               <CardContent className="p-6">
-                <h2 className="text-3xl font-bold mb-4">
-                  Our Internet Capabilities in Türkiye
-                </h2>
+                <h2 className="text-3xl font-bold mb-4">Our Internet Capabilities in Türkiye</h2>
 
                 <p className="text-muted-foreground mb-4 leading-relaxed">
-                  inte-QT provides high-quality connectivity in key Turkish
-                  cities including Antalya, Istanbul, Ankara, and Mersin.
-                  Services are underpinned by best-in-class fibre access and
-                  24/7 monitoring from our Network &amp; Security Operations
-                  Center (NSOC).
+                  inte-QT provides high-quality connectivity in key Turkish cities including Antalya, Istanbul, Ankara, and Mersin. Services are underpinned by best-in-class fibre access and 24/7 monitoring from our Network &amp; Security Operations Center (NSOC).
                 </p>
 
                 <div className="grid sm:grid-cols-2 gap-4 mb-4">
@@ -419,10 +425,7 @@ const Turkey: React.FC = () => {
                     "Diverse Gateway Solutions",
                     "Distributed Denial of Service (DDoS) Protection",
                   ].map((cap) => (
-                    <div
-                      key={cap}
-                      className="flex items-start space-x-3 bg-card/40 backdrop-blur-md p-3 rounded-xl border border-white/10 shadow"
-                    >
+                    <div key={cap} className="flex items-start space-x-3 bg-card/40 backdrop-blur-md p-3 rounded-xl border border-white/10 shadow">
                       <CheckCircle className="w-5 h-5 text-primary mt-1" />
                       <div className="text-sm">{cap}</div>
                     </div>
@@ -430,11 +433,7 @@ const Turkey: React.FC = () => {
                 </div>
 
                 <p className="text-muted-foreground leading-relaxed">
-                  Our Global Business Solutions team can typically provide a{" "}
-                  <strong>Commercial Offer in 2–3 working days</strong>. Global
-                  Operations can deliver services across Türkiye within{" "}
-                  <strong>6–8 weeks</strong>, depending on local access
-                  conditions and site readiness.
+                  Our Global Business Solutions team can typically provide a <strong>Commercial Offer in 2–3 working days</strong>. Global Operations can deliver services across Türkiye within <strong>6–8 weeks</strong>, depending on local access conditions and site readiness.
                 </p>
               </CardContent>
             </Card>
@@ -445,26 +444,14 @@ const Turkey: React.FC = () => {
         <section className="py-16">
           <div className="container mx-auto px-4 max-w-4xl text-center">
             <p className="text-lg leading-relaxed mb-6 text-muted-foreground">
-              For tailored connectivity solutions in Türkiye, contact us to
-              receive a{" "}
-              <mark className="bg-yellow-200 px-1 rounded">
-                Commercial Offer in 2–3 working days
-              </mark>
-              . We support deployments in major hubs such as Antalya, Istanbul,
-              Ankara, Mersin and other regions via our local partners and fibre
-              footprint.
+              For tailored connectivity solutions in Türkiye, contact us to receive a <mark className="bg-yellow-200 px-1 rounded">Commercial Offer in 2–3 working days</mark>. We support deployments in major hubs such as Antalya, Istanbul, Ankara, Mersin and other regions via our local partners and fibre footprint.
             </p>
 
             <p className="mb-6">
-              <a
-                href="mailto:sales@inte-QT.com?subject=Mail from Our Site"
-                className="text-primary underline font-semibold"
-              >
+              <a href="mailto:sales@inte-QT.com?subject=Mail from Our Site" className="text-primary underline font-semibold">
                 Email Us
               </a>
             </p>
-
-            
           </div>
         </section>
       </main>

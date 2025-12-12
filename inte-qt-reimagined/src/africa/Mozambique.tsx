@@ -7,146 +7,125 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Mozambique: React.FC = () => {
-    <Helmet>
-        <title>
-          Internet in Mozambique | Connectivity, ISPs & Broadband Overview
-        </title>
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Internet in Mozambique | Connectivity, ISPs & Broadband Overview",
+    description:
+      "Overview of Mozambique’s internet connectivity, fixed and mobile broadband, submarine cable and backbone routes, and inte-QT service capabilities in Maputo, Beira, Nampula, Tete and other key regions.",
+    url: "https://www.inte-qt.com/coverage/mozambique",
+    about: {
+      "@type": "Country",
+      name: "Mozambique",
+      population: 33000000,
+      currency: "MZN (Mozambican metical)",
+      languages: ["Portuguese", "Emakhuwa", "Tsonga", "Makhuwa", "Others"],
+      neighbouringCountries: ["Tanzania", "Malawi", "Zambia", "Zimbabwe", "Eswatini", "South Africa"],
+      majorCities: ["Maputo", "Matola", "Beira", "Nampula", "Tete", "Nacala", "Pemba"]
+    }
+  };
+
+  return (
+    <>
+      <Helmet>
+        <title>Internet in Mozambique | Connectivity, ISPs & Broadband Overview</title>
+
         <meta
           name="description"
           content="Overview of Mozambique’s internet connectivity, fixed and mobile broadband, submarine cable and backbone routes, and inte-QT service capabilities in Maputo, Beira, Nampula, Tete and other key regions."
         />
-        <link
-          rel="canonical"
-          href="https://www.inte-qt.com/coverage/mozambique"
-        />
+        <link rel="canonical" href="https://www.inte-qt.com/coverage/mozambique" />
+        <meta name="robots" content="index, follow" />
+
+        {/* Open Graph */}
+        <meta property="og:title" content="Internet in Mozambique | Connectivity, ISPs & Broadband Overview" />
+        <meta property="og:description" content="Overview of Mozambique’s internet connectivity, submarine cable and backbone routes, and inte-QT capabilities in Maputo, Beira and other regions." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://www.inte-qt.com/coverage/mozambique" />
+        {/* <meta property="og:image" content="https://www.inte-qt.com/assets/mozambique-hero-1200x630.jpg" /> */}
+
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Internet in Mozambique | Connectivity & ISPs" />
+        <meta name="twitter:description" content="Overview of Mozambique’s internet connectivity, submarine cable landings and backbone routing." />
+
+        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       </Helmet>
-  return (
-    <>
-      
 
       <Navbar />
 
       {/* HERO */}
-      <section
-        className="relative py-28 overflow-hidden"
-        aria-labelledby="hero-title"
-      >
+      <section className="relative py-20 md:py-28 overflow-hidden" aria-labelledby="hero-title">
         <motion.div
-          initial={{ opacity: 0, scale: 1.1 }}
+          initial={{ opacity: 0, scale: 1.06 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.2 }}
+          transition={{ duration: 1.0 }}
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            // Maputo / Indian Ocean coast vibe – swap to your own asset if needed
-            backgroundImage:
-              'url("https://i.imgur.com/0nJcdAY.jpg")',
+            backgroundImage: 'url("https://i.imgur.com/0nJcdAY.jpg")'
           }}
+          aria-hidden
         />
-
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-[1.5px]" />
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" aria-hidden />
 
         <div className="relative z-10 text-center px-6 container mx-auto">
           <motion.h1
             id="hero-title"
-            initial={{ y: 40, opacity: 0 }}
+            initial={{ y: 30, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8 }}
-            className="text-white text-4xl md:text-5xl lg:text-6xl font-extrabold drop-shadow-lg"
+            className="text-white text-4xl md:text-5xl lg:text-6xl font-extrabold drop-shadow-lg leading-tight"
           >
             Internet in Mozambique
           </motion.h1>
 
           <motion.p
-            initial={{ y: 40, opacity: 0 }}
+            initial={{ y: 30, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 1 }}
-            className="text-white/90 max-w-3xl mx-auto text-lg md:text-xl mt-4 leading-relaxed"
+            className="text-white/90 max-w-3xl mx-auto text-base md:text-lg mt-4 leading-relaxed"
           >
-            A coastal Southern African economy on the Indian Ocean with
-            strategic ports, energy projects and trade corridors, where
-            expanding fibre and mobile broadband connect Maputo, Beira, Nacala,
-            inland hubs and neighbouring markets.
+            A coastal Southern African economy on the Indian Ocean with strategic ports and growing fibre & mobile coverage connecting Maputo, Beira, Nampula, Tete and other hubs.
           </motion.p>
         </div>
       </section>
 
       {/* CONTENT */}
       <main className="min-h-screen bg-gradient-to-b from-background via-background/50 to-background">
-        <section className="py-16">
+        <section className="py-12 md:py-16">
           <div className="container mx-auto px-4 max-w-6xl">
-            <div className="grid lg:grid-cols-3 gap-10">
+            <div className="grid lg:grid-cols-3 gap-8">
               {/* LEFT — KEY FACTS */}
               <motion.aside
-                initial={{ opacity: 0, x: -40 }}
+                initial={{ opacity: 0, x: -30 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6 }}
                 className="w-full"
               >
-                <Card className="backdrop-blur-xl bg-white/70 dark:bg-black/30 rounded-3xl border border-white/20 shadow-xl">
-                  <CardContent className="p-8">
-                    <h2 className="text-2xl font-bold mb-5">Key Facts</h2>
+                <Card className="backdrop-blur-xl bg-white/80 dark:bg-black/30 rounded-2xl border border-white/10 shadow">
+                  <CardContent className="p-6 md:p-8">
+                    <h2 className="text-2xl font-bold mb-4">Key Facts</h2>
 
-                    <ul className="space-y-3 text-sm text-muted-foreground leading-relaxed">
-                      <li>
-                        <strong>Population:</strong> ~33 million (2024 estimate)
-                      </li>
-                      <li>
-                        <strong>Region:</strong> Southern/Eastern Africa, Indian
-                        Ocean coast
-                      </li>
-                      <li>
-                        <strong>Neighbors:</strong> Tanzania (north), Malawi and
-                        Zambia (northwest), Zimbabwe (west), Eswatini &amp; South
-                        Africa (southwest); Indian Ocean (east)
-                      </li>
-                      <li>
-                        <strong>Capital &amp; Largest City:</strong> Maputo
-                      </li>
-                      <li>
-                        <strong>Other Major Cities:</strong> Matola, Beira,
-                        Nampula, Quelimane, Tete, Nacala, Pemba
-                      </li>
-                      <li>
-                        <strong>Official Language:</strong> Portuguese (many
-                        local languages also widely spoken)
-                      </li>
-                      <li>
-                        <strong>Currency:</strong> Mozambican Metical (MZN)
-                      </li>
-                      <li>
-                        <strong>Key Industries:</strong> Natural gas &amp; coal,
-                        aluminium, agriculture &amp; fisheries, port &amp;
-                        corridor logistics, tourism, construction, services
-                      </li>
-                      <li>
-                        <strong>Internet Penetration:</strong> ~25–30% of
-                        population online (fast growing)
-                      </li>
+                    <ul className="space-y-2 text-sm text-muted-foreground leading-relaxed">
+                      <li><strong>Population:</strong> ~33 million (2024 est.)</li>
+                      <li><strong>Region:</strong> Southern/Eastern Africa, Indian Ocean coast</li>
+                      <li><strong>Capital:</strong> Maputo</li>
+                      <li><strong>Major Cities:</strong> Maputo, Matola, Beira, Nampula, Tete, Nacala, Pemba</li>
+                      <li><strong>Language:</strong> Portuguese (official)</li>
+                      <li><strong>Currency:</strong> Mozambican metical (MZN)</li>
                     </ul>
-
-                    <div className="mt-6">
-                      <h3 className="text-sm font-semibold mb-2">
-                        Country Snapshot
-                      </h3>
-                      <p className="text-xs text-muted-foreground">
-                        Mozambique stretches along over 2,400 km of Indian Ocean
-                        coastline, with major corridors linking its ports to
-                        neighbouring countries. Population is concentrated in
-                        coastal cities such as Maputo, Beira and Nacala, and in
-                        key inland hubs like Tete and Nampula, shaping how
-                        national backbones and mobile networks are planned and
-                        deployed.
-                      </p>
-                    </div>
 
                     <div className="text-center mt-6">
                       <motion.img
-                        initial={{ scale: 0.8, opacity: 0 }}
+                        initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ duration: 0.6 }}
                         src="https://flagcdn.com/w320/mz.png"
-                        alt="Mozambique Flag"
-                        className="mx-auto rounded-lg shadow-lg border border-white/40"
+                        alt="Flag of Mozambique"
+                        className="mx-auto rounded-md shadow-md border border-white/30 max-w-[160px]"
+                        loading="lazy"
+                        width={160}
+                        height={100}
                       />
                     </div>
                   </CardContent>
@@ -155,194 +134,101 @@ const Mozambique: React.FC = () => {
 
               {/* RIGHT — MAIN CONTENT */}
               <motion.article
-                initial={{ opacity: 0, x: 40 }}
+                initial={{ opacity: 0, x: 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6 }}
-                className="lg:col-span-2 space-y-10"
+                className="lg:col-span-2 space-y-8"
               >
-                {/* Overview */}
-                <Card className="rounded-3xl shadow-xl border border-white/10">
-                  <CardContent className="p-8">
-                    <h2 className="text-3xl font-bold mb-4">
-                      A Brief Overview
-                    </h2>
+                <Card className="rounded-2xl shadow border border-white/8">
+                  <CardContent className="p-6 md:p-8">
+                    <h2 className="text-2xl md:text-3xl font-bold mb-4">A Brief Overview</h2>
 
                     <p className="text-muted-foreground mb-4 leading-relaxed">
-                      Mozambique is a low- to lower-middle-income Southern
-                      African country whose economy is anchored in natural
-                      resources, agriculture and trade corridors running from
-                      landlocked neighbours to Indian Ocean ports. Large
-                      offshore gas reserves, coal, aluminium smelting and
-                      infrastructure along the Maputo, Beira and Nacala
-                      corridors are key drivers of investment.
+                      Mozambique's economy is anchored in natural resources, ports and corridor logistics. Population and investment concentrate around Maputo, Beira and Nacala corridors, which shape backbone and metro network planning.
                     </p>
 
                     <p className="text-muted-foreground mb-4 leading-relaxed">
-                      Economic activity and population are concentrated in
-                      Maputo–Matola in the south, Beira and Chimoio in the
-                      centre, and Nampula, Nacala and Pemba in the north, with
-                      important mining and energy activity around Tete. National
-                      connectivity follows these axes, with fibre and microwave
-                      routes running along coastal and inland corridors that
-                      connect ports, cities, border posts and project sites.
+                      Mobile broadband (3G/4G) is the primary access method for most users; fixed broadband and FTTH are expanding in cities. Network designs blend submarine & terrestrial fibre, microwave and satellite to match geography and project needs.
                     </p>
 
-                    <p className="text-muted-foreground mb-6 leading-relaxed">
-                      Internet and mobile usage has grown significantly from a
-                      low base. 3G/4G mobile broadband is the primary access
-                      method for most users, with coverage concentrated in
-                      cities, towns and transport corridors. Fixed broadband and
-                      FTTH are present in Maputo and a limited number of other
-                      urban centres, gradually expanding as demand and
-                      infrastructure investment increase.
-                    </p>
-
-                    {/* Map */}
+                    {/* Map — responsive */}
                     <div>
                       <h3 className="font-semibold mb-3 text-lg">Map</h3>
-                      <div className="rounded-2xl overflow-hidden shadow-lg border border-white/20">
-                        <iframe
-                          src="https://www.google.com/maps?q=Mozambique&output=embed"
-                          width="100%"
-                          height="420"
-                          style={{ border: 0 }}
-                          loading="lazy"
-                        />
+                      <div className="rounded-xl overflow-hidden shadow-sm border border-white/10">
+                        <div className="w-full aspect-[16/9]">
+                          <iframe
+                            title="Map of Mozambique"
+                            src="https://www.google.com/maps?q=Mozambique&output=embed"
+                            width="100%"
+                            height="100%"
+                            style={{ border: 0 }}
+                            loading="lazy"
+                            referrerPolicy="no-referrer-when-downgrade"
+                            aria-label="Map showing Mozambique and major cities"
+                          />
+                        </div>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
 
-                {/* Airports / Ports + Connectivity */}
                 <div className="grid md:grid-cols-2 gap-6">
-                  {/* Airports & Ports */}
-                  <Card className="rounded-3xl border border-white/10 shadow-lg">
-                    <CardContent className="p-6">
-                      <h3 className="text-xl font-bold mb-3">
-                        Main Airports & Ports
-                      </h3>
-
-                      <p className="text-muted-foreground mb-3 text-sm leading-relaxed">
-                        Mozambique’s international airports and deep-water ports
-                        are vital gateways for passengers, coal and gas exports,
-                        containers and regional trade, anchoring demand for
-                        resilient, high-capacity connectivity.
+                  <Card className="rounded-2xl border border-white/8 shadow-sm">
+                    <CardContent className="p-4 md:p-6">
+                      <h3 className="text-xl font-bold mb-3">Main Airports & Ports</h3>
+                      <p className="text-muted-foreground text-sm mb-3 leading-relaxed">
+                        International airports and deep-water ports are critical demand anchors for resilient, high-capacity connectivity.
                       </p>
 
-                      <h4 className="font-semibold text-sm mb-2">
-                        Key International Airports
-                      </h4>
-                      <ul className="list-disc pl-5 text-muted-foreground text-sm space-y-1 mb-4">
-                        <li>
-                          Maputo Intl. Airport (MPM) — Maputo / Matola region
-                        </li>
-                        <li>Beira Airport (BEW) — Beira</li>
-                        <li>Nampula Airport (APL) — Nampula</li>
-                        <li>Pemba Airport (POL) — Pemba / gas region</li>
-                        <li>Tete–Chingodzi Airport (TET) — Tete / mining corridor</li>
-                      </ul>
-
-                      <h4 className="font-semibold text-sm mb-2">
-                        Major Seaports
-                      </h4>
-                      <ul className="list-disc pl-5 text-muted-foreground text-sm space-y-1">
-                        <li>Port of Maputo — regional trade &amp; bulk cargo</li>
-                        <li>Port of Beira — central corridor &amp; hinterland</li>
-                        <li>Port of Nacala — deep-water port &amp; rail corridor</li>
-                        <li>Port of Pemba — offshore gas support hub</li>
-                        <li>Other coastal ports and jetties along the Indian Ocean</li>
+                      <ul className="list-disc pl-5 text-sm text-muted-foreground space-y-1">
+                        <li>Maputo Intl. Airport (MPM)</li>
+                        <li>Beira Airport (BEW)</li>
+                        <li>Nampula (APL), Pemba (POL), Tete (TET)</li>
+                        <li>Port of Maputo, Port of Beira, Port of Nacala, Port of Pemba</li>
                       </ul>
                     </CardContent>
                   </Card>
 
-                  {/* Connectivity / Internet Access */}
-                  <Card className="rounded-3xl border border-white/10 shadow-lg">
-                    <CardContent className="p-6">
-                      <h3 className="text-xl font-bold mb-4">
-                        Connectivity & Internet Access
-                      </h3>
-
-                      <p className="text-muted-foreground mb-4 leading-relaxed text-sm">
-                        Mozambique’s connectivity landscape is characterised by
-                        strong growth in mobile broadband, improving
-                        international capacity and gradual expansion of fibre
-                        and fixed broadband in key urban and corridor locations.
-                        Penetration remains below global averages, but data
-                        traffic and digital service uptake are rising each year.
-                      </p>
+                  <Card className="rounded-2xl border border-white/8 shadow-sm">
+                    <CardContent className="p-4 md:p-6">
+                      <h3 className="text-xl font-bold mb-3">Connectivity & Internet Access</h3>
 
                       <div className="overflow-x-auto">
-                        <table className="w-full border-collapse text-xs">
+                        <table className="w-full border-collapse text-xs" role="table" aria-label="Mozambique connectivity metrics">
                           <thead>
-                            <tr className="bg-muted/30 border border-muted">
-                              <th className="py-3 px-4 text-left font-semibold">
-                                Metric
-                              </th>
-                              <th className="py-3 px-4 text-left font-semibold">
-                                Status (recent)
-                              </th>
-                              <th className="py-3 px-4 text-left font-semibold">
-                                Notes
-                              </th>
+                            <tr className="bg-muted/20">
+                              <th className="py-2 px-2 text-left font-semibold">Metric</th>
+                              <th className="py-2 px-2 text-left font-semibold">Status</th>
+                              <th className="py-2 px-2 text-left font-semibold">Notes</th>
                             </tr>
                           </thead>
                           <tbody>
-                            <tr className="border-t border-muted/40">
-                              <td className="py-3 px-4">Internet Users</td>
-                              <td className="py-3 px-4">
-                                ≈8–10 million users
-                              </td>
-                              <td className="py-3 px-4">
-                                Roughly one-quarter to one-third of the
-                                population online, mostly via mobile devices.
-                              </td>
+                            <tr className="border-t border-muted/30">
+                              <td className="py-2 px-2">Internet Users</td>
+                              <td className="py-2 px-2">≈ 8–10M</td>
+                              <td className="py-2 px-2">~25–30% penetration; mostly mobile</td>
                             </tr>
-                            <tr className="border-t border-muted/40">
-                              <td className="py-3 px-4">Fixed Broadband</td>
-                              <td className="py-3 px-4">
-                                Limited; focused on cities &amp; corridors
-                              </td>
-                              <td className="py-3 px-4">
-                                FTTH and other fixed services mainly in Maputo,
-                                Matola and selected cities such as Beira,
-                                Nampula and Tete; rural fixed access remains
-                                sparse.
-                              </td>
+                            <tr className="border-t border-muted/30">
+                              <td className="py-2 px-2">Fixed Broadband</td>
+                              <td className="py-2 px-2">Limited</td>
+                              <td className="py-2 px-2">Focused in Maputo, Beira, Nampula; FTTH expanding slowly</td>
                             </tr>
-                            <tr className="border-t border-muted/40">
-                              <td className="py-3 px-4">Mobile Networks</td>
-                              <td className="py-3 px-4">
-                                2G/3G/4G available; 4G driving most data uptake
-                              </td>
-                              <td className="py-3 px-4">
-                                Mobile broadband is the primary access method;
-                                coverage strongest in urban areas and along main
-                                transport and energy corridors.
-                              </td>
+                            <tr className="border-t border-muted/30">
+                              <td className="py-2 px-2">Mobile Networks</td>
+                              <td className="py-2 px-2">2G/3G/4G (growing)</td>
+                              <td className="py-2 px-2">4G drives most data; 5G pilots rare</td>
                             </tr>
-                            <tr className="border-t border-muted/40">
-                              <td className="py-3 px-4">
-                                Enterprise Connectivity
-                              </td>
-                              <td className="py-3 px-4">
-                                Focused on ports, corridors &amp; project sites
-                              </td>
-                              <td className="py-3 px-4">
-                                DIA, IP-VPN, SD-WAN and managed services for
-                                energy, mining, logistics, banking, NGOs,
-                                government and tourism, with satellite and
-                                wireless used for remote and offshore sites.
-                              </td>
+                            <tr className="border-t border-muted/30">
+                              <td className="py-2 px-2">Enterprise</td>
+                              <td className="py-2 px-2">DIA / IP-VPN / SD-WAN</td>
+                              <td className="py-2 px-2">Focus on ports, mining & energy sites; satellite/wireless for remote/offshore</td>
                             </tr>
                           </tbody>
                         </table>
                       </div>
 
-                      <p className="text-muted-foreground mt-4 text-xs leading-relaxed">
-                        Network designs frequently blend submarine and
-                        terrestrial fibre, microwave, and satellite backup to
-                        address distance, terrain, weather and power reliability
-                        challenges.
+                      <p className="text-muted-foreground text-xs mt-3 leading-relaxed">
+                        Designs typically combine submarine & terrestrial fibre with microwave and satellite for resilience and reach.
                       </p>
                     </CardContent>
                   </Card>
@@ -352,128 +238,75 @@ const Mozambique: React.FC = () => {
           </div>
         </section>
 
-        {/* Submarine Cables & Backbone / Our Capabilities */}
-        <section className="py-12">
-          <div className="container mx-auto px-4 max-w-6xl space-y-10">
-            {/* Submarine Cables & National Backbone */}
-            <Card className="rounded-3xl border border-white/10 shadow-xl">
-              <CardContent className="p-6">
-                <h2 className="text-3xl font-bold mb-4">
-                  Submarine Cables & National Backbone
-                </h2>
+        {/* SUBMARINE CABLES & CAPABILITIES */}
+        <section className="py-10 md:py-12">
+          <div className="container mx-auto px-4 max-w-6xl space-y-8">
+            <Card className="rounded-2xl border border-white/8 shadow">
+              <CardContent className="p-6 md:p-8">
+                <h2 className="text-2xl md:text-3xl font-bold mb-4">Submarine Cables & National Backbone</h2>
 
-                <p className="text-muted-foreground mb-4 leading-relaxed">
-                  Mozambique connects to the global internet through multiple
-                  submarine cable systems in the Indian Ocean, with landings
-                  near Maputo and other coastal locations. These systems provide
-                  international capacity and route diversity to regional hubs
-                  and global destinations.
-                </p>
-
-                <p className="text-muted-foreground mb-4 leading-relaxed">
-                  International capacity is backhauled over national and
-                  corridor fibre backbones that follow key routes such as the
-                  Maputo, Beira and Nacala corridors, linking ports to inland
-                  hubs like Tete and to borders with South Africa, Eswatini,
-                  Zimbabwe, Malawi, Zambia and Tanzania.
+                <p className="text-muted-foreground leading-relaxed mb-3">
+                  Mozambique connects to international networks via Indian Ocean submarine systems and coastal landings. National backbone corridors (Maputo, Beira, Nacala) backhaul capacity inland and toward neighbouring markets.
                 </p>
 
                 <p className="text-muted-foreground leading-relaxed text-sm">
-                  Metro and aggregation networks around Maputo–Matola, Beira,
-                  Nampula and other cities support datacentres, carrier PoPs and
-                  enterprise sites, enabling cloud on-ramps, peering and
-                  low-latency access for business-critical applications.
+                  Metro networks around major cities support datacentres, carrier PoPs and enterprise on-ramps for cloud/peering, while SD-WAN and managed services help deliver consistent performance across multi-site deployments.
                 </p>
               </CardContent>
             </Card>
 
-            {/* Our Capabilities */}
-            <Card className="rounded-3xl border border-white/10 shadow-xl">
-              <CardContent className="p-6">
-                <h2 className="text-3xl font-bold mb-4">
-                  Our Capabilities in Mozambique
-                </h2>
+            <Card className="rounded-2xl border border-white/8 shadow">
+              <CardContent className="p-6 md:p-8">
+                <h2 className="text-2xl md:text-3xl font-bold mb-4">Our Capabilities</h2>
 
                 <p className="text-muted-foreground mb-4 leading-relaxed">
-                  inte-QT partners with leading Mozambican and regional
-                  operators to deliver managed connectivity solutions in Maputo,
-                  Matola, Beira, Nampula, Nacala, Tete, Pemba and other
-                  strategic locations along coastal and inland trade and energy
-                  corridors.
+                  inte-QT partners with local and regional operators to provide DIA, managed services, last-mile wireless, CPE staging, security (DDoS, VPN, firewalling) and SD-WAN solutions for Mozambique’s ports, projects and enterprises.
                 </p>
 
-                <p className="text-muted-foreground mb-4 leading-relaxed">
-                  We support sectors such as energy and LNG, mining, logistics
-                  and ports, financial services, NGOs, government, education and
-                  tourism with secure, scalable network and security services
-                  aligned to local conditions and global performance needs.
-                </p>
-
-                <h3 className="text-xl font-semibold mb-4">Our Services</h3>
-
-                <div className="grid sm:grid-cols-2 gap-4 mb-4">
+                <div className="grid sm:grid-cols-2 gap-3 mb-3">
                   {[
                     "Dedicated Internet Access (DIA)",
                     "Business Broadband (BB)",
-                    "Wireless Connectivity (4G/5G or fixed wireless last mile)",
-                    "Service Level Agreements (SLA)",
-                    "Customer Premises Equipment (CPE) / Routers",
-                    "Global Enterprise Management Solutions (GEMS)",
-                    "Diverse Gateway Solutions",
-                    "Distributed Denial of Service (DDoS) Protection",
-                  ].map((cap) => (
-                    <div
-                      key={cap}
-                      className="flex items-start space-x-3 bg-card/40 backdrop-blur-md p-3 rounded-xl border border-white/10 shadow"
-                    >
-                      <CheckCircle className="w-5 h-5 text-primary mt-1" />
-                      <div className="text-sm">{cap}</div>
+                    "Fixed-wireless / 4G/5G last mile",
+                    "SLA-backed managed services",
+                    "CPE staging & logistics",
+                    "DDoS protection & security",
+                    "Traffic engineering & routing",
+                    "Regional SD-WAN solutions"
+                  ].map((s) => (
+                    <div key={s} className="flex items-start space-x-3 bg-card/40 backdrop-blur-md p-2 rounded-lg border border-white/10 shadow-sm">
+                      <CheckCircle className="w-5 h-5 text-primary mt-1" aria-hidden />
+                      <div className="text-sm">{s}</div>
                     </div>
                   ))}
                 </div>
 
-                <p className="text-muted-foreground leading-relaxed text-sm">
-                  Our Global Business Solutions team can typically provide a{" "}
-                  <strong>Commercial Offer within 2–4 working days</strong>, and
-                  services are generally deliverable within{" "}
-                  <strong>4–6 weeks</strong>, depending on access technology,
-                  region and site readiness.
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  Typical lead times vary by access and site readiness. We can provide a commercial offer within <strong>2–4 working days</strong> and delivery estimates on request depending on region and technology.
                 </p>
               </CardContent>
             </Card>
           </div>
         </section>
 
-        {/* Commercial Offer & References */}
-        <section className="py-16">
+        {/* COMMERCIAL OFFER & REFERENCES */}
+        <section className="py-12 md:py-16">
           <div className="container mx-auto px-4 max-w-4xl text-center">
-            <p className="text-lg leading-relaxed mb-6 text-muted-foreground">
-              Contact us to receive a{" "}
-              <mark className="bg-yellow-200 px-1 rounded">
-                Commercial Offer in 2–4 working days
-              </mark>
-              . We support deployments across Maputo, Beira, Nampula, Nacala,
-              Tete, Pemba and other cities and corridors in Mozambique.
+            <p className="text-base md:text-lg leading-relaxed mb-4 text-muted-foreground">
+              Contact us to receive a <mark className="bg-yellow-200 px-1 rounded">Commercial Offer in 2–4 working days</mark>. We support deployments across Maputo, Beira, Nampula, Nacala, Tete, Pemba and other corridors.
             </p>
 
             <p className="mb-6">
-              <a
-                href="mailto:sales@inte-qt.com?subject=Mail from Our Site"
-                className="text-primary underline font-semibold"
-              >
+              <a href="mailto:sales@inte-qt.com?subject=Mozambique%20Connectivity%20Inquiry" className="text-primary underline font-semibold">
                 Email Us
               </a>
             </p>
 
             <h4 className="mb-3 font-semibold">Suggested References</h4>
             <ul className="text-muted-foreground space-y-1 text-sm">
-              <li>
-                World Bank / ITU — Mozambique ICT &amp; internet indicators
-              </li>
-              <li>
-                Digital 2023–2024 Mozambique — internet &amp; social media data
-              </li>
-              <li>National telecom regulator and market reports</li>
+              <li>World Bank / ITU — Mozambique ICT & internet indicators</li>
+              <li>National telecom regulator reports and market analyses</li>
+              <li>Submarine Cable Map — regional cable systems</li>
             </ul>
           </div>
         </section>

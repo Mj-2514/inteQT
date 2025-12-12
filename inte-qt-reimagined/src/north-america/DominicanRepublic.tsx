@@ -7,22 +7,65 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const DominicanRepublic: React.FC = () => {
-    <Helmet>
-        <title>
-          Internet in Dominican Republic | Connectivity, ISPs & Broadband Overview
-        </title>
-        <meta
-          name="description"
-          content="Overview of the Dominican Republic’s internet connectivity, fixed and mobile broadband, submarine cable systems and inte-QT service capabilities in Santo Domingo, Santiago de los Caballeros, Punta Cana and other key regions."
-        />
-        <link
-          rel="canonical"
-          href="https://www.inte-qt.com/coverage/europe/dominicanrepublic"
-        />
-      </Helmet>
+    const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "Internet in Dominican Republic | Connectivity, ISPs & Broadband Overview",
+  description:
+    "Overview of the Dominican Republic’s internet connectivity, fixed and mobile broadband, submarine cable systems and inte-QT service capabilities in Santo Domingo, Santiago de los Caballeros, Punta Cana and other key regions.",
+  url: "https://www.inte-qt.com/coverage/caribbean/dominican-republic",
+  about: {
+    "@type": "Country",
+    name: "Dominican Republic",
+    capital: {
+      "@type": "City",
+      name: "Santo Domingo"
+    },
+    officialLanguage: ["Spanish"],
+    currency: "DOP",
+    population: {
+      "@type": "QuantitativeValue",
+      value: 11000000
+    },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: 18.7357,
+      longitude: -70.1627
+    }
+  },
+  isPartOf: {
+    "@type": "WebSite",
+    "@id": "https://www.inte-qt.com/#website"
+  },
+  publisher: {
+    "@type": "Organization",
+    "@id": "https://www.inte-qt.com/#organization"
+  }
+};
+
   return (
     <>
-      
+      <Helmet>
+  <title>
+    Internet in Dominican Republic | Connectivity, ISPs & Broadband Overview
+  </title>
+
+  <meta
+    name="description"
+    content="Overview of the Dominican Republic’s internet connectivity, fixed and mobile broadband, submarine cable systems and inte-QT service capabilities in Santo Domingo, Santiago de los Caballeros, Punta Cana and other key regions."
+  />
+
+  <link
+    rel="canonical"
+    href="https://www.inte-qt.com/coverage/caribbean/dominican-republic"
+  />
+
+  {/* JSON-LD Structured Data */}
+  <script type="application/ld+json">
+    {JSON.stringify(jsonLd)}
+  </script>
+</Helmet>
+
 
       <Navbar />
 

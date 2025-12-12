@@ -7,22 +7,55 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Germany: React.FC = () => {
-    <Helmet>
+  const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "Internet in Germany | Connectivity, ISPs & Broadband Overview",
+  description:
+    "Overview of Germany's internet connectivity, submarine and terrestrial routes, ISPs, broadband statistics and inte-QT service capabilities in Berlin, Frankfurt, Munich and other key centres.",
+  url: "https://www.inte-qt.com/coverage/europe/germany",
+  about: {
+    "@type": "Country",
+    name: "Germany",
+    officialLanguage: "German",
+    currency: "EUR",
+    population: {
+      "@type": "QuantitativeValue",
+      value: 84000000
+    },
+    capital: {
+      "@type": "City",
+      name: "Berlin"
+    }
+  },
+  publisher: {
+    "@type": "Organization",
+    name: "inte-QT",
+    url: "https://www.inte-qt.com"
+  }
+};
+
+  return (
+    <>
+      <Helmet>
         <title>Internet in Germany | Connectivity, ISPs & Broadband Overview</title>
         <meta
           name="description"
           content="Overview of Germany's internet connectivity, submarine and terrestrial routes, ISPs, broadband statistics and inte-QT service capabilities in Berlin, Frankfurt, Munich and other key centres."
         />
-        <link rel="canonical" href="https://www.inte-qt.com/coverage/europe/germany" />
+        <link
+          rel="canonical"
+          href="https://www.inte-qt.com/coverage/europe/germany"
+        />
       </Helmet>
-  return (
-    <>
-      
 
       <Navbar />
 
       {/* HERO */}
-      <section className="relative py-28 overflow-hidden" aria-labelledby="hero-title">
+      <section
+        className="relative py-28 overflow-hidden"
+        aria-labelledby="hero-title"
+      >
         <motion.div
           initial={{ opacity: 0, scale: 1.05 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -30,7 +63,7 @@ const Germany: React.FC = () => {
           className="absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage:
-              'url("https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Z2VybWFueXxlbnwwfDB8MHx8fDI%3D")',
+              'url("https://images.unsplash.com/photo-1467269204594-9661b134dd2b?auto=format&fit=crop&w=1600&q=80")',
           }}
         />
 

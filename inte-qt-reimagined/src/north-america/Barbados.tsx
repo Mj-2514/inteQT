@@ -7,20 +7,63 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Barbados: React.FC = () => {
-    <Helmet>
-        <title>Internet in Barbados | Connectivity, ISPs & Broadband Overview</title>
-        <meta
-          name="description"
-          content="Overview of Barbados’s internet connectivity, broadband and mobile adoption, submarine cable systems, and inte-QT service capabilities in Bridgetown, Speightstown, Oistins and other key locations."
-        />
-        <link
-          rel="canonical"
-          href="https://www.inte-qt.com/coverage/north-america/barbados"
-        />
-      </Helmet>
+    const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "Internet in Barbados | Connectivity, ISPs & Broadband Overview",
+  description:
+    "Overview of Barbados’s internet connectivity, broadband and mobile adoption, submarine cable systems, and inte-QT service capabilities in Bridgetown, Speightstown, Oistins and other key locations.",
+  url: "https://www.inte-qt.com/coverage/north-america/barbados",
+  about: {
+    "@type": "Country",
+    name: "Barbados",
+    capital: {
+      "@type": "City",
+      name: "Bridgetown"
+    },
+    officialLanguage: "English",
+    currency: "BBD",
+    population: {
+      "@type": "QuantitativeValue",
+      value: 281000
+    },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: 13.1939,
+      longitude: -59.5432
+    }
+  },
+  isPartOf: {
+    "@type": "WebSite",
+    "@id": "https://www.inte-qt.com/#website"
+  },
+  publisher: {
+    "@type": "Organization",
+    "@id": "https://www.inte-qt.com/#organization"
+  }
+};
+
   return (
     <>
-      
+      <Helmet>
+  <title>Internet in Barbados | Connectivity, ISPs & Broadband Overview</title>
+
+  <meta
+    name="description"
+    content="Overview of Barbados’s internet connectivity, broadband and mobile adoption, submarine cable systems, and inte-QT service capabilities in Bridgetown, Speightstown, Oistins and other key locations."
+  />
+
+  <link
+    rel="canonical"
+    href="https://www.inte-qt.com/coverage/north-america/barbados"
+  />
+
+  {/* JSON-LD Structured Data */}
+  <script type="application/ld+json">
+    {JSON.stringify(jsonLd)}
+  </script>
+</Helmet>
+
 
       <Navbar />
 

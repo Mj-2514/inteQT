@@ -7,20 +7,140 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Brazil: React.FC = () => {
-    <Helmet>
+  const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "Internet in Brazil | Connectivity, ISPs & Broadband Overview",
+  description:
+    "Overview of Brazil’s internet connectivity, fixed and mobile broadband, submarine cable and backbone routes, and inte-QT service capabilities in São Paulo, Rio de Janeiro, Brasília, Porto Alegre, Fortaleza and other regions.",
+  url: "https://www.inte-qt.com/coverage/south-america/brazil",
+
+  about: {
+    "@type": "Country",
+    name: "Brazil",
+
+    population: {
+      "@type": "QuantitativeValue",
+      value: 215000000
+    },
+
+    currency: "BRL",
+
+    inLanguage: ["Portuguese"],
+
+    capital: {
+      "@type": "City",
+      name: "Brasília"
+    },
+
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: -14.2350,
+      longitude: -51.9253
+    },
+
+    containsPlace: [
+      {
+        "@type": "City",
+        name: "São Paulo"
+      },
+      {
+        "@type": "City",
+        name: "Rio de Janeiro"
+      },
+      {
+        "@type": "City",
+        name: "Belo Horizonte"
+      },
+      {
+        "@type": "City",
+        name: "Porto Alegre"
+      },
+      {
+        "@type": "City",
+        name: "Salvador"
+      },
+      {
+        "@type": "City",
+        name: "Fortaleza"
+      }
+    ],
+
+    neighboringCountry: [
+      { "@type": "Country", name: "Argentina" },
+      { "@type": "Country", name: "Bolivia" },
+      { "@type": "Country", name: "Colombia" },
+      { "@type": "Country", name: "Guyana" },
+      { "@type": "Country", name: "Paraguay" },
+      { "@type": "Country", name: "Peru" },
+      { "@type": "Country", name: "Suriname" },
+      { "@type": "Country", name: "Uruguay" },
+      { "@type": "Country", name: "Venezuela" },
+      { "@type": "Country", name: "France (French Guiana)" }
+    ]
+  },
+
+  mentions: [
+    {
+      "@type": "Airport",
+      name: "São Paulo/Guarulhos International Airport",
+      iataCode: "GRU"
+    },
+    {
+      "@type": "Airport",
+      name: "Rio de Janeiro/Galeão International Airport",
+      iataCode: "GIG"
+    },
+    {
+      "@type": "Airport",
+      name: "Brasília International Airport",
+      iataCode: "BSB"
+    },
+    {
+      "@type": "Airport",
+      name: "Confins International Airport",
+      iataCode: "CNF"
+    },
+    {
+      "@type": "Airport",
+      name: "Pinto Martins International Airport",
+      iataCode: "FOR"
+    }
+  ],
+
+  isPartOf: {
+    "@type": "WebSite",
+    "@id": "https://www.inte-qt.com/#website"
+  },
+
+  publisher: {
+    "@type": "Organization",
+    "@id": "https://www.inte-qt.com/#organization"
+  }
+};
+
+
+  return (
+    <>
+      {/* SEO */}
+      <Helmet>
         <title>Internet in Brazil | Connectivity, ISPs & Broadband Overview</title>
+
         <meta
           name="description"
           content="Overview of Brazil’s internet connectivity, fixed and mobile broadband, submarine cable and backbone routes, and inte-QT service capabilities in São Paulo, Rio de Janeiro, Brasília, Porto Alegre, Fortaleza and other regions."
         />
+
         <link
           rel="canonical"
           href="https://www.inte-qt.com/coverage/south-america/brazil"
         />
+
+        {/* JSON-LD */}
+        <script type="application/ld+json">
+          {JSON.stringify(jsonLd)}
+        </script>
       </Helmet>
-  return (
-    <>
-      
 
       <Navbar />
 

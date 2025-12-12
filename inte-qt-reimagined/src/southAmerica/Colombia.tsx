@@ -7,22 +7,117 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Colombia: React.FC = () => {
-    <Helmet>
-        <title>
-          Internet in Colombia | Connectivity, ISPs & Broadband Overview
-        </title>
-        <meta
-          name="description"
-          content="Detailed overview of Colombia's internet connectivity, submarine and terrestrial fiber routes, telecom operators, broadband statistics and inte-QT service capabilities in Bogotá, Medellín, Cali, Barranquilla, Cartagena and other key cities."
-        />
-        <link
-          rel="canonical"
-          href="https://www.inte-qt.com/coverage/south-america/colombia"
-        />
-      </Helmet>
+    const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "Internet in Colombia | Connectivity, ISPs & Broadband Overview",
+  description:
+    "Detailed overview of Colombia's internet connectivity, submarine and terrestrial fiber routes, telecom operators, broadband statistics and inte-QT service capabilities in Bogotá, Medellín, Cali, Barranquilla, Cartagena and other key cities.",
+  url: "https://www.inte-qt.com/coverage/south-america/colombia",
+
+  about: {
+    "@type": "Country",
+    name: "Colombia",
+
+    population: {
+      "@type": "QuantitativeValue",
+      value: 53400000
+    },
+
+    currency: "COP",
+
+    inLanguage: ["Spanish"],
+
+    capital: {
+      "@type": "City",
+      name: "Bogotá"
+    },
+
+    containsPlace: [
+      { "@type": "City", name: "Bogotá" },
+      { "@type": "City", name: "Medellín" },
+      { "@type": "City", name: "Cali" },
+      { "@type": "City", name: "Barranquilla" },
+      { "@type": "City", name: "Cartagena" },
+      { "@type": "City", name: "Bucaramanga" }
+    ],
+
+    neighboringCountry: [
+      { "@type": "Country", name: "Venezuela" },
+      { "@type": "Country", name: "Brazil" },
+      { "@type": "Country", name: "Peru" },
+      { "@type": "Country", name: "Ecuador" },
+      { "@type": "Country", name: "Panama" }
+    ],
+
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: 4.5709,
+      longitude: -74.2973
+    }
+  },
+
+  mentions: [
+    {
+      "@type": "Airport",
+      name: "El Dorado International Airport",
+      iataCode: "BOG"
+    },
+    {
+      "@type": "Airport",
+      name: "José María Córdova International Airport",
+      iataCode: "MDE"
+    },
+    {
+      "@type": "Airport",
+      name: "Alfonso Bonilla Aragón International Airport",
+      iataCode: "CLO"
+    },
+    {
+      "@type": "Airport",
+      name: "Rafael Núñez International Airport",
+      iataCode: "CTG"
+    },
+    {
+      "@type": "Airport",
+      name: "Ernesto Cortissoz International Airport",
+      iataCode: "BAQ"
+    }
+  ],
+
+  isPartOf: {
+    "@type": "WebSite",
+    "@id": "https://www.inte-qt.com/#website"
+  },
+
+  publisher: {
+    "@type": "Organization",
+    "@id": "https://www.inte-qt.com/#organization"
+  }
+};
+
   return (
     <>
-      
+      <Helmet>
+      <title>
+        Internet in Colombia | Connectivity, ISPs & Broadband Overview
+      </title>
+
+      <meta
+        name="description"
+        content="Detailed overview of Colombia's internet connectivity, submarine and terrestrial fiber routes, telecom operators, broadband statistics and inte-QT service capabilities in Bogotá, Medellín, Cali, Barranquilla, Cartagena and other key cities."
+      />
+
+      <link
+        rel="canonical"
+        href="https://www.inte-qt.com/coverage/south-america/colombia"
+      />
+
+      {/* JSON-LD */}
+      <script type="application/ld+json">
+        {JSON.stringify(jsonLd)}
+      </script>
+    </Helmet>
 
       <Navbar />
 

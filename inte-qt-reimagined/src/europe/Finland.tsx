@@ -7,22 +7,55 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Finland: React.FC = () => {
-    <Helmet>
+  const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "Internet in Finland | Connectivity, ISPs & Broadband Overview",
+  description:
+    "Overview of Finland's internet connectivity, Nordic submarine routes, ISPs, broadband market, datacentres and inte-QT capabilities in Helsinki, Tampere, Oulu and other regions.",
+  url: "https://www.inte-qt.com/coverage/europe/finland",
+  about: {
+    "@type": "Country",
+    name: "Finland",
+    officialLanguage: ["Finnish", "Swedish"],
+    currency: "EUR",
+    population: {
+      "@type": "QuantitativeValue",
+      value: 5600000
+    },
+    capital: {
+      "@type": "City",
+      name: "Helsinki"
+    }
+  },
+  publisher: {
+    "@type": "Organization",
+    name: "inte-QT",
+    url: "https://www.inte-qt.com"
+  }
+};
+
+  return (
+    <>
+      <Helmet>
         <title>Internet in Finland | Connectivity, ISPs & Broadband Overview</title>
         <meta
           name="description"
           content="Overview of Finland's internet connectivity, Nordic submarine routes, ISPs, broadband market, datacentres and inte-QT capabilities in Helsinki, Tampere, Oulu and other regions."
         />
-        <link rel="canonical" href="https://www.inte-qt.com/coverage/europe/finland" />
+        <link
+          rel="canonical"
+          href="https://www.inte-qt.com/coverage/europe/finland"
+        />
       </Helmet>
-  return (
-    <>
-      
 
       <Navbar />
 
       {/* HERO */}
-      <section className="relative py-28 overflow-hidden" aria-labelledby="hero-title">
+      <section
+        className="relative py-28 overflow-hidden"
+        aria-labelledby="hero-title"
+      >
         <motion.div
           initial={{ opacity: 0, scale: 1.05 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -30,7 +63,7 @@ const Finland: React.FC = () => {
           className="absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage:
-              'url("https://images.unsplash.com/photo-1522885147691-06d859633fb8?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZmlubGFuZHxlbnwwfDB8MHx8fDI%3D")',
+              'url("https://images.unsplash.com/photo-1522885147691-06d859633fb8?auto=format&fit=crop&w=1600&q=80")',
           }}
         />
 

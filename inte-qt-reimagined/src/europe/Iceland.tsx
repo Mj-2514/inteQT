@@ -7,17 +7,59 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Iceland: React.FC = () => {
-    <Helmet>
-        <title>Internet in Iceland | Connectivity, ISPs & Subsea Overview</title>
-        <meta
-          name="description"
-          content="Overview of Iceland's internet connectivity, submarine & terrestrial routes, ISPs, broadband adoption and inte-QT capabilities in Reykjavík, Akureyri and other key centres."
-        />
-        <link rel="canonical" href="https://www.inte-qt.com/coverage/europe/iceland" />
-      </Helmet>
+    const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "Internet in Iceland | Connectivity, ISPs & Subsea Overview",
+  description:
+    "Overview of Iceland's internet connectivity, submarine and terrestrial routes, ISPs, broadband adoption and inte-QT capabilities in Reykjavík, Akureyri and other key centres.",
+  url: "https://www.inte-qt.com/coverage/europe/iceland",
+  about: {
+    "@type": "Country",
+    name: "Iceland",
+    alternateName: "Ísland",
+    officialLanguage: "Icelandic",
+    currency: "ISK",
+    population: {
+      "@type": "QuantitativeValue",
+      value: 390000
+    },
+    capital: {
+      "@type": "City",
+      name: "Reykjavík"
+    }
+  },
+  isPartOf: {
+    "@type": "WebSite",
+    "@id": "https://www.inte-qt.com/#website"
+  },
+  publisher: {
+    "@type": "Organization",
+    "@id": "https://www.inte-qt.com/#organization"
+  }
+};
+
   return (
     <>
-      
+      <Helmet>
+  <title>Internet in Iceland | Connectivity, ISPs & Subsea Overview</title>
+
+  <meta
+    name="description"
+    content="Overview of Iceland's internet connectivity, submarine and terrestrial routes, ISPs, broadband adoption and inte-QT capabilities in Reykjavík, Akureyri and other key centres."
+  />
+
+  <link
+    rel="canonical"
+    href="https://www.inte-qt.com/coverage/europe/iceland"
+  />
+
+  {/* JSON-LD */}
+  <script type="application/ld+json">
+    {JSON.stringify(jsonLd)}
+  </script>
+</Helmet>
+
 
       <Navbar />
 

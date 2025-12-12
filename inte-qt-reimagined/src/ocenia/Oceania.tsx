@@ -36,17 +36,48 @@ export default function OceaniaList() {
   const filtered = oceaniaCountries.filter((c) =>
     c.name.toLowerCase().includes(query.trim().toLowerCase())
   );
-<Helmet>
+
+      const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Oceania Internet Coverage",
+    description:
+      "Explore Oceania country coverage for internet connectivity, broadband, wireless and managed network services.",
+    url: "https://www.inte-qt.com/coverage/oceania",
+    itemListElement: oceaniaCountries.map((c, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: c.name,
+      url: `https://www.inte-qt.com${c.link}`,
+    })),
+    isPartOf: {
+      "@type": "WebSite",
+      "@id": "https://www.inte-qt.com/#website",
+    },
+    publisher: {
+      "@type": "Organization",
+      "@id": "https://www.inte-qt.com/#organization",
+    },
+  };
+  return (
+    <>
+       <Helmet>
         <title>Oceania Coverage | inte-QT Global Internet Services</title>
+
         <meta
           name="description"
           content="Explore Oceania country coverage for Dedicated Internet Access, Broadband, LTE/5G Wireless, Managed Services, and Global Connectivity."
         />
-        <link rel="canonical" href="https://www.inte-qt.com/coverage/oceania" />
+
+        <link
+          rel="canonical"
+          href="https://www.inte-qt.com/coverage/oceania"
+        />
+
+        <script type="application/ld+json">
+          {JSON.stringify(jsonLd)}
+        </script>
       </Helmet>
-  return (
-    <>
-      
 
       <Navbar />
 

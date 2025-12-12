@@ -7,20 +7,69 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Bolivia: React.FC = () => {
-    <Helmet>
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Internet in Bolivia | Connectivity, ISPs & Broadband Overview",
+    description:
+      "Overview of Bolivia’s internet connectivity, fixed and mobile broadband, regional backbone routes and inte-QT service capabilities in La Paz, Santa Cruz, Cochabamba and other key regions.",
+    url: "https://www.inte-qt.com/coverage/south-america/bolivia",
+    about: {
+      "@type": "Country",
+      name: "Bolivia",
+      alternateName: "Plurinational State of Bolivia",
+      capital: [
+        { "@type": "City", name: "La Paz" },
+        { "@type": "City", name: "Sucre" }
+      ],
+      officialLanguage: [
+        "Spanish",
+        "Quechua",
+        "Aymara",
+        "Guaraní"
+      ],
+      currency: "BOB",
+      population: {
+        "@type": "QuantitativeValue",
+        value: 12000000
+      },
+      geo: {
+        "@type": "GeoCoordinates",
+        latitude: -16.2902,
+        longitude: -63.5887
+      }
+    },
+    isPartOf: {
+      "@type": "WebSite",
+      "@id": "https://www.inte-qt.com/#website"
+    },
+    publisher: {
+      "@type": "Organization",
+      "@id": "https://www.inte-qt.com/#organization"
+    }
+  };
+
+  return (
+    <>
+      {/* SEO */}
+      <Helmet>
         <title>Internet in Bolivia | Connectivity, ISPs & Broadband Overview</title>
+
         <meta
           name="description"
           content="Overview of Bolivia’s internet connectivity, fixed and mobile broadband, regional backbone routes and inte-QT service capabilities in La Paz, Santa Cruz, Cochabamba and other key regions."
         />
+
         <link
           rel="canonical"
           href="https://www.inte-qt.com/coverage/south-america/bolivia"
         />
-      </Helmet>
-  return (
-    <>
 
+        {/* JSON-LD */}
+        <script type="application/ld+json">
+          {JSON.stringify(jsonLd)}
+        </script>
+      </Helmet>
       <Navbar />
 
       {/* HERO */}

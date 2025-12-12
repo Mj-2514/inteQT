@@ -7,20 +7,63 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Belize: React.FC = () => {
-    <Helmet>
-        <title>Internet in Belize | Connectivity, ISPs & Broadband Overview</title>
-        <meta
-          name="description"
-          content="Overview of Belize’s internet connectivity, fixed and mobile broadband, submarine cable systems and inte-QT service capabilities in Belize City, Belmopan and key tourism and border corridors."
-        />
-        <link
-          rel="canonical"
-          href="https://www.inte-qt.com/coverage/north-america/belize"
-        />
-      </Helmet>
+    const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "Internet in Belize | Connectivity, ISPs & Broadband Overview",
+  description:
+    "Overview of Belize’s internet connectivity, fixed and mobile broadband, submarine cable systems and inte-QT service capabilities in Belize City, Belmopan and key tourism and border corridors.",
+  url: "https://www.inte-qt.com/coverage/north-america/belize",
+  about: {
+    "@type": "Country",
+    name: "Belize",
+    capital: {
+      "@type": "City",
+      name: "Belmopan"
+    },
+    officialLanguage: "English",
+    currency: "BZD",
+    population: {
+      "@type": "QuantitativeValue",
+      value: 414000
+    },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: 17.1899,
+      longitude: -88.4976
+    }
+  },
+  isPartOf: {
+    "@type": "WebSite",
+    "@id": "https://www.inte-qt.com/#website"
+  },
+  publisher: {
+    "@type": "Organization",
+    "@id": "https://www.inte-qt.com/#organization"
+  }
+};
+
   return (
     <>
-      
+      <Helmet>
+  <title>Internet in Belize | Connectivity, ISPs & Broadband Overview</title>
+
+  <meta
+    name="description"
+    content="Overview of Belize’s internet connectivity, fixed and mobile broadband, submarine cable systems and inte-QT service capabilities in Belize City, Belmopan and key tourism and border corridors."
+  />
+
+  <link
+    rel="canonical"
+    href="https://www.inte-qt.com/coverage/north-america/belize"
+  />
+
+  {/* JSON-LD Structured Data */}
+  <script type="application/ld+json">
+    {JSON.stringify(jsonLd)}
+  </script>
+</Helmet>
+
 
       <Navbar />
 

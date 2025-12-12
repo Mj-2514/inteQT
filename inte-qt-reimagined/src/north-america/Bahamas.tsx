@@ -7,21 +7,60 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Bahamas: React.FC = () => {
-    <Helmet>
-        <title>
-          Internet in The Bahamas | Connectivity, ISPs & Broadband Overview
-        </title>
-        <meta
-          name="description"
-          content="Overview of The Bahamas’ internet connectivity, fixed and mobile broadband, submarine cable systems and inte-QT service capabilities in Nassau, Freeport and across the Family Islands."
-        />
-        <link
-          rel="canonical"
-          href="https://www.inte-qt.com/coverage/north-america/bahamas"
-        />
-      </Helmet>
+    const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "Internet in The Bahamas | Connectivity, ISPs & Broadband Overview",
+  description:
+    "Overview of The Bahamas’ internet connectivity, fixed and mobile broadband, submarine cable systems and inte-QT service capabilities in Nassau, Freeport and across the Family Islands.",
+  url: "https://www.inte-qt.com/coverage/north-america/bahamas",
+  about: {
+    "@type": "Country",
+    name: "The Bahamas",
+    alternateName: "Commonwealth of The Bahamas",
+    capital: {
+      "@type": "City",
+      name: "Nassau"
+    },
+    officialLanguage: "English",
+    currency: "BSD",
+    population: {
+      "@type": "QuantitativeValue",
+      value: 410000
+    }
+  },
+  isPartOf: {
+    "@type": "WebSite",
+    "@id": "https://www.inte-qt.com/#website"
+  },
+  publisher: {
+    "@type": "Organization",
+    "@id": "https://www.inte-qt.com/#organization"
+  }
+};
+
   return (
     <>
+    <Helmet>
+  <title>
+    Internet in The Bahamas | Connectivity, ISPs & Broadband Overview
+  </title>
+
+  <meta
+    name="description"
+    content="Overview of The Bahamas’ internet connectivity, fixed and mobile broadband, submarine cable systems and inte-QT service capabilities in Nassau, Freeport and across the Family Islands."
+  />
+
+  <link
+    rel="canonical"
+    href="https://www.inte-qt.com/coverage/north-america/bahamas"
+  />
+
+  {/* JSON-LD */}
+  <script type="application/ld+json">
+    {JSON.stringify(jsonLd)}
+  </script>
+</Helmet>
 
       <Navbar />
 

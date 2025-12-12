@@ -7,22 +7,56 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Georgia: React.FC = () => {
-    <Helmet>
+  const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "Internet in Georgia | Connectivity, ISPs & Broadband Overview",
+  description:
+    "Overview of Georgia's internet connectivity, submarine and terrestrial routes, ISPs, broadband market and inte-QT capabilities in Tbilisi, Batumi, Kutaisi and other key centres.",
+  url: "https://www.inte-qt.com/coverage/europe/georgia",
+  about: {
+    "@type": "Country",
+    name: "Georgia",
+    alternateName: "Sakartvelo",
+    officialLanguage: "Georgian",
+    currency: "GEL",
+    population: {
+      "@type": "QuantitativeValue",
+      value: 3800000
+    },
+    capital: {
+      "@type": "City",
+      name: "Tbilisi"
+    }
+  },
+  publisher: {
+    "@type": "Organization",
+    name: "inte-QT",
+    url: "https://www.inte-qt.com"
+  }
+};
+
+  return (
+    <>
+      <Helmet>
         <title>Internet in Georgia | Connectivity, ISPs & Broadband Overview</title>
         <meta
           name="description"
-          content="Overview of Georgia's internet connectivity, submarine/terrestrial routes, ISPs, broadband market and inte-QT capabilities in Tbilisi, Batumi, Kutaisi and other key centres."
+          content="Overview of Georgia's internet connectivity, submarine and terrestrial routes, ISPs, broadband market and inte-QT capabilities in Tbilisi, Batumi, Kutaisi and other key centres."
         />
-        <link rel="canonical" href="https://www.inte-qt.com/coverage/europe/georgia" />
+        <link
+          rel="canonical"
+          href="https://www.inte-qt.com/coverage/europe/georgia"
+        />
       </Helmet>
-  return (
-    <>
-      
 
       <Navbar />
 
       {/* HERO */}
-      <section className="relative py-28 overflow-hidden" aria-labelledby="hero-title">
+      <section
+        className="relative py-28 overflow-hidden"
+        aria-labelledby="hero-title"
+      >
         <motion.div
           initial={{ opacity: 0, scale: 1.05 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -30,7 +64,7 @@ const Georgia: React.FC = () => {
           className="absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage:
-              'url("https://images.unsplash.com/photo-1561731172-9d906d7b13bf?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Z2VvcmdpYXxlbnwwfDB8MHx8fDI%3D")',
+              'url("https://images.unsplash.com/photo-1561731172-9d906d7b13bf?auto=format&fit=crop&w=1600&q=80")',
           }}
         />
 

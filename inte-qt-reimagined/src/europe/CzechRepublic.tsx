@@ -7,41 +7,78 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const CzechRepublic: React.FC = () => {
-    <Helmet>
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Internet in the Czech Republic | Connectivity, ISPs & Broadband Overview",
+    description:
+      "Detailed overview of the Czech Republic's internet connectivity, fibre backbones, broadband coverage and enterprise connectivity.",
+    url: "https://www.inte-qt.com/coverage/europe/czech-republic",
+    about: {
+      "@type": "Country",
+      name: "Czech Republic",
+      population: 10800000,
+      currency: "CZK",
+      languages: ["Czech"],
+      majorCities: ["Prague", "Brno", "Ostrava", "Plzeň"],
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "inte-QT",
+      url: "https://www.inte-qt.com",
+    },
+  };
+
+  return (
+    <>
+      <Helmet>
         <title>
           Internet in the Czech Republic | Connectivity, ISPs & Broadband Overview
         </title>
         <meta
           name="description"
-          content="Detailed overview of the Czech Republic's internet connectivity, fibre backbones and regional routes, telecom operators, broadband statistics and inte-QT service capabilities in Prague, Brno, Ostrava, Plzeň and other key cities."
+          content="Explore internet connectivity, fibre backbones, broadband and enterprise networking across Prague, Brno, Ostrava and other Czech cities."
         />
         <link
           rel="canonical"
           href="https://www.inte-qt.com/coverage/europe/czech-republic"
         />
+
+        {/* OpenGraph */}
+        <meta property="og:title" content="Internet in the Czech Republic | inte-QT" />
+        <meta
+          property="og:description"
+          content="Broadband, fibre backbone and enterprise connectivity overview for the Czech Republic."
+        />
+        <meta property="og:type" content="article" />
+        <meta
+          property="og:url"
+          content="https://www.inte-qt.com/coverage/europe/czech-republic"
+        />
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+
+        {/* JSON-LD */}
+        <script type="application/ld+json">
+          {JSON.stringify(jsonLd)}
+        </script>
       </Helmet>
-  return (
-    <>
-      
 
       <Navbar />
 
       {/* HERO */}
-      <section
-        className="relative py-28 overflow-hidden"
-        aria-labelledby="hero-title"
-      >
+      <section className="relative py-28 overflow-hidden" aria-labelledby="hero-title">
         <motion.div
           initial={{ opacity: 0, scale: 1.1 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.2 }}
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            // 🔁 swap this with your own Prague / skyline screenshot
-            backgroundImage: 'url("https://images.unsplash.com/photo-1458150945447-7fb764c11a92?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Y3plY2glMjByZXB1YmxpY3xlbnwwfHwwfHx8Mg%3D%3D")',
+            backgroundImage:
+              'url("https://images.unsplash.com/photo-1458150945447-7fb764c11a92?auto=format&fit=crop&w=1600&q=80")',
           }}
         />
-
         <div className="absolute inset-0 bg-black/55 backdrop-blur-[1.5px]" />
 
         <div className="relative z-10 text-center px-6 container mx-auto">
@@ -62,9 +99,7 @@ const CzechRepublic: React.FC = () => {
             className="text-white/90 max-w-3xl mx-auto text-lg md:text-xl mt-4 leading-relaxed"
           >
             A highly connected Central European EU member where dense fibre,
-            cable and mobile networks cover most of the population, and traffic
-            rides robust terrestrial routes into Germany, Austria, Poland and
-            Slovakia.
+            cable and mobile networks support businesses and enterprises.
           </motion.p>
         </div>
       </section>

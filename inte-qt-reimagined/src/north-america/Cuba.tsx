@@ -7,22 +7,65 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Cuba: React.FC = () => {
-    <Helmet>
-        <title>
-          Internet in Cuba | Connectivity, ISPs & Broadband Overview
-        </title>
-        <meta
-          name="description"
-          content="Detailed overview of Cuba's internet connectivity, submarine and terrestrial routes, telecom operators, broadband statistics and inte-QT service capabilities in Havana, Santiago de Cuba and other key cities."
-        />
-        <link
-          rel="canonical"
-          href="https://www.inte-qt.com/coverage/north-america/cuba"
-        />
-      </Helmet>
+    const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "Internet in Cuba | Connectivity, ISPs & Broadband Overview",
+  description:
+    "Detailed overview of Cuba's internet connectivity, submarine and terrestrial routes, telecom operators, broadband statistics and inte-QT service capabilities in Havana, Santiago de Cuba and other key cities.",
+  url: "https://www.inte-qt.com/coverage/north-america/cuba",
+  about: {
+    "@type": "Country",
+    name: "Cuba",
+    capital: {
+      "@type": "City",
+      name: "Havana"
+    },
+    officialLanguage: ["Spanish"],
+    currency: "CUP",
+    population: {
+      "@type": "QuantitativeValue",
+      value: 11100000
+    },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: 21.5218,
+      longitude: -77.7812
+    }
+  },
+  isPartOf: {
+    "@type": "WebSite",
+    "@id": "https://www.inte-qt.com/#website"
+  },
+  publisher: {
+    "@type": "Organization",
+    "@id": "https://www.inte-qt.com/#organization"
+  }
+};
+
   return (
     <>
-      
+      <Helmet>
+  <title>
+    Internet in Cuba | Connectivity, ISPs & Broadband Overview
+  </title>
+
+  <meta
+    name="description"
+    content="Detailed overview of Cuba's internet connectivity, submarine and terrestrial routes, telecom operators, broadband statistics and inte-QT service capabilities in Havana, Santiago de Cuba and other key cities."
+  />
+
+  <link
+    rel="canonical"
+    href="https://www.inte-qt.com/coverage/north-america/cuba"
+  />
+
+  {/* JSON-LD Structured Data */}
+  <script type="application/ld+json">
+    {JSON.stringify(jsonLd)}
+  </script>
+</Helmet>
+
 
       <Navbar />
 

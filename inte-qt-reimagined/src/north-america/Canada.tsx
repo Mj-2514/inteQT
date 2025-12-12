@@ -7,17 +7,63 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Canada: React.FC = () => {
-    <Helmet>
-        <title>Internet in Canada | Connectivity, ISPs & Broadband Overview</title>
-        <meta
-          name="description"
-          content="Detailed overview of Canada’s internet connectivity, fixed and mobile broadband, submarine cable and backbone routes, and inte-QT service capabilities in Toronto, Montreal, Vancouver and other major regions."
-        />
-        <link rel="canonical" href="https://www.inte-qt.com/coverage/north-america/canada" />
-      </Helmet>
+    const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "Internet in Canada | Connectivity, ISPs & Broadband Overview",
+  description:
+    "Detailed overview of Canada’s internet connectivity, fixed and mobile broadband, submarine cable and backbone routes, and inte-QT service capabilities in Toronto, Montreal, Vancouver and other major regions.",
+  url: "https://www.inte-qt.com/coverage/north-america/canada",
+  about: {
+    "@type": "Country",
+    name: "Canada",
+    capital: {
+      "@type": "City",
+      name: "Ottawa"
+    },
+    officialLanguage: ["English", "French"],
+    currency: "CAD",
+    population: {
+      "@type": "QuantitativeValue",
+      value: 41500000
+    },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: 56.1304,
+      longitude: -106.3468
+    }
+  },
+  isPartOf: {
+    "@type": "WebSite",
+    "@id": "https://www.inte-qt.com/#website"
+  },
+  publisher: {
+    "@type": "Organization",
+    "@id": "https://www.inte-qt.com/#organization"
+  }
+};
+
   return (
     <>
-      
+      <Helmet>
+  <title>Internet in Canada | Connectivity, ISPs & Broadband Overview</title>
+
+  <meta
+    name="description"
+    content="Detailed overview of Canada’s internet connectivity, fixed and mobile broadband, submarine cable and backbone routes, and inte-QT service capabilities in Toronto, Montreal, Vancouver and other major regions."
+  />
+
+  <link
+    rel="canonical"
+    href="https://www.inte-qt.com/coverage/north-america/canada"
+  />
+
+  {/* JSON-LD Structured Data */}
+  <script type="application/ld+json">
+    {JSON.stringify(jsonLd)}
+  </script>
+</Helmet>
+
 
       <Navbar />
 

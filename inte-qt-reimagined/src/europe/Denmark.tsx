@@ -7,41 +7,76 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Denmark: React.FC = () => {
-    <Helmet>
-        <title>
-          Internet in Denmark | Connectivity, ISPs & Broadband Overview
-        </title>
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Internet in Denmark | Connectivity, ISPs & Broadband Overview",
+    description:
+      "Detailed overview of Denmark's internet connectivity, fibre and mobile networks, submarine cable systems and enterprise connectivity.",
+    url: "https://www.inte-qt.com/coverage/europe/denmark",
+    about: {
+      "@type": "Country",
+      name: "Denmark",
+      population: 6100000,
+      currency: "DKK",
+      languages: ["Danish"],
+      majorCities: ["Copenhagen", "Aarhus", "Odense", "Aalborg"],
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "inte-QT",
+      url: "https://www.inte-qt.com",
+    },
+  };
+
+  return (
+    <>
+      <Helmet>
+        <title>Internet in Denmark | Connectivity, ISPs & Broadband Overview</title>
         <meta
           name="description"
-          content="Detailed overview of Denmark's internet connectivity, fibre and mobile networks, submarine and terrestrial routes, telecom operators, broadband statistics and inte-QT service capabilities in Copenhagen, Aarhus, Odense, Aalborg and other key cities."
+          content="Explore Denmark’s internet infrastructure, fibre and mobile broadband, submarine cable routes and enterprise connectivity across Copenhagen, Aarhus and beyond."
         />
         <link
           rel="canonical"
           href="https://www.inte-qt.com/coverage/europe/denmark"
         />
+
+        {/* OpenGraph */}
+        <meta property="og:title" content="Internet in Denmark | inte-QT" />
+        <meta
+          property="og:description"
+          content="Denmark internet connectivity overview covering broadband, fibre, mobile and submarine cable routes."
+        />
+        <meta property="og:type" content="article" />
+        <meta
+          property="og:url"
+          content="https://www.inte-qt.com/coverage/europe/denmark"
+        />
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+
+        {/* JSON-LD */}
+        <script type="application/ld+json">
+          {JSON.stringify(jsonLd)}
+        </script>
       </Helmet>
-  return (
-    <>
-      
 
       <Navbar />
 
       {/* HERO */}
-      <section
-        className="relative py-28 overflow-hidden"
-        aria-labelledby="hero-title"
-      >
+      <section className="relative py-28 overflow-hidden" aria-labelledby="hero-title">
         <motion.div
           initial={{ opacity: 0, scale: 1.1 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.2 }}
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            // 🔁 swap this with your own Copenhagen / Øresund screenshot
-            backgroundImage: 'url("https://images.unsplash.com/photo-1513622470522-26c3c8a854bc?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8ZGVubWFya3xlbnwwfHwwfHx8Mg%3D%3D")',
+            backgroundImage:
+              'url("https://images.unsplash.com/photo-1513622470522-26c3c8a854bc?auto=format&fit=crop&w=1600&q=80")',
           }}
         />
-
         <div className="absolute inset-0 bg-black/55 backdrop-blur-[1.5px]" />
 
         <div className="relative z-10 text-center px-6 container mx-auto">
@@ -62,8 +97,8 @@ const Denmark: React.FC = () => {
             className="text-white/90 max-w-3xl mx-auto text-lg md:text-xl mt-4 leading-relaxed"
           >
             A highly digital Nordic EU member where nationwide fibre and mobile
-            networks, strong IXPs and dense cable routes make connectivity a
-            core enabler for government, enterprises and cloud workloads.
+            networks, strong IXPs and dense cable routes power enterprises and
+            cloud ecosystems.
           </motion.p>
         </div>
       </section>

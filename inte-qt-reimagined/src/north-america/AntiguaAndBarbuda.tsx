@@ -7,22 +7,60 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const AntiguaAndBarbuda: React.FC = () => {
-    <Helmet>
-        <title>
-          Internet in Antigua and Barbuda | Connectivity, ISPs & Broadband Overview
-        </title>
-        <meta
-          name="description"
-          content="Overview of Antigua and Barbuda’s internet connectivity, fixed and mobile broadband, submarine cable systems and inte-QT service capabilities in St. John’s and across both main islands."
-        />
-        <link
-          rel="canonical"
-          href="https://www.inte-qt.com/coverage/north-america/antigua-and-barbuda"
-        />
-      </Helmet>
+    const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "Internet in Antigua and Barbuda | Connectivity, ISPs & Broadband Overview",
+  description:
+    "Overview of Antigua and Barbuda’s internet connectivity, fixed and mobile broadband, submarine cable systems and inte-QT service capabilities in St. John’s and across both main islands.",
+  url: "https://www.inte-qt.com/coverage/north-america/antigua-and-barbuda",
+  about: {
+    "@type": "Country",
+    name: "Antigua and Barbuda",
+    capital: {
+      "@type": "City",
+      name: "St. John's"
+    },
+    officialLanguage: "English",
+    currency: "XCD",
+    population: {
+      "@type": "QuantitativeValue",
+      value: 94000
+    }
+  },
+  isPartOf: {
+    "@type": "WebSite",
+    "@id": "https://www.inte-qt.com/#website"
+  },
+  publisher: {
+    "@type": "Organization",
+    "@id": "https://www.inte-qt.com/#organization"
+  }
+};
+
   return (
     <>
-      
+      <Helmet>
+  <title>
+    Internet in Antigua and Barbuda | Connectivity, ISPs & Broadband Overview
+  </title>
+
+  <meta
+    name="description"
+    content="Overview of Antigua and Barbuda’s internet connectivity, fixed and mobile broadband, submarine cable systems and inte-QT service capabilities in St. John’s and across both main islands."
+  />
+
+  <link
+    rel="canonical"
+    href="https://www.inte-qt.com/coverage/north-america/antigua-and-barbuda"
+  />
+
+  {/* JSON-LD */}
+  <script type="application/ld+json">
+    {JSON.stringify(jsonLd)}
+  </script>
+</Helmet>
+
 
       <Navbar />
 

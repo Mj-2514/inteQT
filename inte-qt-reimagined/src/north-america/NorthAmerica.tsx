@@ -43,17 +43,47 @@ export default function NorthAmericaList() {
   const filtered = northAmericanCountries.filter((c) =>
     c.name.toLowerCase().includes(query.trim().toLowerCase())
   );
-<Helmet>
+const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "North America Internet Coverage",
+    description:
+      "Explore North American country coverage for internet connectivity, broadband, wireless and managed network services.",
+    url: "https://www.inte-qt.com/coverage/north-america",
+    itemListElement: northAmericanCountries.map((c, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: c.name,
+      url: `https://www.inte-qt.com${c.link}`,
+    })),
+    isPartOf: {
+      "@type": "WebSite",
+      "@id": "https://www.inte-qt.com/#website",
+    },
+    publisher: {
+      "@type": "Organization",
+      "@id": "https://www.inte-qt.com/#organization",
+    },
+  };
+  return (
+    <>
+      <Helmet>
         <title>North America Coverage | inte-QT Global Internet Services</title>
-        <meta 
+
+        <meta
           name="description"
           content="Explore North American country coverage for Dedicated Internet Access, Broadband, LTE/5G Wireless, Managed Services, and Global Connectivity."
         />
-        <link rel="canonical" href="https://www.inte-qt.com/coverage/north-america" />
+
+        <link
+          rel="canonical"
+          href="https://www.inte-qt.com/coverage/north-america"
+        />
+
+        <script type="application/ld+json">
+          {JSON.stringify(jsonLd)}
+        </script>
       </Helmet>
-  return (
-    <>
-      
 
       <Navbar />
 

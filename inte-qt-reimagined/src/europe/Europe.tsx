@@ -65,17 +65,20 @@ export default function EuropeList() {
   const filtered = europeanCountries.filter((c) =>
     c.name.toLowerCase().includes(query.trim().toLowerCase())
   );
-  <Helmet>
-        <title>Europe Coverage | inte-QT Global Internet Services</title>
-        <meta 
-          name="description"
-          content="Explore European country coverage for Dedicated Internet Access, Broadband, LTE/5G Wireless, Managed Services, and Global Connectivity in 190+ countries."
-        />
-        <link rel="canonical" href="https://www.inte-qt.com/coverage/europe" />
-      </Helmet>
 
   return (
     <>
+      <Helmet>
+        <title>Europe Coverage | inte-QT Global Internet Services</title>
+        <meta
+          name="description"
+          content="Explore European country coverage for Dedicated Internet Access, Broadband, LTE/5G Wireless, Managed Services, and Global Connectivity."
+        />
+        <link
+          rel="canonical"
+          href="https://www.inte-qt.com/coverage/europe"
+        />
+      </Helmet>
 
       <Navbar />
 

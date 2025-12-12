@@ -7,22 +7,108 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Ecuador: React.FC = () => {
-    <Helmet>
-        <title>
-          Internet in Ecuador | Connectivity, ISPs & Broadband Overview
-        </title>
-        <meta
-          name="description"
-          content="Detailed overview of Ecuador's internet connectivity, submarine and terrestrial fiber routes, telecom operators, broadband statistics and inte-QT service capabilities in Quito, Guayaquil, Cuenca and other key cities."
-        />
-        <link
-          rel="canonical"
-          href="https://www.inte-qt.com/coverage/latin-america/ecuador"
-        />
-      </Helmet>
+    const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "Internet in Ecuador | Connectivity, ISPs & Broadband Overview",
+  description:
+    "Detailed overview of Ecuador's internet connectivity, submarine and terrestrial fiber routes, telecom operators, broadband statistics and inte-QT service capabilities in Quito, Guayaquil, Cuenca and other key cities.",
+  url: "https://www.inte-qt.com/coverage/latin-america/ecuador",
+
+  about: {
+    "@type": "Country",
+    name: "Ecuador",
+
+    population: {
+      "@type": "QuantitativeValue",
+      value: 18000000
+    },
+
+    currency: "USD",
+
+    inLanguage: ["Spanish", "Kichwa", "Shuar"],
+
+    capital: {
+      "@type": "City",
+      name: "Quito"
+    },
+
+    containsPlace: [
+      { "@type": "City", name: "Quito" },
+      { "@type": "City", name: "Guayaquil" },
+      { "@type": "City", name: "Cuenca" },
+      { "@type": "City", name: "Manta" },
+      { "@type": "City", name: "Machala" }
+    ],
+
+    neighboringCountry: [
+      { "@type": "Country", name: "Colombia" },
+      { "@type": "Country", name: "Peru" }
+    ],
+
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: -1.8312,
+      longitude: -78.1834
+    }
+  },
+
+  mentions: [
+    {
+      "@type": "Airport",
+      name: "Mariscal Sucre International Airport",
+      iataCode: "UIO"
+    },
+    {
+      "@type": "Airport",
+      name: "José Joaquín de Olmedo International Airport",
+      iataCode: "GYE"
+    },
+    {
+      "@type": "Airport",
+      name: "Eloy Alfaro International Airport",
+      iataCode: "MEC"
+    },
+    {
+      "@type": "Airport",
+      name: "Seymour Airport",
+      iataCode: "GPS"
+    }
+  ],
+
+  isPartOf: {
+    "@type": "WebSite",
+    "@id": "https://www.inte-qt.com/#website"
+  },
+
+  publisher: {
+    "@type": "Organization",
+    "@id": "https://www.inte-qt.com/#organization"
+  }
+};
+
   return (
     <>
-      
+      <Helmet>
+      <title>
+        Internet in Ecuador | Connectivity, ISPs & Broadband Overview
+      </title>
+
+      <meta
+        name="description"
+        content="Detailed overview of Ecuador's internet connectivity, submarine and terrestrial fiber routes, telecom operators, broadband statistics and inte-QT service capabilities in Quito, Guayaquil, Cuenca and other key cities."
+      />
+
+      <link
+        rel="canonical"
+        href="https://www.inte-qt.com/coverage/latin-america/ecuador"
+      />
+
+      {/* JSON-LD */}
+      <script type="application/ld+json">
+        {JSON.stringify(jsonLd)}
+      </script>
+    </Helmet>
 
       <Navbar />
 

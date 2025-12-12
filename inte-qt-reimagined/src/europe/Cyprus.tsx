@@ -7,39 +7,76 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Cyprus: React.FC = () => {
-    <Helmet>
-        <title>
-          Internet in Cyprus | Connectivity, ISPs & Broadband Overview
-        </title>
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Internet in Cyprus | Connectivity, ISPs & Broadband Overview",
+    description:
+      "Detailed overview of Cyprus' internet connectivity, submarine cable systems, broadband coverage and enterprise connectivity services.",
+    url: "https://www.inte-qt.com/coverage/europe/cyprus",
+    about: {
+      "@type": "Country",
+      name: "Cyprus",
+      population: 1260000,
+      currency: "EUR",
+      languages: ["Greek", "Turkish"],
+      majorCities: ["Nicosia", "Limassol", "Larnaca", "Paphos"],
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "inte-QT",
+      url: "https://www.inte-qt.com",
+    },
+  };
+
+  return (
+    <>
+      <Helmet>
+        <title>Internet in Cyprus | Connectivity, ISPs & Broadband Overview</title>
         <meta
           name="description"
-          content="Detailed overview of Cyprus' internet connectivity, submarine and terrestrial fiber routes, telecom operators, broadband statistics and inte-QT service capabilities in Nicosia, Limassol, Larnaca, Paphos and other key cities."
+          content="Explore Cyprus’ internet infrastructure, submarine cables, broadband and mobile connectivity across Nicosia, Limassol, Larnaca and Paphos."
         />
         <link
           rel="canonical"
           href="https://www.inte-qt.com/coverage/europe/cyprus"
         />
+
+        {/* OpenGraph */}
+        <meta property="og:title" content="Internet in Cyprus | inte-QT" />
+        <meta
+          property="og:description"
+          content="Overview of Cyprus’ broadband, mobile connectivity and international submarine cable routes."
+        />
+        <meta property="og:type" content="article" />
+        <meta
+          property="og:url"
+          content="https://www.inte-qt.com/coverage/europe/cyprus"
+        />
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+
+        {/* JSON-LD */}
+        <script type="application/ld+json">
+          {JSON.stringify(jsonLd)}
+        </script>
       </Helmet>
-  return (
-    <>
-      
 
       <Navbar />
 
       {/* HERO */}
-      <section
-        className="relative py-28 overflow-hidden"
-        aria-labelledby="hero-title"
-      >
+      <section className="relative py-28 overflow-hidden" aria-labelledby="hero-title">
         <motion.div
           initial={{ opacity: 0, scale: 1.1 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.2 }}
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            // 🔁 swap this with your own Limassol / Nicosia / island screenshot
-            backgroundImage: 'url("https://images.unsplash.com/photo-1560860446-c821e910a0a7?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Y3lwcnVzfGVufDB8fDB8fHwyhttps://images.unsplash.com/photo-1560860446-c821e910a0a7?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Y3lwcnVzfGVufDB8fDB8fHwy")',
+            backgroundImage:
+              'url("https://images.unsplash.com/photo-1560860446-c821e910a0a7?auto=format&fit=crop&w=1600&q=80")',
           }}
+          aria-hidden="true"
         />
 
         <div className="absolute inset-0 bg-black/55 backdrop-blur-[1.5px]" />

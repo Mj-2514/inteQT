@@ -7,17 +7,63 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Fiji: React.FC = () => {
-    <Helmet>
-        <title>Internet in Fiji | Connectivity, ISPs & Broadband Overview</title>
-        <meta
-          name="description"
-          content="Overview of Fiji's internet connectivity, submarine cable systems, ISPs, broadband market and inte-QT service capabilities across Suva, Nadi and other key island hubs."
-        />
-        <link rel="canonical" href="https://www.inte-qt.com/coverage/oceania/fiji" />
-      </Helmet>
+    const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "Internet in Fiji | Connectivity, ISPs & Broadband Overview",
+  description:
+    "Overview of Fiji's internet connectivity, submarine cable systems, ISPs, broadband market and inte-QT service capabilities across Suva, Nadi and other key island hubs.",
+  url: "https://www.inte-qt.com/coverage/oceania/fiji",
+  about: {
+    "@type": "Country",
+    name: "Fiji",
+    capital: {
+      "@type": "City",
+      name: "Suva"
+    },
+    officialLanguage: ["English", "Fijian", "Fiji Hindi"],
+    currency: "FJD",
+    population: {
+      "@type": "QuantitativeValue",
+      value: 940000
+    },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: -17.7134,
+      longitude: 178.0650
+    }
+  },
+  isPartOf: {
+    "@type": "WebSite",
+    "@id": "https://www.inte-qt.com/#website"
+  },
+  publisher: {
+    "@type": "Organization",
+    "@id": "https://www.inte-qt.com/#organization"
+  }
+};
+
   return (
     <>
-      
+      <Helmet>
+  <title>Internet in Fiji | Connectivity, ISPs & Broadband Overview</title>
+
+  <meta
+    name="description"
+    content="Overview of Fiji's internet connectivity, submarine cable systems, ISPs, broadband market and inte-QT service capabilities across Suva, Nadi and other key island hubs."
+  />
+
+  <link
+    rel="canonical"
+    href="https://www.inte-qt.com/coverage/oceania/fiji"
+  />
+
+  {/* JSON-LD Structured Data */}
+  <script type="application/ld+json">
+    {JSON.stringify(jsonLd)}
+  </script>
+</Helmet>
+
 
       <Navbar />
 

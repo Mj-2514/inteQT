@@ -7,20 +7,63 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Mexico: React.FC = () => {
-    <Helmet>
-        <title>Internet in Mexico | Connectivity, ISPs & Broadband Overview</title>
-        <meta
-          name="description"
-          content="Overview of Mexico’s internet connectivity, fixed and mobile broadband, submarine cable and backbone routes, and inte-QT service capabilities in Mexico City, Monterrey, Guadalajara and other regions."
-        />
-        <link
-          rel="canonical"
-          href="https://www.inte-qt.com/coverage/mexico"
-        />
-      </Helmet>
+    const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "Internet in Mexico | Connectivity, ISPs & Broadband Overview",
+  description:
+    "Overview of Mexico’s internet connectivity, fixed and mobile broadband, submarine cable and backbone routes, and inte-QT service capabilities in Mexico City, Monterrey, Guadalajara and other regions.",
+  url: "https://www.inte-qt.com/coverage/mexico",
+  about: {
+    "@type": "Country",
+    name: "Mexico",
+    capital: {
+      "@type": "City",
+      name: "Mexico City"
+    },
+    officialLanguage: ["Spanish"],
+    currency: "MXN",
+    population: {
+      "@type": "QuantitativeValue",
+      value: 129000000
+    },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: 23.634501,
+      longitude: -102.552784
+    }
+  },
+  isPartOf: {
+    "@type": "WebSite",
+    "@id": "https://www.inte-qt.com/#website"
+  },
+  publisher: {
+    "@type": "Organization",
+    "@id": "https://www.inte-qt.com/#organization"
+  }
+};
+
   return (
     <>
-      
+      <Helmet>
+  <title>Internet in Mexico | Connectivity, ISPs & Broadband Overview</title>
+
+  <meta
+    name="description"
+    content="Overview of Mexico’s internet connectivity, fixed and mobile broadband, submarine cable and backbone routes, and inte-QT service capabilities in Mexico City, Monterrey, Guadalajara and other regions."
+  />
+
+  <link
+    rel="canonical"
+    href="https://www.inte-qt.com/coverage/mexico"
+  />
+
+  {/* JSON-LD Structured Data */}
+  <script type="application/ld+json">
+    {JSON.stringify(jsonLd)}
+  </script>
+</Helmet>
+
 
       <Navbar />
 

@@ -7,17 +7,97 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Guyana: React.FC = () => {
-    <Helmet>
-        <title>Internet in Guyana | Connectivity, ISPs & Broadband Overview</title>
-        <meta
-          name="description"
-          content="Overview of Guyana's internet connectivity, submarine/terrestrial routes, ISPs, broadband market and inte-QT capabilities across Georgetown, Linden, Berbice and other key hubs."
-        />
-        <link rel="canonical" href="https://www.inte-qt.com/coverage/south-america/guyana" />
-      </Helmet>
+    const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "Internet in Guyana | Connectivity, ISPs & Broadband Overview",
+  description:
+    "Overview of Guyana's internet connectivity, submarine and terrestrial routes, ISPs, broadband market and inte-QT capabilities across Georgetown, Linden, Berbice and other key hubs.",
+  url: "https://www.inte-qt.com/coverage/south-america/guyana",
+
+  about: {
+    "@type": "Country",
+    name: "Guyana",
+
+    population: {
+      "@type": "QuantitativeValue",
+      value: 805000
+    },
+
+    currency: "GYD",
+
+    inLanguage: ["English", "Guyanese Creole"],
+
+    capital: {
+      "@type": "City",
+      name: "Georgetown"
+    },
+
+    containsPlace: [
+      { "@type": "City", name: "Georgetown" },
+      { "@type": "City", name: "Linden" },
+      { "@type": "City", name: "New Amsterdam" },
+      { "@type": "City", name: "Bartica" },
+      { "@type": "City", name: "Lethem" }
+    ],
+
+    neighboringCountry: [
+      { "@type": "Country", name: "Brazil" },
+      { "@type": "Country", name: "Suriname" },
+      { "@type": "Country", name: "Venezuela" }
+    ],
+
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: 4.8604,
+      longitude: -58.9302
+    }
+  },
+
+  mentions: [
+    {
+      "@type": "Airport",
+      name: "Cheddi Jagan International Airport",
+      iataCode: "GEO"
+    },
+    {
+      "@type": "Airport",
+      name: "Eugene F. Correia International Airport",
+      iataCode: "OGL"
+    }
+  ],
+
+  isPartOf: {
+    "@type": "WebSite",
+    "@id": "https://www.inte-qt.com/#website"
+  },
+
+  publisher: {
+    "@type": "Organization",
+    "@id": "https://www.inte-qt.com/#organization"
+  }
+};
+
   return (
     <>
-      
+      <Helmet>
+      <title>Internet in Guyana | Connectivity, ISPs & Broadband Overview</title>
+
+      <meta
+        name="description"
+        content="Overview of Guyana's internet connectivity, submarine/terrestrial routes, ISPs, broadband market and inte-QT capabilities across Georgetown, Linden, Berbice and other key hubs."
+      />
+
+      <link
+        rel="canonical"
+        href="https://www.inte-qt.com/coverage/south-america/guyana"
+      />
+
+      {/* JSON-LD Structured Data */}
+      <script type="application/ld+json">
+        {JSON.stringify(jsonLd)}
+      </script>
+    </Helmet>
 
       <Navbar />
 

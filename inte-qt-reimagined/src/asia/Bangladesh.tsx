@@ -1,3 +1,4 @@
+// src/pages/Bangladesh.jsx
 import React from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -6,7 +7,7 @@ import { CheckCircle } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 
-const Bangladesh: React.FC = () => {
+const Bangladesh = () => {
   const capabilities = [
     "Dedicated Internet Access (DIA)",
     "Business Broadband (BB)",
@@ -17,24 +18,52 @@ const Bangladesh: React.FC = () => {
     "Diverse Gateway Solutions",
     "DDoS Protection",
   ];
-  <Helmet>
-  <title>Internet in Bangladesh | DIA, Broadband, 4G/5G, Fiber | inte-QT</title>
 
-  <meta
-    name="description"
-    content="Enterprise internet in Bangladesh: Dedicated Internet Access (DIA), Business Broadband, Wireless LTE, SEA-ME-WE connectivity, and managed global services. Coverage across Dhaka, Chittagong & national regions."
-  />
-
-  <link rel="canonical" href="https://www.inte-qt.com/coverage/asia/bangladesh" />
-
-  <meta property="og:title" content="Internet in Bangladesh | inte-QT Connectivity" />
-  <meta property="og:description" content="DIA, Broadband, LTE/5G, wireless and enterprise-grade connectivity across Bangladesh backed by global NSOC support." />
-  <meta property="og:type" content="website" />
-</Helmet>
-
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Internet in Bangladesh | DIA, Broadband, 4G/5G, Fiber | inte-QT",
+    description:
+      "Enterprise internet in Bangladesh: Dedicated Internet Access (DIA), Business Broadband, Wireless LTE, SEA-ME-WE connectivity, and managed global services. Coverage across Dhaka, Chittagong & national regions.",
+    url: "https://www.inte-qt.com/coverage/asia/bangladesh",
+    about: {
+      "@type": "Country",
+      name: "Bangladesh",
+      population: 172900000,
+      currency: "BDT (Bangladeshi Taka)",
+      languages: ["Bengali"],
+      neighbouringCountries: ["India", "Myanmar"],
+      majorCities: ["Dhaka", "Chittagong", "Khulna"]
+    }
+  };
 
   return (
     <>
+      <Helmet>
+        <title>Internet in Bangladesh | DIA, Broadband, 4G/5G, Fiber | inte-QT</title>
+
+        <meta
+          name="description"
+          content="Enterprise internet in Bangladesh: Dedicated Internet Access (DIA), Business Broadband, Wireless LTE, SEA-ME-WE connectivity, and managed global services. Coverage across Dhaka, Chittagong & national regions."
+        />
+        <link rel="canonical" href="https://www.inte-qt.com/coverage/asia/bangladesh" />
+
+        {/* Open Graph */}
+        <meta property="og:title" content="Internet in Bangladesh | DIA, Broadband, 4G/5G, Fiber | inte-QT" />
+        <meta
+          property="og:description"
+          content="Enterprise internet in Bangladesh: DIA, Business Broadband, Wireless LTE, SEA-ME-WE connectivity, and managed global services across Dhaka, Chittagong & regional hubs."
+        />
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content="https://www.inte-qt.com/coverage/asia/bangladesh" />
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+
+        {/* JSON-LD */}
+        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
+      </Helmet>
+
       <Navbar />
 
       {/* HERO */}
@@ -45,14 +74,12 @@ const Bangladesh: React.FC = () => {
           transition={{ duration: 1 }}
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            // Unsplash page you provided — using a direct Unsplash CDN style image
-            // Replace this URL if you prefer another exact image asset
-            backgroundImage:
-              'url("https://i.imgur.com/Bks0uYa.jpeg")',
+            backgroundImage: 'url("https://i.imgur.com/Bks0uYa.jpeg")',
           }}
+          aria-hidden="true"
         />
 
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-[1px]" />
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-[1px]" aria-hidden="true" />
 
         <div className="relative z-10 text-center px-6 container mx-auto">
           <motion.h1
@@ -78,11 +105,10 @@ const Bangladesh: React.FC = () => {
       </section>
 
       {/* MAIN */}
-      <main className="min-h-screen bg-background/60">
+      <main className="min-h-screen bg-background/60" id="main">
         <section className="py-16">
           <div className="container mx-auto px-4 max-w-6xl">
             <div className="grid lg:grid-cols-3 gap-10">
-
               {/* LEFT — KEY FACTS */}
               <aside>
                 <Card className="backdrop-blur-xl bg-white/70 dark:bg-black/30 rounded-3xl border border-white/10 shadow-xl">
@@ -91,7 +117,7 @@ const Bangladesh: React.FC = () => {
 
                     <ul className="space-y-3 text-sm text-muted-foreground leading-relaxed">
                       <li><strong>Population:</strong> 172.9 million (2023 estimate)</li>
-                      <li><strong>Neighbors:</strong> India (W, N, E), Myanmar (SE); Bay of Bengal (S)</li>
+                      <li><strong>Neighbors:</strong> India, Myanmar; Bay of Bengal to the south</li>
                       <li><strong>Language:</strong> Bengali (Bangla). English used in business & education</li>
                       <li><strong>Currency:</strong> Bangladeshi Taka (BDT)</li>
                       <li><strong>Top Cities:</strong> Dhaka, Chittagong, Khulna</li>
@@ -101,9 +127,10 @@ const Bangladesh: React.FC = () => {
                     <div className="text-center mt-6">
                       <img
                         src="https://flagcdn.com/w320/bd.png"
-                        alt="Bangladesh flag"
+                        alt="Flag of Bangladesh"
                         className="mx-auto rounded-md shadow-sm border border-white/10"
                         style={{ width: 140 }}
+                        loading="lazy"
                       />
                     </div>
                   </CardContent>
@@ -118,14 +145,14 @@ const Bangladesh: React.FC = () => {
                     <h2 className="text-3xl font-bold mb-4">Overview</h2>
 
                     <p className="text-muted-foreground mb-4 leading-relaxed">
-                      Bangladesh has seen massive mobile adoption; 4G is the primary access medium and
-                      fixed broadband is growing in urban centers. inte-QT partners locally to provide enterprise-grade
-                      services across sectors including textiles, shipping, pharmaceuticals and fintech.
+                      Bangladesh has seen massive mobile adoption; 4G is the primary access medium and fixed broadband is
+                      growing in urban centers. inte-QT partners locally to provide enterprise-grade services across sectors
+                      including textiles, shipping, pharmaceuticals and fintech.
                     </p>
 
                     <p className="text-muted-foreground mb-4 leading-relaxed">
-                      As 5G trials and infrastructure buildouts accelerate, enterprises need resilient routed
-                      connectivity, redundancy and local support — all areas we can help with through DIA, BB and managed wireless.
+                      As 5G trials and infrastructure buildouts accelerate, enterprises need resilient routed connectivity,
+                      redundancy and local support — all areas we can help with through DIA, BB and managed wireless.
                     </p>
 
                     {/* Map (centered card) */}
@@ -135,12 +162,13 @@ const Bangladesh: React.FC = () => {
                         <div className="p-6 bg-card">
                           <div className="max-w-3xl mx-auto">
                             <iframe
-                              title="Bangladesh map"
+                              title="Map of Bangladesh"
                               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d365789.2005341431!2d89.0108702821781!3d23.7808873427808!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755c1c1f4f3b6b9%3A0x6aee0065b9b18158!2sBangladesh!5e0!3m2!1sen!2sus!4v1700000000000"
                               width="100%"
                               height="420"
                               style={{ border: 0 }}
                               loading="lazy"
+                              referrerPolicy="no-referrer-when-downgrade"
                             />
                           </div>
                         </div>
@@ -234,9 +262,10 @@ const Bangladesh: React.FC = () => {
                   >
                     <img
                       src="https://i.imgur.com/3x8sK8k.jpg"
-                      alt="Submarine Cables Bangladesh"
+                      alt="Submarine cables serving Bangladesh"
                       className="rounded-xl shadow-lg border border-white/20 w-full"
                       style={{ objectFit: "cover" }}
+                      loading="lazy"
                     />
                   </a>
                 </div>

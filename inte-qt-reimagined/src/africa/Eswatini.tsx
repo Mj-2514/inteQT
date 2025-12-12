@@ -7,17 +7,35 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Eswatini: React.FC = () => {
-    <Helmet>
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Internet in Eswatini | Connectivity, ISPs & Broadband Overview",
+    description:
+      "Overview of Eswatini's internet connectivity, terrestrial routes, ISPs, broadband market and inte-QT service capabilities in Mbabane, Manzini and other key centres.",
+    url: "https://www.inte-qt.com/coverage/africa/eswatini",
+    about: {
+      "@type": "Country",
+      name: "Eswatini",
+      population: 1200000,
+      currency: "SZL (Lilangeni)",
+      languages: ["Siswati", "English"],
+      neighbouringCountries: ["South Africa", "Mozambique"],
+      majorCities: ["Mbabane", "Manzini", "Matsapha"]
+    }
+  };
+
+  return (
+    <>
+      <Helmet>
         <title>Internet in Eswatini | Connectivity, ISPs & Broadband Overview</title>
         <meta
           name="description"
           content="Overview of Eswatini's internet connectivity, terrestrial routes, ISPs, broadband market and inte-QT service capabilities in Mbabane, Manzini and other key centres."
         />
         <link rel="canonical" href="https://www.inte-qt.com/coverage/africa/eswatini" />
+        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       </Helmet>
-  return (
-    <>
-      
 
       <Navbar />
 
@@ -30,12 +48,11 @@ const Eswatini: React.FC = () => {
           className="absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage:
-              'url("https://images.unsplash.com/photo-1652478412675-7cc39050f2f0?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8ZXN3YXRpbml8ZW58MHwwfDB8fHwy")',
+              'url("https://images.unsplash.com/photo-1652478412675-7cc39050f2f0?w=1200&auto=format&fit=crop&q=80")'
           }}
+          aria-hidden
         />
-
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" aria-hidden />
         <div className="relative z-10 text-center px-6 container mx-auto">
           <motion.h1
             id="hero-title"
@@ -54,8 +71,7 @@ const Eswatini: React.FC = () => {
             className="text-white/90 max-w-3xl mx-auto text-lg md:text-xl mt-4 leading-relaxed"
           >
             A landlocked Southern African kingdom with connectivity influenced by
-            cross-border fibre routes through South Africa and Mozambique;
-            broadband adoption is growing with 4G/5G and metro fibre expansion.
+            cross-border fibre routes through South Africa and Mozambique; broadband adoption is growing with 4G/5G and metro fibre expansion.
           </motion.p>
         </div>
       </section>
@@ -84,19 +100,19 @@ const Eswatini: React.FC = () => {
                         <strong>Population:</strong> ≈ 1.2 million (2025 est.)
                       </li>
                       <li>
-                        <strong>Capital Cities:</strong> Mbabane (administrative), Lobamba (legislative & royal).
+                        <strong>Capital Cities:</strong> Mbabane (administrative), Lobamba (legislative & royal)
                       </li>
                       <li>
-                        <strong>Main Cities:</strong> Mbabane, Manzini, Matsapha.
+                        <strong>Main Cities:</strong> Mbabane, Manzini, Matsapha
                       </li>
                       <li>
-                        <strong>Languages:</strong> Siswati (official), English (official working language).
+                        <strong>Languages:</strong> Siswati (official), English (working)
                       </li>
                       <li>
-                        <strong>Currency:</strong> Lilangeni (SZL) — pegged 1:1 to South African Rand.
+                        <strong>Currency:</strong> Lilangeni (SZL) — pegged 1:1 to ZAR
                       </li>
                       <li>
-                        <strong>Neighbours:</strong> South Africa (north, west, south), Mozambique (east).
+                        <strong>Neighbours:</strong> South Africa, Mozambique
                       </li>
                     </ul>
 
@@ -108,6 +124,7 @@ const Eswatini: React.FC = () => {
                         src="https://flagcdn.com/w320/sz.png"
                         alt="Eswatini Flag"
                         className="mx-auto rounded-lg shadow-lg border border-white/40"
+                        loading="lazy"
                       />
                     </div>
                   </CardContent>
@@ -127,19 +144,11 @@ const Eswatini: React.FC = () => {
                     <h2 className="text-3xl font-bold mb-4">A Brief Overview</h2>
 
                     <p className="text-muted-foreground mb-4 leading-relaxed">
-                      Eswatini is a compact, landlocked nation whose telecom
-                      ecosystem is closely tied to neighbouring South Africa and
-                      Mozambique. International capacity largely enters through
-                      cross-border terrestrial fibre routes, complemented by
-                      mobile broadband and enterprise wireless links.
+                      Eswatini is a compact, landlocked nation whose telecom ecosystem is closely tied to neighbouring South Africa and Mozambique. International capacity largely enters through cross-border terrestrial fibre routes, complemented by mobile broadband and enterprise wireless links.
                     </p>
 
                     <p className="text-muted-foreground mb-6 leading-relaxed">
-                      Broadband availability is steadily increasing, with metro
-                      fibre investments in Mbabane, Manzini and Matsapha. Mobile
-                      networks (4G, emerging 5G) handle most consumer traffic,
-                      while enterprise services rely on leased lines and regional
-                      upstream providers.
+                      Broadband availability is steadily increasing, with metro fibre investments in Mbabane, Manzini and Matsapha. Mobile networks (4G, emerging 5G) handle most consumer traffic, while enterprise services rely on leased lines and regional upstream providers.
                     </p>
 
                     {/* Map */}
@@ -166,8 +175,8 @@ const Eswatini: React.FC = () => {
                     <CardContent className="p-6">
                       <h3 className="text-xl font-bold mb-3">Main Airports</h3>
                       <ul className="list-disc pl-5 text-muted-foreground space-y-1">
-                        <li>King Mswati III International Airport (SHO) — primary international airport.</li>
-                        <li>Matsapha Airport — now mostly cargo/general aviation.</li>
+                        <li>King Mswati III International Airport (SHO)</li>
+                        <li>Matsapha Airport — cargo / general aviation</li>
                       </ul>
                     </CardContent>
                   </Card>
@@ -177,10 +186,7 @@ const Eswatini: React.FC = () => {
                       <h3 className="text-xl font-bold mb-4">Connectivity Overview</h3>
 
                       <p className="text-muted-foreground mb-6 leading-relaxed">
-                        Eswatini does not have a submarine coastline, making
-                        terrestrial cross-border fibre essential. Major operators
-                        interconnect through South African and Mozambican transit,
-                        while VSAT remains an option for remote enterprise sites.
+                        Eswatini does not have a submarine coastline, making terrestrial cross-border fibre essential. Major operators interconnect through South African and Mozambican transit, while VSAT remains an option for remote enterprise sites.
                       </p>
 
                       <div className="overflow-x-auto">
@@ -221,7 +227,7 @@ const Eswatini: React.FC = () => {
           </div>
         </section>
 
-        {/* Submarine Cables & International Routes */}
+        {/* International Routes & Transit */}
         <section className="py-12">
           <div className="container mx-auto px-4 max-w-6xl space-y-10">
             <Card className="rounded-3xl border border-white/10 shadow-xl">
@@ -229,11 +235,7 @@ const Eswatini: React.FC = () => {
                 <h2 className="text-3xl font-bold mb-4">International Routes & Transit</h2>
 
                 <p className="text-muted-foreground mb-6 leading-relaxed text-center max-w-3xl mx-auto">
-                  As a landlocked country, Eswatini depends heavily on cross-border
-                  fibre routes into South Africa and Mozambique. These paths
-                  provide access to regional submarine cables (EASSy, SEACOM,
-                  WACS, SAFE, etc.) via interconnected PoPs in neighbouring
-                  countries.
+                  As a landlocked country, Eswatini depends heavily on cross-border fibre routes into South Africa and Mozambique. These paths provide access to regional submarine cables (EASSy, SEACOM, WACS, SAFE, etc.) via interconnected PoPs in neighbouring countries.
                 </p>
 
                 <div className="flex justify-center">
@@ -247,6 +249,7 @@ const Eswatini: React.FC = () => {
                       src="/Eswatini.png"
                       alt="Regional transit and fibre routes serving Eswatini"
                       className="rounded-xl shadow-lg border border-white/20 w-full max-w-3xl mx-auto"
+                      loading="lazy"
                     />
                   </a>
                 </div>
@@ -259,10 +262,7 @@ const Eswatini: React.FC = () => {
                 <h2 className="text-3xl font-bold mb-4">Internet Providers & Market</h2>
 
                 <p className="text-muted-foreground mb-4 leading-relaxed">
-                  The market includes MTN Eswatini, eSwatini Posts and Telecoms,
-                  and regional fibre partners. Mobile broadband dominates, while
-                  enterprise customers rely on MPLS, DIA and wireless last-mile
-                  solutions.
+                  The market includes MTN Eswatini, eSwatini Posts and Telecoms, and regional fibre partners. Mobile broadband dominates, while enterprise customers rely on MPLS, DIA and wireless last-mile solutions.
                 </p>
 
                 <h3 className="text-xl font-semibold mb-4">Our Capabilities</h3>
@@ -302,7 +302,7 @@ const Eswatini: React.FC = () => {
 
             <p className="mb-6">
               <a
-                href="mailto:sales@inte-QT.com?subject=Eswatini%20Connectivity%20Inquiry"
+                href="mailto:sales@inte-qt.com?subject=Eswatini%20Connectivity%20Inquiry"
                 className="text-primary underline font-semibold"
               >
                 Email Us
@@ -311,9 +311,8 @@ const Eswatini: React.FC = () => {
 
             <h4 className="mb-3 font-semibold">References</h4>
             <ul className="text-muted-foreground">
+              <li><a href="https://en.wikipedia.org/wiki/Eswatini" target="_blank" rel="noopener noreferrer" className="underline">Wikipedia — Eswatini</a></li>
               <li><a href="https://www.worldometers.info/world-population/eswatini-population/" target="_blank" rel="noopener noreferrer" className="underline">Worldometers — Population estimates (2025)</a></li>
-              <li><a href="https://en.wikipedia.org/wiki/Eswatini" target="_blank" rel="noopener noreferrer" className="underline">Wikipedia — Eswatini (overview)</a></li>
-              <li><a href="https://en.wikipedia.org/wiki/King_Mswati_III_International_Airport" target="_blank" rel="noopener noreferrer" className="underline">King Mswati III International Airport — details</a></li>
               <li><a href="https://www.submarinecablemap.com/" target="_blank" rel="noopener noreferrer" className="underline">Submarine Cable lines</a></li>
             </ul>
           </div>

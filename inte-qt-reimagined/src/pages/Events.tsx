@@ -276,7 +276,7 @@ const Events = () => {
     <h1 className="text-black dark:text-black text-5xl md:text-6xl font-bold mb-6 animate-fade-in">
       Events & Exhibitions
     </h1>
-    <p className="text-black dark:text-black text-xl md:text-2xl opacity-90 max-w-3xl mx-auto animate-fade-in-up">
+    <p className="text-black dark:text-black text-xl md:text-2xl opacity-90 max-w-3xl mx-auto animate-fade-in-up font-bold">
       Meet us at industry-leading events around the world
     </p>
   </div>

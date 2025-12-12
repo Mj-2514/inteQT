@@ -7,22 +7,66 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Dominica: React.FC = () => {
-    <Helmet>
-        <title>
-          Internet in Dominica | Connectivity, ISPs & Broadband Overview
-        </title>
-        <meta
-          name="description"
-          content="Detailed overview of Dominica's internet connectivity, submarine cables, telecom operators, broadband statistics and inte-QT service capabilities in Roseau, Portsmouth and other key locations on the Nature Island."
-        />
-        <link
-          rel="canonical"
-          href="https://www.inte-qt.com/coverage/caribbean/dominica"
-        />
-      </Helmet>
+    const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "Internet in Dominica | Connectivity, ISPs & Broadband Overview",
+  description:
+    "Detailed overview of Dominica's internet connectivity, submarine cables, telecom operators, broadband statistics and inte-QT service capabilities in Roseau, Portsmouth and other key locations on the Nature Island.",
+  url: "https://www.inte-qt.com/coverage/caribbean/dominica",
+  about: {
+    "@type": "Country",
+    name: "Dominica",
+    alternateName: "Commonwealth of Dominica",
+    capital: {
+      "@type": "City",
+      name: "Roseau"
+    },
+    officialLanguage: ["English"],
+    currency: "XCD",
+    population: {
+      "@type": "QuantitativeValue",
+      value: 66000
+    },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: 15.415,
+      longitude: -61.371
+    }
+  },
+  isPartOf: {
+    "@type": "WebSite",
+    "@id": "https://www.inte-qt.com/#website"
+  },
+  publisher: {
+    "@type": "Organization",
+    "@id": "https://www.inte-qt.com/#organization"
+  }
+};
+
   return (
     <>
-      
+      <Helmet>
+  <title>
+    Internet in Dominica | Connectivity, ISPs & Broadband Overview
+  </title>
+
+  <meta
+    name="description"
+    content="Detailed overview of Dominica's internet connectivity, submarine cables, telecom operators, broadband statistics and inte-QT service capabilities in Roseau, Portsmouth and other key locations on the Nature Island."
+  />
+
+  <link
+    rel="canonical"
+    href="https://www.inte-qt.com/coverage/caribbean/dominica"
+  />
+
+  {/* JSON-LD Structured Data */}
+  <script type="application/ld+json">
+    {JSON.stringify(jsonLd)}
+  </script>
+</Helmet>
+
 
       <Navbar />
 

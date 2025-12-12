@@ -7,30 +7,79 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Estonia: React.FC = () => {
-    <Helmet>
-        <title>Internet in Estonia | Connectivity, ISPs & Broadband Overview</title>
-        <meta
-          name="description"
-          content="Overview of Estonia's internet connectivity, submarine/terrestrial routes, ISPs, broadband statistics and inte-QT service capabilities in Tallinn, Tartu and other key centres."
-        />
-        <link rel="canonical" href="https://www.inte-qt.com/coverage/europe/estonia" />
-      </Helmet>
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Internet in Estonia | Connectivity, ISPs & Broadband Overview",
+    description:
+      "Overview of Estonia's internet connectivity, international fibre routes, broadband adoption and enterprise connectivity.",
+    url: "https://www.inte-qt.com/coverage/europe/estonia",
+    about: {
+      "@type": "Country",
+      name: "Estonia",
+      population: 1370000,
+      currency: "EUR",
+      languages: ["Estonian"],
+      majorCities: ["Tallinn", "Tartu", "Narva", "Pärnu"],
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "inte-QT",
+      url: "https://www.inte-qt.com",
+    },
+  };
+
   return (
     <>
-      
+      <Helmet>
+        <title>
+          Internet in Estonia | Connectivity, ISPs & Broadband Overview
+        </title>
+        <meta
+          name="description"
+          content="Explore Estonia’s internet infrastructure, international fibre connectivity, broadband adoption and enterprise networking across Tallinn and Tartu."
+        />
+        <link
+          rel="canonical"
+          href="https://www.inte-qt.com/coverage/europe/estonia"
+        />
+
+        {/* OpenGraph */}
+        <meta property="og:title" content="Internet in Estonia | inte-QT" />
+        <meta
+          property="og:description"
+          content="Estonia internet connectivity overview covering fibre routes, broadband adoption and enterprise services."
+        />
+        <meta property="og:type" content="article" />
+        <meta
+          property="og:url"
+          content="https://www.inte-qt.com/coverage/europe/estonia"
+        />
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+
+        {/* JSON-LD */}
+        <script type="application/ld+json">
+          {JSON.stringify(jsonLd)}
+        </script>
+      </Helmet>
 
       <Navbar />
 
       {/* HERO */}
-      <section className="relative py-28 overflow-hidden" aria-labelledby="hero-title">
+      <section
+        className="relative py-28 overflow-hidden"
+        aria-labelledby="hero-title"
+      >
         <motion.div
           initial={{ opacity: 0, scale: 1.05 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.0 }}
+          transition={{ duration: 1 }}
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            // swap with your own Tallinn skyline / coastline screenshot
-            backgroundImage: 'url("https://images.unsplash.com/photo-1564951537954-29dd59397b90?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8ZXN0b25pYXxlbnwwfDB8MHx8fDI%3D")',
+            backgroundImage:
+              'url("https://images.unsplash.com/photo-1564951537954-29dd59397b90?auto=format&fit=crop&w=1600&q=80")',
           }}
         />
 
@@ -54,8 +103,7 @@ const Estonia: React.FC = () => {
             className="text-white/90 max-w-3xl mx-auto text-lg md:text-xl mt-4 leading-relaxed"
           >
             A digitally advanced Baltic nation with strong international fibre
-            links across the Baltic Sea; Estonia is a regional leader in
-            e-government, broadband adoption and cloud-first public services.
+            links and one of the world’s most mature e-government ecosystems.
           </motion.p>
         </div>
       </section>

@@ -7,17 +7,63 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Grenada: React.FC = () => {
-    <Helmet>
-        <title>Internet in Grenada | Connectivity, ISPs & Broadband Overview</title>
-        <meta
-          name="description"
-          content="Overview of Grenada's internet connectivity, submarine cable access, ISPs, broadband landscape and inte-QT capabilities in St. George's, Gouyave and other key hubs."
-        />
-        <link rel="canonical" href="https://www.inte-qt.com/coverage/north-america/grenada" />
-      </Helmet>
+    const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "Internet in Grenada | Connectivity, ISPs & Broadband Overview",
+  description:
+    "Overview of Grenada's internet connectivity, submarine cable access, ISPs, broadband landscape and inte-QT capabilities in St. George's, Gouyave and other key hubs.",
+  url: "https://www.inte-qt.com/coverage/north-america/grenada",
+  about: {
+    "@type": "Country",
+    name: "Grenada",
+    capital: {
+      "@type": "City",
+      name: "St. George's"
+    },
+    officialLanguage: ["English"],
+    currency: "XCD",
+    population: {
+      "@type": "QuantitativeValue",
+      value: 117000
+    },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: 12.1165,
+      longitude: -61.679
+    }
+  },
+  isPartOf: {
+    "@type": "WebSite",
+    "@id": "https://www.inte-qt.com/#website"
+  },
+  publisher: {
+    "@type": "Organization",
+    "@id": "https://www.inte-qt.com/#organization"
+  }
+};
+
   return (
     <>
-      
+      <Helmet>
+  <title>Internet in Grenada | Connectivity, ISPs & Broadband Overview</title>
+
+  <meta
+    name="description"
+    content="Overview of Grenada's internet connectivity, submarine cable access, ISPs, broadband landscape and inte-QT capabilities in St. George's, Gouyave and other key hubs."
+  />
+
+  <link
+    rel="canonical"
+    href="https://www.inte-qt.com/coverage/north-america/grenada"
+  />
+
+  {/* JSON-LD Structured Data */}
+  <script type="application/ld+json">
+    {JSON.stringify(jsonLd)}
+  </script>
+</Helmet>
+
 
       <Navbar />
 

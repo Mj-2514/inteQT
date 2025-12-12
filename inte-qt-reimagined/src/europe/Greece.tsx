@@ -7,17 +7,58 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Greece: React.FC = () => {
-    <Helmet>
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Internet in Greece | Connectivity, ISPs & Broadband Overview",
+    description:
+      "Overview of Greece's internet connectivity, submarine and terrestrial routes, ISPs, broadband and datacentre ecosystem across Athens, Thessaloniki, Patras and other key centres.",
+    url: "https://www.inte-qt.com/coverage/europe/greece",
+    about: {
+      "@type": "Country",
+      name: "Greece",
+      alternateName: "Hellenic Republic",
+      currency: "EUR",
+      officialLanguage: "Greek",
+      population: {
+        "@type": "QuantitativeValue",
+        value: 10300000
+      },
+      capital: {
+        "@type": "City",
+        name: "Athens"
+      }
+    },
+    isPartOf: {
+      "@type": "WebSite",
+      "@id": "https://www.inte-qt.com/#website"
+    },
+    publisher: {
+      "@type": "Organization",
+      "@id": "https://www.inte-qt.com/#organization"
+    }
+  };
+
+  return (
+    <>
+      <Helmet>
         <title>Internet in Greece | Connectivity, ISPs & Broadband Overview</title>
+
         <meta
           name="description"
           content="Overview of Greece's internet connectivity, submarine and terrestrial routes, ISPs, broadband and datacentre ecosystem across Athens, Thessaloniki, Patras and other key centres."
         />
-        <link rel="canonical" href="https://www.inte-qt.com/coverage/europe/greece" />
+
+        <link
+          rel="canonical"
+          href="https://www.inte-qt.com/coverage/europe/greece"
+        />
+
+        {/* JSON-LD */}
+        <script type="application/ld+json">
+          {JSON.stringify(jsonLd)}
+        </script>
       </Helmet>
-  return (
-    <>
-      
 
       <Navbar />
 

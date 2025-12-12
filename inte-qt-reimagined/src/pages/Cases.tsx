@@ -85,7 +85,7 @@ const Cases: React.FC = () => {
           aria-label="NSOC hero"
           style={{
             minHeight: "60vh",
-            backgroundImage: `url(${nsocImage})`,
+            backgroundImage: `url(${"https://images.unsplash.com/vector-1762275212334-bd13fce3c41e?w=1400&q=80&auto=format&fit=crop"})`,
             backgroundSize: "cover",
             backgroundPosition: "center center",
           }}
@@ -101,11 +101,11 @@ const Cases: React.FC = () => {
                 </h1>
               </div>
 
-              <p className="text-lg sm:text-xl text-white/90 mb-4">
+              <p className="text-lg sm:text-xl text-white/90 mb-4 font-bold">
                 Global Network Security Operations Center (NSOC) — 24×7 monitoring, protection and optimization.
               </p>
 
-              <p className="text-sm sm:text-base text-white/80 max-w-2xl mx-auto mb-6">
+              <p className="text-sm sm:text-base text-white/80 max-w-2xl mx-auto mb-6 font-bold">
                 Sit back and relax while our dedicated team monitors, protects, and optimizes your global network infrastructure around the clock.
               </p>
 

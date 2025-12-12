@@ -33,17 +33,42 @@ export default function SouthAmericaList() {
   const filtered = southAmericanCountries.filter((c) =>
     c.name.toLowerCase().includes(query.trim().toLowerCase())
   );
-<Helmet>
-        <title>South America Coverage | inte-QT Global Internet Services</title>
-        <meta
-          name="description"
-          content="Explore South American country coverage for Dedicated Internet Access, Broadband, LTE/5G Wireless, Managed Services, and Global Connectivity."
-        />
-        <link rel="canonical" href="https://www.inte-qt.com/coverage/south-america" />
-      </Helmet>
+  const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  name: "South America Internet Coverage",
+  description:
+    "Explore South American country coverage for internet connectivity, broadband, wireless and managed network services.",
+  url: "https://www.inte-qt.com/coverage/south-america",
+  itemListElement: southAmericanCountries.map((c, index) => ({
+    "@type": "ListItem",
+    position: index + 1,
+    name: c.name,
+    url: `https://www.inte-qt.com${c.link}`
+  })),
+  isPartOf: {
+    "@type": "WebSite",
+    "@id": "https://www.inte-qt.com/#website"
+  },
+  publisher: {
+    "@type": "Organization",
+    "@id": "https://www.inte-qt.com/#organization"
+  }
+};
+
   return (
     <>
-      
+      <Helmet>
+      <title>South America Coverage | inte-QT Global Internet Services</title>
+      <meta
+        name="description"
+        content="Explore South American country coverage for Dedicated Internet Access, Broadband, LTE/5G Wireless, Managed Services, and Global Connectivity."
+      />
+      <link
+        rel="canonical"
+        href="https://www.inte-qt.com/coverage/south-america"
+      />
+    </Helmet>
 
       <Navbar />
 

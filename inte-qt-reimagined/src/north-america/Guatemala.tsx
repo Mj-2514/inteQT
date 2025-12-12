@@ -7,17 +7,63 @@ import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Guatemala: React.FC = () => {
-    <Helmet>
-        <title>Internet in Guatemala | Connectivity, ISPs & Broadband Overview</title>
-        <meta
-          name="description"
-          content="Overview of Guatemala's internet connectivity, submarine cable routes, ISPs, broadband market and inte-QT capabilities across Guatemala City, Quetzaltenango, Antigua and other major hubs."
-        />
-        <link rel="canonical" href="https://www.inte-qt.com/coverage/north-america/guatemala" />
-      </Helmet>
+    const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "Internet in Guatemala | Connectivity, ISPs & Broadband Overview",
+  description:
+    "Overview of Guatemala's internet connectivity, submarine cable routes, ISPs, broadband market and inte-QT capabilities across Guatemala City, Quetzaltenango, Antigua and other major hubs.",
+  url: "https://www.inte-qt.com/coverage/north-america/guatemala",
+  about: {
+    "@type": "Country",
+    name: "Guatemala",
+    capital: {
+      "@type": "City",
+      name: "Guatemala City"
+    },
+    officialLanguage: ["Spanish"],
+    currency: "GTQ",
+    population: {
+      "@type": "QuantitativeValue",
+      value: 18500000
+    },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: 15.7835,
+      longitude: -90.2308
+    }
+  },
+  isPartOf: {
+    "@type": "WebSite",
+    "@id": "https://www.inte-qt.com/#website"
+  },
+  publisher: {
+    "@type": "Organization",
+    "@id": "https://www.inte-qt.com/#organization"
+  }
+};
+
   return (
     <>
-      
+      <Helmet>
+  <title>Internet in Guatemala | Connectivity, ISPs & Broadband Overview</title>
+
+  <meta
+    name="description"
+    content="Overview of Guatemala's internet connectivity, submarine cable routes, ISPs, broadband market and inte-QT capabilities across Guatemala City, Quetzaltenango, Antigua and other major hubs."
+  />
+
+  <link
+    rel="canonical"
+    href="https://www.inte-qt.com/coverage/north-america/guatemala"
+  />
+
+  {/* JSON-LD Structured Data */}
+  <script type="application/ld+json">
+    {JSON.stringify(jsonLd)}
+  </script>
+</Helmet>
+
 
       <Navbar />
 
