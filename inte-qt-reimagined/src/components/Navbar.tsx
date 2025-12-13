@@ -65,11 +65,13 @@ const Navbar: React.FC = () => {
   // When true, navbar should render as light-on-dark (white text + light logo)
   const isHomeHeroVisible = location.pathname === "/" && !isScrolled;
   const isCoveragePage = location.pathname === "/coverage" && !isScrolled;
+    const isPrivacyPolicy = location.pathname === "/privacy-policy" && !isScrolled;
 
   // Logo selection: prefer explicit hero logo when on home top
   const logoSrc = (() => {
     if (isHomeHeroVisible) return "/logo1.png"; // ensure you have this asset
      if (isCoveragePage) return "/logo1.png";
+     if (isPrivacyPolicy) return "/logo1.png";
     // fallback by theme
     return theme === "dark" ? "/logo1.png" : "/logo-dark.png";
   })();

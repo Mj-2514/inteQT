@@ -225,8 +225,8 @@ const DedicatedLines = () => {
         {/* CTA SECTION */}
         <section className="py-20 gradient-hero text-primary-foreground">
           <div className="container mx-auto px-4 text-center">
-            <h2 className="text-4xl font-bold mb-4">Ready to Experience DIA?</h2>
-            <p className="text-lg mb-8 opacity-90 max-w-2xl mx-auto">
+            <h2 className="text-4xl font-bold mb-4 text-white">Ready to Experience DIA?</h2>
+            <p className="text-lg mb-8 opacity-90 max-w-2xl mx-auto text-white">
               Get in touch with our specialists and discover connectivity built
               for performance, security, and scale.
             </p>

@@ -528,10 +528,10 @@ const Home: React.FC = () => {
       {/* CTA */}
       <section className="py-16 sm:py-20 gradient-hero text-primary-foreground">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-3">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-3 text-white">
             Not sure what you need?
           </h2>
-          <p className="text-base sm:text-lg mb-6">
+          <p className="text-base sm:text-lg mb-6 text-white">
             Contact us and our team will resolve your concerns
           </p>
           <Button

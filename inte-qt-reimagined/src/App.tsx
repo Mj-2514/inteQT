@@ -154,6 +154,7 @@ import Guyana from "./southAmerica/Guyana";
 ===================== */
 import Australia from "./ocenia/Australia";
 import Fiji from "./ocenia/Fiji";
+import India from "./asia/India";
 
 /* =====================
    LAYOUT
@@ -222,6 +223,7 @@ const App = () => {
           <Route path="/coverage/asia/afghanistan" element={<Afghanistan />} />
           <Route path="/coverage/asia/armenia" element={<Armenia />} />
           <Route path="/coverage/asia/azerbaijan" element={<Azerbaijan />} />
+          <Route path="/coverage/asia/india" element={<India />} />
           <Route path="/coverage/asia/bahrain" element={<Bahrain />} />
           <Route path="/coverage/asia/bangladesh" element={<Bangladesh />} />
           <Route path="/coverage/asia/bhutan" element={<Bhutan />} />
