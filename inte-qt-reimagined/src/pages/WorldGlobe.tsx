@@ -317,10 +317,28 @@ export default function WorldGlobe(): JSX.Element {
     // animation loop
     const raycaster = raycasterRef.current;
     const pointer = pointerRef.current;
-
+    
     function animate() {
       requestAnimationFrame(animate);
       const t = clock.getElapsedTime();
+      markersRef.current.forEach((marker) => {
+  // Marker world position
+  const markerPos = new THREE.Vector3();
+  marker.getWorldPosition(markerPos);
+
+  // Camera direction
+  const cameraDir = new THREE.Vector3();
+  camera.getWorldDirection(cameraDir);
+
+  // Globe center to marker
+  const globeToMarker = markerPos.clone().normalize();
+
+  // Dot product tells us if marker faces camera
+  const dot = globeToMarker.dot(cameraDir.clone().negate());
+
+  // Show only if facing camera
+  marker.visible = dot > 0.60; // tweak threshold if needed
+});
 
       // stars animation
       (starMaterial as any).size = 0.03 + 0.015 * (1 + Math.sin(t * 4));
