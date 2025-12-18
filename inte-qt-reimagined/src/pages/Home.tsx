@@ -191,7 +191,7 @@ const Home: React.FC = () => {
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url("${image}")` }}
         />
-        <div className="absolute inset-0" />
+        <div className="absolute inset-0 bg-black/45" />
 
         <div className="relative z-10 container mx-auto px-4 text-center">
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight text-white drop-shadow-lg">
@@ -207,15 +207,13 @@ const Home: React.FC = () => {
   max-w-3xl mx-auto
   font-bold
   text-white
-  
-  bg-black/40
-  backdrop-blur-sm
-  px-6 py-4
-  rounded-2xl
+  drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)]
 ">
   Managed L3 Internet Global Services — Dedicated Lines, DIA, SD-WAN
   underlay and 24×7 NSOC.
 </p>
+
+
 
 
           <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
@@ -360,31 +358,31 @@ const Home: React.FC = () => {
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${nsocImage})` }}
         />
-        <div className="absolute inset-0 bg-black/10" />
+        <div className="absolute inset-0 bg-black/35" />
+
 
         <div className="container mx-auto px-4 relative z-10">
           <div
   className="
     max-w-3xl
-    bg-white/30
-    backdrop-blur-md
-    rounded-3xl
     px-6 sm:px-8
     py-6
   "
 >
 
+
            <div className="flex items-center gap-4 mb-4">
-  <Eye className="w-10 h-10 text-foreground" />
-  <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
+  <Eye className="w-10 h-10 text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]" />
+  <h2 className="text-2xl sm:text-3xl font-bold text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
     Sit back &amp; Relax, We got our{" "}
-    <span className="text-gradient">EYES</span> on it
+    <span className="">EYES</span> on it
   </h2>
 </div>
 
-<p className="text-base sm:text-lg mb-6 text-foreground font-bold">
+<p className="text-base sm:text-lg mb-6 text-white font-bold drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
   24×7 Global Network Security Operations Center
 </p>
+
 
             <Button
               asChild

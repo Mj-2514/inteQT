@@ -91,35 +91,26 @@ const Cases: React.FC = () => {
           }}
         >
           {/* overlay for contrast */}
-          <div className="absolute inset-0 bg-black/55" aria-hidden />
+          <div className="absolute inset-0 bg-black/70" aria-hidden />
           <div className="container mx-auto px-4 relative z-10">
-            <div className="
-  max-w-3xl
-  text-center
-  bg-black/40
-  backdrop-blur-md
-  rounded-3xl
-  px-6 sm:px-10
-  py-8 sm:py-10
-  mx-auto
-">
+            <div className="max-w-3xl text-center mx-auto">
+
 
               <div className="flex items-center justify-center gap-4 mb-6">
-                <Eye className="w-12 h-12 text-primary animate-pulse-glow" aria-hidden />
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white drop-shadow-lg">
-  We got our <span className="text-gradient">EYES</span> on it
-</h1>
+  <Eye className="w-12 h-12 text-white animate-pulse-glow drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]" />
+  <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]">
+    We got our <span className="text-gradient">EYES</span> on it
+  </h1>
+</div>
 
-              </div>
-
-              <p className="text-lg sm:text-xl text-white mb-4 font-bold">
+<p className="text-lg sm:text-xl text-white font-bold mb-4 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
   Global Network Security Operations Center (NSOC) — 24×7 monitoring, protection and optimization.
 </p>
 
-
-             <p className="text-sm sm:text-base text-white/90 max-w-2xl mx-auto mb-6 font-bold">
+<p className="text-sm sm:text-base text-white/90 max-w-2xl mx-auto mb-6 font-bold drop-shadow-[0_2px_6px_rgba(0,0,0,0.75)]">
   Sit back and relax while our dedicated team monitors, protects, and optimizes your global network infrastructure around the clock.
 </p>
+
 
 
               <div className="flex gap-3 justify-center">

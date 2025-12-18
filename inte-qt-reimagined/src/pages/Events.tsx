@@ -264,29 +264,25 @@ const Events = () => {
     <div className="min-h-screen pt-20">
       {/* Hero Section */}
       <section
-  className="gradient-hero text-primary-foreground py-24 bg-content bg-center bg-no-repeat"
+  className="relative gradient-hero py-24 bg-content bg-center bg-no-repeat"
   style={{
     backgroundImage: `url("https://dipoletechi.co.uk/wp-content/uploads/2023/07/ezgif.com-optimize-6.gif")`,
-    backgroundSize: '600px',
-    backgroundPosition: "96% center"
+    backgroundSize: "600px",
+    backgroundPosition: "96% center",
   }}
 >
-  <div className="
-  container mx-auto px-4 text-center
-  bg-white/70
-  backdrop-blur-md
-  rounded-3xl
-  py-10
-  max-w-4xl
-">
+  {/* contrast overlay */}
+  <div className="absolute inset-0 bg-black/50" />
+  <div className="container mx-auto px-4 text-center relative z-10">
     {/* <Globe className="w-20 h-20 mx-auto mb-6 animate-pulse-glow" /> */}
-    <h1 className="text-black text-5xl md:text-6xl font-bold mb-6 animate-fade-in">
+    <h1 className="text-white text-5xl md:text-6xl font-bold mb-6 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)] animate-fade-in">
   Events & Exhibitions
 </h1>
 
-<p className="text-black text-xl md:text-2xl opacity-90 max-w-3xl mx-auto animate-fade-in-up font-bold">
+<p className="text-white text-xl md:text-2xl max-w-3xl mx-auto font-bold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] animate-fade-in-up">
   Meet us at industry-leading events around the world
 </p>
+
 
   </div>
 </section>

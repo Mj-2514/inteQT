@@ -143,33 +143,28 @@ const PartnerCenter: React.FC = () => {
       <main className="min-h-screen pt-20 bg-background text-foreground">
         {/* HERO */}
         <section
-          className="py-24 bg-cover bg-center text-center"
-          style={{
-            backgroundImage:
-              'url("https://cdn.arrify.com/wp-content/uploads/2022/05/giphy.gif")',
-            backgroundSize: "698px",
-          }}
-        >
-          <div className="
-  container mx-auto px-4
-  bg-white/50
-  backdrop-blur-md
-  rounded-3xl
-  py-10
-  max-w-4xl
-  mx-auto
-">
+  className="relative py-24 bg-cover bg-center text-center"
+  style={{
+    backgroundImage:
+      'url("https://cdn.arrify.com/wp-content/uploads/2022/05/giphy.gif")',
+    backgroundSize: "698px",
+  }}
+>
+  {/* contrast overlay */}
+  <div className="absolute inset-0 bg-black/45" />
 
-            <h1 className="text-black text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 drop-shadow-sm">
+
+            <h1 className="text-white text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]">
   Partner Center
 </h1>
 
-<p className="max-w-3xl mx-auto text-lg text-black font-bold">
+<p className="max-w-3xl mx-auto text-lg text-white font-bold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
   Join our global network and grow your business with inte-QT — access connectivity,
   operational tools, and commercial support.
 </p>
 
-          </div>
+
+          
         </section>
 
         {/* BENEFITS */}
