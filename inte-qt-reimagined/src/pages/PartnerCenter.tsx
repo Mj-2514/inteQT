@@ -150,14 +150,25 @@ const PartnerCenter: React.FC = () => {
             backgroundSize: "698px",
           }}
         >
-          <div className="container mx-auto px-4">
-            <h1 className="text-black text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4">
-              Partner Center
-            </h1>
-            <p className="  max-w-3xl mx-auto text-lg text-black font-bold">
-              Join our global network and grow your business with inte-QT — access connectivity,
-              operational tools, and commercial support.
-            </p>
+          <div className="
+  container mx-auto px-4
+  bg-white/50
+  backdrop-blur-md
+  rounded-3xl
+  py-10
+  max-w-4xl
+  mx-auto
+">
+
+            <h1 className="text-black text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 drop-shadow-sm">
+  Partner Center
+</h1>
+
+<p className="max-w-3xl mx-auto text-lg text-black font-bold">
+  Join our global network and grow your business with inte-QT — access connectivity,
+  operational tools, and commercial support.
+</p>
+
           </div>
         </section>
 

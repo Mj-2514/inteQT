@@ -242,13 +242,23 @@ const Blogs = () => {
           backgroundPosition: "10% center",
         }}
       >
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-white text-5xl md:text-6xl font-bold mb-6">
-            Blogs & Insights
-          </h1>
-          <p className="text-white text-xl md:text-2xl opacity-90 max-w-3xl mx-auto">
-            Stay informed with the latest industry news and insights
-          </p>
+        <div className="
+  container mx-auto px-4 text-center
+  bg-white/10
+  backdrop-blur-sm
+  rounded-3xl
+  py-10
+  max-w-4xl
+">
+
+          <h1 className="text-black text-5xl md:text-6xl font-bold mb-6 drop-shadow-sm">
+  Blogs & Insights
+</h1>
+
+<p className="text-black text-xl md:text-2xl max-w-3xl font-bold mx-auto">
+  Stay informed with the latest industry news and insights
+</p>
+
         </div>
       </section>
 

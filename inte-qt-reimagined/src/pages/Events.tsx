@@ -271,14 +271,23 @@ const Events = () => {
     backgroundPosition: "96% center"
   }}
 >
-  <div className="container mx-auto px-4 text-center">
+  <div className="
+  container mx-auto px-4 text-center
+  bg-white/70
+  backdrop-blur-md
+  rounded-3xl
+  py-10
+  max-w-4xl
+">
     {/* <Globe className="w-20 h-20 mx-auto mb-6 animate-pulse-glow" /> */}
-    <h1 className="text-black dark:text-black text-5xl md:text-6xl font-bold mb-6 animate-fade-in">
-      Events & Exhibitions
-    </h1>
-    <p className="text-black dark:text-black text-xl md:text-2xl opacity-90 max-w-3xl mx-auto animate-fade-in-up font-bold">
-      Meet us at industry-leading events around the world
-    </p>
+    <h1 className="text-black text-5xl md:text-6xl font-bold mb-6 animate-fade-in">
+  Events & Exhibitions
+</h1>
+
+<p className="text-black text-xl md:text-2xl opacity-90 max-w-3xl mx-auto animate-fade-in-up font-bold">
+  Meet us at industry-leading events around the world
+</p>
+
   </div>
 </section>
 

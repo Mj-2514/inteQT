@@ -93,21 +93,34 @@ const Cases: React.FC = () => {
           {/* overlay for contrast */}
           <div className="absolute inset-0 bg-black/55" aria-hidden />
           <div className="container mx-auto px-4 relative z-10">
-            <div className="max-w-3xl text-center">
+            <div className="
+  max-w-3xl
+  text-center
+  bg-black/40
+  backdrop-blur-md
+  rounded-3xl
+  px-6 sm:px-10
+  py-8 sm:py-10
+  mx-auto
+">
+
               <div className="flex items-center justify-center gap-4 mb-6">
                 <Eye className="w-12 h-12 text-primary animate-pulse-glow" aria-hidden />
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white">
-                  We got our <span className="text-gradient">EYES</span> on it
-                </h1>
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white drop-shadow-lg">
+  We got our <span className="text-gradient">EYES</span> on it
+</h1>
+
               </div>
 
-              <p className="text-lg sm:text-xl text-white/90 mb-4 font-bold">
-                Global Network Security Operations Center (NSOC) — 24×7 monitoring, protection and optimization.
-              </p>
+              <p className="text-lg sm:text-xl text-white mb-4 font-bold">
+  Global Network Security Operations Center (NSOC) — 24×7 monitoring, protection and optimization.
+</p>
 
-              <p className="text-sm sm:text-base text-white/80 max-w-2xl mx-auto mb-6 font-bold">
-                Sit back and relax while our dedicated team monitors, protects, and optimizes your global network infrastructure around the clock.
-              </p>
+
+             <p className="text-sm sm:text-base text-white/90 max-w-2xl mx-auto mb-6 font-bold">
+  Sit back and relax while our dedicated team monitors, protects, and optimizes your global network infrastructure around the clock.
+</p>
+
 
               <div className="flex gap-3 justify-center">
                 <Button asChild size="lg" className="gradient-primary shadow-glow">

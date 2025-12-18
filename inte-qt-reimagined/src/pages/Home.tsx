@@ -200,10 +200,23 @@ const Home: React.FC = () => {
             <span className="text-gradient">in 190+ Countries</span>
           </h1>
 
-          <p className="font-agbalumo mt-28 text-sm sm:text-base md:text-lg max-w-3xl mx-auto font-bold text-lg text-zinc-650 [text-shadow:0_0_12px_rgba(40,220,255,0.9)]">
-            Managed L3 Internet Global Services — Dedicated Lines, DIA, SD-WAN
-            underlay and 24×7 NSOC.
-          </p>
+          <p className="
+  font-agbalumo
+  mt-28
+  text-sm sm:text-base md:text-lg
+  max-w-3xl mx-auto
+  font-bold
+  text-white
+  
+  bg-black/40
+  backdrop-blur-sm
+  px-6 py-4
+  rounded-2xl
+">
+  Managed L3 Internet Global Services — Dedicated Lines, DIA, SD-WAN
+  underlay and 24×7 NSOC.
+</p>
+
 
           <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
             <Button
@@ -506,6 +519,7 @@ const Home: React.FC = () => {
                 BRILLIANT work by inte-QT.
               </p>
               <p className="text-base sm:text-lg text-white/80 mb-4">
+              
                 It was seamlessly managed by inte-QT, right from quotation
                 to timely delivery within the event schedule. A truly
                 delightful experience.
