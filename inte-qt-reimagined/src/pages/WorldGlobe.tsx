@@ -11,6 +11,7 @@ type Country = {
   lon: number;
   details: string;
   url: string;
+  region: string;
 };
 
 type TooltipState = {
@@ -46,6 +47,7 @@ const countries: Country[] = (allCountries as any[])
       lon,
       details: `${region} · Capital: ${capital}`,
       url: `/coverage/${slugify(region)}/${slugify(name)}`,
+      region: region,
     } as Country;
   })
   .filter(Boolean) as Country[];
@@ -60,6 +62,11 @@ export default function WorldGlobe(): JSX.Element {
     country: null,
   });
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<Country[]>([]);
+  const [showResults, setShowResults] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
+
   // Refs used in animation loop
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const raycasterRef = useRef(new THREE.Raycaster());
@@ -69,6 +76,84 @@ export default function WorldGlobe(): JSX.Element {
   const pointerInsideRef = useRef(false);
   const stickyRef = useRef(false);
   const controlsRef = useRef<OrbitControls | null>(null);
+
+  // Search functionality
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    if (query.trim() === "") {
+      setSearchResults([]);
+      setShowResults(false);
+      setSelectedCountry(null);
+      return;
+    }
+
+    const results = countries.filter(country =>
+      country.name.toLowerCase().includes(query.toLowerCase())
+    ).slice(0, 5); // Limit to 5 results
+
+    setSearchResults(results);
+    setShowResults(true);
+  };
+
+  const handleSelectCountry = (country: Country) => {
+    setSelectedCountry(country);
+    setSearchQuery(country.name);
+    setShowResults(false);
+    
+    // Fly to country (gentle zoom, not too close)
+    if (cameraRef.current && controlsRef.current) {
+      const targetPosition = latLonToVector3(country.lat, country.lon, 3.2);
+      controlsRef.current.enableRotate = true;
+      controlsRef.current.autoRotate = false;
+      
+      // Animate to position
+      const startPosition = cameraRef.current.position.clone();
+      const startTime = performance.now();
+      const duration = 1000; // 1 second animation
+      
+      const animateCamera = () => {
+        const currentTime = performance.now();
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Ease function for smooth animation
+        const easeProgress = easeOutCubic(progress);
+        
+        // Interpolate position
+        cameraRef.current!.position.lerpVectors(startPosition, targetPosition, easeProgress);
+        
+        if (progress < 1) {
+          requestAnimationFrame(animateCamera);
+        } else {
+          cameraRef.current!.lookAt(0, 0, 0);
+          controlsRef.current!.update();
+        }
+      };
+      
+      requestAnimationFrame(animateCamera);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && searchQuery.trim()) {
+      e.preventDefault();
+      const exactMatch = countries.find(
+        country => country.name.toLowerCase() === searchQuery.toLowerCase()
+      );
+      if (exactMatch) {
+        handleSelectCountry(exactMatch);
+      } else if (searchResults.length > 0) {
+        handleSelectCountry(searchResults[0]);
+      }
+    } else if (e.key === 'Escape') {
+      setShowResults(false);
+    }
+  };
+
+  // Easing function for smooth camera animation
+  const easeOutCubic = (t: number): number => {
+    return 1 - Math.pow(1 - t, 3);
+  };
 
   useEffect(() => {
     const mount = containerRef.current;
@@ -119,7 +204,7 @@ export default function WorldGlobe(): JSX.Element {
     // earth texture
     const loader = new THREE.TextureLoader();
     const earthTexture = loader.load(
-      "https://threejs.org/examples/textures/land_ocean_ice_cloud_2048.jpg",
+      "https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg",
       undefined,
       undefined,
       (err) => {
@@ -167,30 +252,7 @@ export default function WorldGlobe(): JSX.Element {
       markersRef.current.push(sprite);
     });
 
-    // cinematic solar group
-    const solarGroup = new THREE.Group();
-    scene.add(solarGroup);
-
-    const sunMesh = new THREE.Mesh(
-      new THREE.SphereGeometry(12, 32, 32),
-      new THREE.MeshBasicMaterial({ color: 0xffcc66, toneMapped: false })
-    );
-    sunMesh.position.set(0, 0, -140);
-    solarGroup.add(sunMesh);
-
-    const planet1 = new THREE.Mesh(
-      new THREE.SphereGeometry(2.4, 24, 24),
-      new THREE.MeshStandardMaterial({ color: 0xb5651d })
-    );
-    planet1.position.set(30, 6, -80);
-    solarGroup.add(planet1);
-
-    const planet2 = new THREE.Mesh(
-      new THREE.SphereGeometry(5.2, 24, 24),
-      new THREE.MeshStandardMaterial({ color: 0x8899ff })
-    );
-    planet2.position.set(-45, -4, -110);
-    solarGroup.add(planet2);
+    // REMOVED: Sun and solar system completely
 
     // camera spline
     const spline = new THREE.CatmullRomCurve3([
@@ -228,7 +290,7 @@ export default function WorldGlobe(): JSX.Element {
       if (event.ctrlKey || event.shiftKey || event.metaKey) {
         event.preventDefault();
         if (flyDone && camera) {
-          const zoomSpeed = 0.0012;
+          const zoomSpeed = 0.0032;
           const delta = event.deltaY;
           const dir = new THREE.Vector3();
           camera.getWorldDirection(dir);
@@ -247,10 +309,10 @@ export default function WorldGlobe(): JSX.Element {
 
     // key handlers to track modifier keys (if you want to use them elsewhere)
     const keysPressed = new Set<string>();
-    const handleKeyDown = (ev: KeyboardEvent) => keysPressed.add(ev.key.toLowerCase());
-    const handleKeyUp = (ev: KeyboardEvent) => keysPressed.delete(ev.key.toLowerCase());
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
+    const handleKeyDownGlobal = (ev: KeyboardEvent) => keysPressed.add(ev.key.toLowerCase());
+    const handleKeyUpGlobal = (ev: KeyboardEvent) => keysPressed.delete(ev.key.toLowerCase());
+    window.addEventListener("keydown", handleKeyDownGlobal);
+    window.addEventListener("keyup", handleKeyUpGlobal);
 
     // animation loop
     const raycaster = raycasterRef.current;
@@ -264,12 +326,6 @@ export default function WorldGlobe(): JSX.Element {
       (starMaterial as any).size = 0.03 + 0.015 * (1 + Math.sin(t * 4));
       stars.rotation.y += 0.0005;
       stars.rotation.x += 0.0002;
-
-      // planet motion
-      planet1.rotation.y += 0.002;
-      planet2.rotation.y -= 0.0012;
-      planet1.position.x = 30 + Math.sin(t * 0.12) * 1.6;
-      planet2.position.z = -110 + Math.cos(t * 0.09) * 2.2;
 
       // earth rotation vs controls
       if (pointerInsideRef.current) {
@@ -381,8 +437,8 @@ export default function WorldGlobe(): JSX.Element {
     // Cleanup on unmount
     return () => {
       window.removeEventListener("resize", handleResize);
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
+      window.removeEventListener("keydown", handleKeyDownGlobal);
+      window.removeEventListener("keyup", handleKeyUpGlobal);
       renderer.domElement.removeEventListener("wheel", handleWheel);
       mount.removeEventListener("pointermove", handlePointerMove);
       mount.removeEventListener("pointerenter", handlePointerEnter);
@@ -438,20 +494,69 @@ export default function WorldGlobe(): JSX.Element {
         onPointerLeave={onPointerLeave}
       />
 
-      {/* Large decorative text overlays (pointer-events-none so canvas controls work) */}
-      <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-        <div className="absolute left-6 md:left-10 lg:left-16 text-left uppercase tracking-wide">
-          <span className="block font-light leading-none text-[clamp(2rem,3vw,4.5rem)]">we</span>
-          <span className="block font-extrabold leading-none text-[clamp(2rem,5vw,5.5rem)]">are</span>
-        </div>
-
-        <div className="absolute right-6 md:right-10 lg:right-16 text-right uppercase tracking-wide">
-          <span className="block font-bold leading-none whitespace-nowrap text-[clamp(2rem,3vw,5.5rem)]">everywhere</span>
+      {/* Search Bar */}
+      <div className="absolute top-6 left-1/2 transform -translate-x-1/2 w-full max-w-2xl px-4 sm:px-6 pointer-events-auto z-10">
+        <div className="relative">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => handleSearch(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onFocus={() => searchQuery.trim() && setShowResults(true)}
+            onBlur={() => setTimeout(() => setShowResults(false), 200)}
+            placeholder="Search for a country..."
+            className="w-full bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded-full py-3 px-6 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent text-sm sm:text-base"
+          />
+          
+          {/* Search Results Dropdown */}
+          {showResults && searchResults.length > 0 && (
+            <div className="absolute top-full left-0 right-0 mt-2 bg-slate-900/95 backdrop-blur-sm rounded-xl border border-slate-700/50 shadow-2xl overflow-hidden z-20">
+              {searchResults.map((country, index) => (
+                <a
+                  key={index}
+                  href={country.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full px-6 py-4 text-left hover:bg-slate-800/50 transition-colors border-b border-slate-700/30 last:border-b-0"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleSelectCountry(country);
+                    // Navigate to country page
+                    window.open(country.url, '_blank');
+                  }}
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-medium text-white">{country.name}</h3>
+                      <p className="text-xs text-gray-300 mt-1">{country.details}</p>
+                    </div>
+                    <span className="text-xs text-sky-300 font-medium">Visit page</span>
+                  </div>
+                </a>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
+      {/* Selected Country Info */}
+      {selectedCountry && (
+        <div className="absolute bottom-24 left-1/2 transform -translate-x-1/2 bg-slate-900/80 backdrop-blur-sm border border-sky-600/30 rounded-lg px-4 py-3 text-center pointer-events-auto z-10 max-w-md w-[90%] sm:w-auto">
+          <h3 className="text-sm font-semibold text-white mb-1">{selectedCountry.name}</h3>
+          <p className="text-xs text-gray-300 mb-2">{selectedCountry.details}</p>
+          <a
+            href={selectedCountry.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block text-xs font-semibold text-sky-300 hover:text-sky-200 bg-sky-900/30 hover:bg-sky-800/40 px-4 py-2 rounded-lg transition-colors"
+          >
+            Visit {selectedCountry.name} Page →
+          </a>
+        </div>
+      )}
+
       {/* Subtext / instructions */}
-      <p className="absolute bottom-5 w-full text-center text-xs md:text-sm text-gray-300/80 pointer-events-none">
+      <p className="absolute bottom-5 w-full text-center text-xs md:text-sm text-gray-300/80 pointer-events-none px-4">
         drag to rotate • Ctrl/Shift (or Cmd) + scroll to zoom • hover to explore • click to pin
       </p>
 

@@ -1,4 +1,4 @@
-// src/pages/Japan.jsx
+// src/pages/Latvia.jsx
 import React from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -7,39 +7,39 @@ import { Helmet } from "react-helmet-async";
 import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
-const Japan = () => {
+const Latvia = () => {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    name: "Internet in Japan | Connectivity, ISPs & Broadband Overview",
+    name: "Internet in Latvia | Connectivity, ISPs & Broadband Overview",
     description:
-      "Detailed overview of Japan’s internet connectivity, submarine cable systems, dense national fiber backbone, ISPs, broadband statistics and inte-QT service capabilities.",
-    url: "https://www.inte-qt.com/coverage/asia/japan",
+      "Detailed overview of Latvia’s internet connectivity, Baltic fiber backbone, submarine cable links, ISPs, broadband statistics and inte-QT service capabilities.",
+    url: "https://www.inte-qt.com/coverage/europe/latvia",
     about: {
       "@type": "Country",
-      name: "Japan",
-      population: 124000000,
-      currency: "JPY (Japanese Yen)",
-      languages: ["Japanese"],
-      neighbouringCountries: ["South Korea", "China", "Russia"],
-      majorCities: ["Tokyo", "Osaka", "Yokohama", "Nagoya", "Fukuoka"],
-      climate: "Temperate; four distinct seasons",
-      nationalSport: "Baseball",
-      touristsPerYear: "~25 million"
+      name: "Latvia",
+      population: 1880000,
+      currency: "EUR (Euro)",
+      languages: ["Latvian"],
+      neighbouringCountries: ["Estonia", "Lithuania", "Russia", "Belarus"],
+      majorCities: ["Riga", "Daugavpils", "Liepāja", "Jelgava"],
+      climate: "Temperate; cold winters and mild summers",
+      nationalSport: "Ice Hockey",
+      touristsPerYear: "~2 million"
     }
   };
 
   return (
     <>
       <Helmet>
-        <title>Internet in Japan | Connectivity, ISPs & Broadband Overview</title>
+        <title>Internet in Latvia | Connectivity, ISPs & Broadband Overview</title>
         <meta
           name="description"
-          content="Detailed overview of Japan’s internet connectivity, submarine cables, fiber backbone, ISPs, broadband penetration and enterprise connectivity landscape."
+          content="Detailed overview of Latvia’s internet connectivity, fiber backbone, submarine cables, ISPs, broadband penetration and enterprise connectivity landscape."
         />
         <link
           rel="canonical"
-          href="https://www.inte-qt.com/coverage/asia/japan"
+          href="https://www.inte-qt.com/coverage/europe/latvia"
         />
         <script type="application/ld+json">
           {JSON.stringify(jsonLd)}
@@ -48,32 +48,39 @@ const Japan = () => {
         {/* Open Graph */}
         <meta
           property="og:title"
-          content="Internet in Japan | Connectivity, ISPs & Broadband Overview"
+          content="Internet in Latvia | Connectivity, ISPs & Broadband Overview"
         />
         <meta
           property="og:description"
-          content="Overview of Japan’s internet infrastructure, submarine cable systems, ISPs and broadband ecosystem."
+          content="Overview of Latvia’s internet infrastructure, Baltic fiber backbone and broadband ecosystem."
         />
         <meta property="og:type" content="article" />
         <meta
           property="og:url"
-          content="https://www.inte-qt.com/coverage/asia/japan"
+          content="https://www.inte-qt.com/coverage/europe/latvia"
         />
       </Helmet>
 
       <Navbar />
 
       {/* HERO */}
-      <section className="relative py-28 overflow-hidden" aria-labelledby="hero-title">
+      <section
+        className="relative py-28 overflow-hidden"
+        aria-labelledby="hero-title"
+      >
         <motion.div
           initial={{ opacity: 0, scale: 1.1 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.2 }}
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8amFwYW58ZW58MHwwfDB8fHwy")' }}
+          style={{
+            backgroundImage: 'url("https://images.unsplash.com/photo-1522054541898-adc6abd570e5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8TEFUVklBfGVufDB8MHwwfHx8Mg%3D%3D")'
+          }}
           aria-hidden="true"
         />
+
         <div className="absolute inset-0 bg-black/50 backdrop-blur-[1.5px]" />
+
         <div className="relative z-10 text-center px-6 container mx-auto">
           <motion.h1
             id="hero-title"
@@ -82,17 +89,18 @@ const Japan = () => {
             transition={{ duration: 0.8 }}
             className="text-white text-5xl md:text-6xl font-extrabold drop-shadow-lg"
           >
-            Internet in Japan
+            Internet in Latvia
           </motion.h1>
+
           <motion.p
             initial={{ y: 40, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 1 }}
             className="text-white/90 max-w-3xl mx-auto text-lg md:text-xl mt-4 leading-relaxed"
           >
-            One of the world’s most advanced digital economies — Japan’s internet
-            ecosystem is defined by ultra-dense fiber, world-class mobile networks,
-            and extensive submarine connectivity across the Pacific.
+            A Baltic digital hub — Latvia’s internet ecosystem is powered by dense
+            fiber infrastructure, strong EU integration, and strategic submarine
+            and terrestrial connectivity across Northern Europe.
           </motion.p>
         </div>
       </section>
@@ -111,26 +119,36 @@ const Japan = () => {
                 <Card className="backdrop-blur-xl bg-white/70 dark:bg-black/30 rounded-3xl border border-white/20 shadow-xl">
                   <CardContent className="p-8">
                     <h2 className="text-2xl font-bold mb-5">Key Facts</h2>
+
                     <ul className="space-y-3 text-sm text-muted-foreground leading-relaxed">
-                      <li><strong>Population:</strong> ~124 million</li>
-                      <li><strong>Language:</strong> Japanese</li>
-                      <li><strong>Currency:</strong> Japanese Yen (JPY)</li>
+                      <li><strong>Population:</strong> ~1.88 million</li>
                       <li>
-                        <strong>Major Cities:</strong> Tokyo, Osaka, Yokohama,
-                        Nagoya, Fukuoka
+                        <strong>Neighbors:</strong> Estonia, Lithuania, Russia,
+                        Belarus
                       </li>
                       <li>
-                        <strong>Key Industries:</strong> Technology, Automotive,
-                        Electronics, Finance
+                        <strong>Language:</strong> Latvian
                       </li>
-                      <li><strong>Tourists per Year:</strong> ~25 million</li>
-                      <li><strong>National Sport:</strong> Baseball</li>
+                      <li>
+                        <strong>Currency:</strong> Euro (EUR)
+                      </li>
+                      <li>
+                        <strong>Major Cities:</strong> Riga, Daugavpils,
+                        Liepāja, Jelgava
+                      </li>
+                      <li>
+                        <strong>Key Industries:</strong> IT, Logistics,
+                        Manufacturing, Finance
+                      </li>
+                      <li><strong>Tourists per Year:</strong> ~2 million</li>
+                      <li><strong>National Sport:</strong> Ice Hockey</li>
                       <li><strong>Climate:</strong> Temperate</li>
                     </ul>
+
                     <div className="text-center mt-6">
                       <img
-                        src="https://flagcdn.com/w320/jp.png"
-                        alt="Flag of Japan"
+                        src="https://flagcdn.com/w320/lv.png"
+                        alt="Flag of Latvia"
                         className="mx-auto rounded-lg shadow-lg border border-white/40"
                         loading="lazy"
                       />
@@ -139,7 +157,7 @@ const Japan = () => {
                 </Card>
               </motion.aside>
 
-              {/* MAIN */}
+              {/* MAIN CONTENT */}
               <motion.article
                 initial={{ opacity: 0, x: 40 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -150,16 +168,17 @@ const Japan = () => {
                 <Card className="rounded-3xl shadow-xl border border-white/10">
                   <CardContent className="p-8">
                     <h2 className="text-3xl font-bold mb-4">A Brief Overview</h2>
+
                     <p className="text-muted-foreground mb-4 leading-relaxed">
-                      Japan consistently ranks among the top countries globally
-                      for internet speed, reliability, and adoption. Nationwide
-                      FTTH coverage and advanced mobile networks power both
-                      consumer and enterprise demand.
+                      Latvia is one of the most digitally advanced countries in
+                      Eastern Europe, with high fiber penetration and strong
+                      mobile broadband coverage across urban and rural regions.
                     </p>
+
                     <p className="text-muted-foreground mb-6 leading-relaxed">
-                      Tokyo and Osaka serve as primary digital hubs, hosting major
-                      data centers and regional peering points for Asia-Pacific
-                      traffic.
+                      Riga acts as the country’s primary connectivity hub,
+                      hosting data centers, IXPs and international gateways
+                      connecting the Baltics to Scandinavia and mainland Europe.
                     </p>
 
                     {/* MAP */}
@@ -167,8 +186,8 @@ const Japan = () => {
                       <h3 className="font-semibold mb-3 text-lg">Map</h3>
                       <div className="rounded-2xl overflow-hidden shadow-lg border border-white/20">
                         <iframe
-                          title="Map of Japan"
-                          src="https://www.google.com/maps?q=Japan&output=embed"
+                          title="Map of Latvia"
+                          src="https://www.google.com/maps?q=Latvia&output=embed"
                           width="100%"
                           height="420"
                           style={{ border: 0 }}
@@ -185,46 +204,48 @@ const Japan = () => {
                     <CardContent className="p-6">
                       <h3 className="text-xl font-bold mb-3">Main Airports</h3>
                       <ul className="list-disc pl-5 text-muted-foreground space-y-1">
-                        <li>Tokyo Haneda Airport</li>
-                        <li>Narita International Airport</li>
-                        <li>Kansai International Airport</li>
-                        <li>Chubu Centrair International Airport</li>
+                        <li>Riga International Airport</li>
                       </ul>
                     </CardContent>
                   </Card>
 
                   <Card className="rounded-3xl border border-white/10 shadow-lg">
                     <CardContent className="p-6">
-                      <h3 className="text-xl font-bold mb-4">Connectivity Overview</h3>
+                      <h3 className="text-xl font-bold mb-4">
+                        Connectivity Overview
+                      </h3>
+
                       <div className="overflow-x-auto">
                         <table className="w-full border-collapse text-sm">
                           <thead>
                             <tr className="bg-muted/30 border border-muted">
                               <th className="py-3 px-4 text-left">Type</th>
                               <th className="py-3 px-4 text-left">Users</th>
-                              <th className="py-3 px-4 text-left">Penetration</th>
+                              <th className="py-3 px-4 text-left">
+                                Penetration
+                              </th>
                             </tr>
                           </thead>
                           <tbody>
                             <tr className="border-t">
                               <td className="py-3 px-4">Mobile Internet</td>
-                              <td className="py-3 px-4">~120 million</td>
-                              <td className="py-3 px-4">~97%</td>
+                              <td className="py-3 px-4">~1.7 million</td>
+                              <td className="py-3 px-4">~90%</td>
                             </tr>
                             <tr className="border-t">
                               <td className="py-3 px-4">Fixed Broadband</td>
-                              <td className="py-3 px-4">~40 million</td>
-                              <td className="py-3 px-4">~32%</td>
+                              <td className="py-3 px-4">~1.1 million</td>
+                              <td className="py-3 px-4">~58%</td>
                             </tr>
                             <tr className="border-t">
                               <td className="py-3 px-4">Landline</td>
-                              <td className="py-3 px-4">~55 million</td>
-                              <td className="py-3 px-4">~44%</td>
+                              <td className="py-3 px-4">~900,000</td>
+                              <td className="py-3 px-4">~48%</td>
                             </tr>
                             <tr className="border-t">
                               <td className="py-3 px-4">Access to Internet</td>
-                              <td className="py-3 px-4">~122 million</td>
-                              <td className="py-3 px-4">~98%</td>
+                              <td className="py-3 px-4">~1.75 million</td>
+                              <td className="py-3 px-4">~93%</td>
                             </tr>
                           </tbody>
                         </table>
@@ -245,19 +266,22 @@ const Japan = () => {
                 <h2 className="text-3xl font-bold mb-4">
                   International Connectivity & Internet Backbone
                 </h2>
+
                 <p className="text-muted-foreground mb-6 max-w-3xl mx-auto">
-                  Japan is connected by numerous high-capacity submarine cable
-                  systems linking East Asia to North America and Southeast Asia,
-                  complemented by a highly resilient national fiber backbone.
+                  Latvia’s international connectivity is supported by submarine
+                  cable systems in the Baltic Sea and dense terrestrial fiber
+                  routes linking it to Estonia, Lithuania, Germany and the
+                  Nordic region.
                 </p>
+
                 <a
-                  href="https://www.submarinecablemap.com/country/japan"
+                  href="https://www.submarinecablemap.com/country/latvia"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   <img
-                    src="/Japan.png"
-                    alt="Japan Submarine Cable Map"
+                    src="/Latvia.png"
+                    alt="Latvia Connectivity Map"
                     className="rounded-xl shadow-lg border border-white/20 mx-auto"
                     loading="lazy"
                   />
@@ -273,16 +297,18 @@ const Japan = () => {
             <Card className="rounded-3xl border border-white/10 shadow-xl">
               <CardContent className="p-6">
                 <h2 className="text-3xl font-bold mb-4">Internet Providers</h2>
+
                 <p className="text-muted-foreground mb-4 leading-relaxed">
-                  Major ISPs in Japan include NTT Communications, KDDI (au),
-                  SoftBank, Rakuten Mobile, and IIJ, serving residential,
-                  enterprise and global transit markets.
+                  Major ISPs in Latvia include LMT, Tet, Bite Latvia and Tele2,
+                  providing nationwide mobile, fiber and enterprise services.
                 </p>
+
                 <h3 className="text-xl font-semibold mb-4">Our Capabilities</h3>
+
                 <div className="grid sm:grid-cols-2 gap-4">
                   {[
                     "Dedicated Internet Access (DIA)",
-                    "Asia-Pacific Transit & Peering",
+                    "Baltic & European Transit",
                     "MPLS & SD-WAN",
                     "Data Center & Cloud Connectivity",
                     "DDoS Protection & Network Security"
@@ -309,27 +335,29 @@ const Japan = () => {
               <mark className="bg-yellow-200 px-1 rounded">
                 Commercial Offer in 2–4 working days
               </mark>
-              . Services in Tokyo, Osaka and Nagoya can typically be deployed
-              within 2–3 weeks, subject to last-mile and data center access.
+              . Services in Riga and other major cities can typically be deployed
+              within 2–3 weeks, subject to last-mile availability.
             </p>
+
             <p className="mb-6">
               <a
-                href="mailto:sales@inte-QT.com?subject=Japan%20Connectivity%20Inquiry"
+                href="mailto:sales@inte-QT.com?subject=Latvia%20Connectivity%20Inquiry"
                 className="text-primary underline font-semibold"
               >
                 Email Us
               </a>
             </p>
+
             <h4 className="mb-3 font-semibold">References</h4>
             <ul className="text-muted-foreground space-y-1">
               <li>
                 <a
-                  href="https://data.worldbank.org/country/japan"
+                  href="https://data.worldbank.org/country/latvia"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="underline"
                 >
-                  World Bank — Japan
+                  World Bank — Latvia
                 </a>
               </li>
               <li>
@@ -352,4 +380,4 @@ const Japan = () => {
   );
 };
 
-export default Japan;
+export default Latvia;

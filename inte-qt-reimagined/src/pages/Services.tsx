@@ -203,7 +203,7 @@ const Services = () => {
     <h1 className="text-black dark:text-black text-5xl md:text-6xl font-bold mb-6 animate-fade-in">
        Our Services
     </h1>
-    <p className="text-black dark:text-black text-xl md:text-2xl opacity-90 max-w-3xl mx-auto animate-fade-in-up">
+    <p className="text-black dark:text-black text-xl md:text-2xl opacity-90 max-w-3xl mx-auto animate-fade-in-up font-bold">
       Comprehensive connectivity solutions for businesses worldwide
     </p>
   </div>

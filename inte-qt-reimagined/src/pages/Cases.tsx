@@ -85,7 +85,7 @@ const Cases: React.FC = () => {
           aria-label="NSOC hero"
           style={{
             minHeight: "60vh",
-            backgroundImage: `url(${"https://images.unsplash.com/vector-1762275212334-bd13fce3c41e?w=1400&q=80&auto=format&fit=crop"})`,
+            backgroundImage: `url(${"https://images.unsplash.com/vector-1757394158090-f76e0d78d661?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dGVhbXxlbnwwfDB8MHx8fDI%3D"})`,
             backgroundSize: "cover",
             backgroundPosition: "center center",
           }}

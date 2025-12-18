@@ -242,6 +242,7 @@ const Indonesia: React.FC = () => {
                 <p className="text-muted-foreground leading-relaxed">
                   These undersea assets, combined with domestic fiber backbones, underpin Indonesia's role as a regional traffic and hosting hub and support cloud, content, fintech and e-commerce ecosystems.
                 </p>
+                
               </CardContent>
             </Card>
 

@@ -264,7 +264,7 @@ export default function Contact() {
                     </div>
 
                     <div className="text-xs text-muted-foreground pt-2">
-                      By submitting you agree to our <Link to="/privacy" className="underline">Privacy Policy</Link>.
+                      By submitting you agree to our <Link to="/privacy-policy" className="underline">Privacy Policy</Link>.
                     </div>
                   </form>
                 </CardContent>

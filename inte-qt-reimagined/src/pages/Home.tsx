@@ -200,7 +200,7 @@ const Home: React.FC = () => {
             <span className="text-gradient">in 190+ Countries</span>
           </h1>
 
-          <p className="mt-4 text-sm sm:text-base md:text-lg max-w-3xl mx-auto text-black font-bold">
+          <p className="font-agbalumo mt-28 text-sm sm:text-base md:text-lg max-w-3xl mx-auto font-bold text-lg text-zinc-650 [text-shadow:0_0_12px_rgba(40,220,255,0.9)]">
             Managed L3 Internet Global Services — Dedicated Lines, DIA, SD-WAN
             underlay and 24×7 NSOC.
           </p>
@@ -261,7 +261,7 @@ const Home: React.FC = () => {
                     <CardContent className="relative z-10 h-full flex flex-col justify-end p-6 text-white">
                       <h3 className="text-xl sm:text-2xl font-semibold">
                         {service.title}
-                      </h3>
+                      </h3> 
                       {service.subtitle && (
                         <p className="text-sm opacity-90 -mt-1">
                           {service.subtitle}
@@ -352,13 +352,13 @@ const Home: React.FC = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl">
             <div className="flex items-center gap-4 mb-4">
-              <Eye className="w-10 h-10 text-primary" />
-              <h2 className="text-2xl sm:text-3xl font-bold">
+              <Eye className="w-10 h-10 text-black" />
+              <h2 className="text-2xl sm:text-3xl font-bold text-black">
                 Sit back &amp; Relax, We got our{" "}
                 <span className="text-gradient">EYES</span> on it
               </h2>
             </div>
-            <p className="text-base sm:text-lg mb-6">
+            <p className="text-base sm:text-lg mb-6 text-black font-bold">
               24×7 Global Network Security Operations Center
             </p>
             <Button
