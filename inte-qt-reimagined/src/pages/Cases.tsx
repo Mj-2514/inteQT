@@ -126,9 +126,21 @@ const Cases: React.FC = () => {
                 <Button asChild size="lg" className="gradient-primary shadow-glow">
                   <a href="/support" aria-label="Contact NSOC">Contact Support</a>
                 </Button>
-                <Button asChild size="lg" variant="outline" className="border-2 text-white/90">
-                  <a href="/global-nsoc" aria-label="View success stories">Explore NSOC</a>
-                </Button>
+                <Button
+  asChild
+  size="lg"
+  variant="outline"
+  className="
+    border-2
+    text-foreground
+    dark:text-white/90
+  "
+>
+  <a href="/global-nsoc" aria-label="View success stories">
+    Explore NSOC
+  </a>
+</Button>
+
               </div>
             </div>
           </div>

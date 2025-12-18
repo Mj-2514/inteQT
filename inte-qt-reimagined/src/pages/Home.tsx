@@ -363,23 +363,35 @@ const Home: React.FC = () => {
         <div className="absolute inset-0 bg-black/10" />
 
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl">
-            <div className="flex items-center gap-4 mb-4">
-              <Eye className="w-10 h-10 text-black" />
-              <h2 className="text-2xl sm:text-3xl font-bold text-black">
-                Sit back &amp; Relax, We got our{" "}
-                <span className="text-gradient">EYES</span> on it
-              </h2>
-            </div>
-            <p className="text-base sm:text-lg mb-6 text-black font-bold">
-              24×7 Global Network Security Operations Center
-            </p>
+          <div
+  className="
+    max-w-3xl
+    bg-white/30
+    backdrop-blur-md
+    rounded-3xl
+    px-6 sm:px-8
+    py-6
+  "
+>
+
+           <div className="flex items-center gap-4 mb-4">
+  <Eye className="w-10 h-10 text-foreground" />
+  <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
+    Sit back &amp; Relax, We got our{" "}
+    <span className="text-gradient">EYES</span> on it
+  </h2>
+</div>
+
+<p className="text-base sm:text-lg mb-6 text-foreground font-bold">
+  24×7 Global Network Security Operations Center
+</p>
+
             <Button
               asChild
               size="lg"
               className="gradient-primary shadow-glow"
             >
-              <Link to="/cases">
+              <Link to="/global-nsoc">
                 Explore NSOC 24X7{" "}
                 <ArrowRight className="ml-2 inline-block" />
               </Link>
