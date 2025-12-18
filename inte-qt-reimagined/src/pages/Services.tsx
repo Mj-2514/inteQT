@@ -192,28 +192,32 @@ const Services = () => {
   return (
     <div className="min-h-screen pt-20">
       {/* Hero Section */}
-      <section
-  className="gradient-hero text-primary-foreground py-24 bg-cover bg-center bg-no-repeat"
-  style={{
-    backgroundImage: `url("https://www.hrcloud.com/hubfs/workplace.gif")`,
-  }}
->
-  <div className="absolute inset-0 bg-black/35" />
+      <section className="gradient-hero text-primary-foreground">
+  {/* Background Wrapper */}
+  <div
+    className="relative h-[420px] bg-cover bg-center bg-no-repeat"
+    style={{
+      backgroundImage: `url("https://www.hrcloud.com/hubfs/workplace.gif")`,
+    }}
+  >
+    {/* Darkness ONLY on the GIF */}
+    <div className="absolute inset-0 bg-black/35" />
 
-  <div className="container mx-auto px-4 text-center relative z-10">
+    {/* Content */}
+    <div className="container mx-auto px-4 text-center relative z-10 h-full flex flex-col justify-center">
+      <Globe className="w-20 h-20 mx-auto mb-6 text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)] animate-pulse-glow" />
 
-    <Globe className="w-20 h-20 mx-auto mb-6 text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)] animate-pulse-glow" />
+      <h1 className="text-white text-5xl md:text-6xl font-bold mb-6 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)] animate-fade-in">
+        Our Services
+      </h1>
 
-<h1 className="text-white text-5xl md:text-6xl font-bold mb-6 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)] animate-fade-in">
-  Our Services
-</h1>
-
-<p className="text-white text-xl md:text-2xl max-w-3xl mx-auto font-bold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] animate-fade-in-up">
-  Comprehensive connectivity solutions for businesses worldwide
-</p>
-
+      <p className="text-white text-xl md:text-2xl max-w-3xl mx-auto font-bold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] animate-fade-in-up">
+        Comprehensive connectivity solutions for businesses worldwide
+      </p>
+    </div>
   </div>
 </section>
+
 
       {/* Main Services */}
       <section className="py-20">
