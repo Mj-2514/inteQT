@@ -262,7 +262,20 @@ const Home: React.FC = () => {
                     .replace(/ /g, "-")}`}
                   key={index}
                 >
-                  <Card className="relative overflow-hidden rounded-2xl shadow-xl h-[320px] group cursor-pointer">
+                  <Card className="
+  relative
+  overflow-hidden
+  rounded-2xl
+  shadow-xl
+  h-[320px]
+  group
+  cursor-pointer
+  transition-all
+  duration-300
+  hover:scale-105
+  hover:shadow-glow
+">
+
                     <div
                       className="absolute inset-0 bg-cover bg-center"
                       style={{ backgroundImage: `url(${service.image})` }}
