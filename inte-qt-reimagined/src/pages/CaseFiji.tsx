@@ -119,7 +119,7 @@ const CaseFiji = () => {
       <Navbar />
 
       {/* HERO */}
-      <section className="bg-muted/40 pt-28 pb-20">
+      <section className="bg-muted/40 pt-28 pb-20 ">
         <div className="container max-w-6xl">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}

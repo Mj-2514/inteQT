@@ -143,7 +143,7 @@ const isValidEmail = (email) => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">Email Address*</label>
+                    <label className="block text-sm font-medium mb-2">Your Email Address*</label>
                     <Input type="email" name="email" placeholder="you@company.com" value={form.email} onChange={handleChange} required />
                   </div>
 

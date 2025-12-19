@@ -164,7 +164,7 @@ const Support = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm mb-2 font-medium">Email*</label>
+                  <label className="block text-sm mb-2 font-medium">Your Email*</label>
                   <Input name="email" type="email" required placeholder="your@email.com" />
                 </div>
 

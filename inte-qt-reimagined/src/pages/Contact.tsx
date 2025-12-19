@@ -222,7 +222,7 @@ export default function Contact() {
                     </div>
 
                     <div>
-                      <label htmlFor="email" className="block text-sm font-medium mb-2">Email</label>
+                      <label htmlFor="email" className="block text-sm font-medium mb-2">Your Email</label>
                       <Input
                         id="email"
                         name="email"

@@ -153,22 +153,36 @@ export default function GlobalNsoc(): JSX.Element {
                 business stays online, secure, and optimized at all times.
               </p>
 
-              <div className="rounded-2xl overflow-hidden shadow-2xl border bg-black">
-                {/* responsive video with fallback poster */}
-                <video
-                  src="/videos/NSOC_arrow.mp4"
-                  poster="https://i.imgur.com/FVpCGEE.png"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="w-full h-[300px] sm:h-[300px] md:h-[480px] object-cover"
-                  aria-label="NSOC process video"
-                >
-                  {/* Fallback content for very old browsers */}
-                  Your browser does not support HTML5 video. View our NSOC overview on the website.
-                </video>
-              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+  
+  {/* LEFT: VIDEO */}
+  <div className="rounded-2xl overflow-hidden shadow-2xl border bg-black">
+    <video
+      src="/videos/NSOC_arrow.mp4"
+      poster="https://i.imgur.com/FVpCGEE.png"
+      autoPlay
+      loop
+      muted
+      playsInline
+      className="w-full h-[260px] sm:h-[420px] md:h-[480px] object-contain"
+      aria-label="NSOC process video"
+    >
+      Your browser does not support HTML5 video.
+    </video>
+  </div>
+
+  {/* RIGHT: IMAGE */}
+  <div className="rounded-2xl overflow-hidden shadow-2xl border bg-black">
+    <img
+      src="https://i.imgur.com/WSZQMpb.png"
+      alt="NSOC operations and monitoring dashboard"
+      className="w-full h-[260px] sm:h-[320px] md:h-[480px] object-contain"
+      loading="lazy"
+    />
+  </div>
+
+</div>
+
             </div>
           </section>
 

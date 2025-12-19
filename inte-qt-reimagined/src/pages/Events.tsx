@@ -95,7 +95,7 @@ const Events = () => {
 
     // Repeating/other events (kept your original duplicates/content) — each has an img
     {
-      img: "https://media.licdn.com/dms/image/v2/D4D22AQErfzJMyYQnbg/feedshare-shrink_800/feedshare-shrink_800/0/1724161514570?e=1764806400&v=beta&t=kmWPmodOFLLrzbbWWtOJTZeQp_3FQJqqR8Cjne7JJg4",
+      img: "https://i.imgur.com/IJBhBsd.jpeg",
       title: "ITW Africa And Data Cloud Africa 2024",
       date: "10 - 12 October 2024",
       location: "Radisson Blu Hotel",
@@ -293,7 +293,7 @@ const Events = () => {
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold mb-4">Events</h2>
             <p className="text-xl text-muted-foreground text-gray">
-              Connect with us at these upcoming industry events
+              Our Past Industry Events
             </p>
           </div>
 
