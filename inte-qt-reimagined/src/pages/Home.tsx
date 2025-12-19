@@ -447,10 +447,10 @@ const Home: React.FC = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
             <h2 className="text-3xl sm:text-4xl font-bold mb-3">
-              Upcoming Events
+              Past Events
             </h2>
             <p className="text-base sm:text-lg text-muted-foreground">
-              Meet us at industry leading events
+              Great industry leading events
             </p>
           </div>
 
@@ -458,16 +458,16 @@ const Home: React.FC = () => {
             {events.map((event, idx) => (
               <Card
                 key={idx}
-                className="overflow-hidden hover:shadow-lg transition-all duration-300"
+                className="overflow-hidden hover:shadow-lg transition-all duration-300 w-full"
               >
-                <div className="w-full h-56 overflow-hidden rounded-t-xl">
-                  <img
-                    src={event.img}
-                    alt={event.title}
-                    loading="lazy"
-                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                  />
-                </div>
+                <div className="w-full aspect-[16/9] overflow-hidden rounded-t-xl bg-muted">
+  <img
+    src={event.img}
+    alt={event.title}
+    className="w-full h-full object-contain"
+  />
+</div>
+
                 <CardContent>
                   <div className="flex items-start gap-3 mb-3">
                     <Calendar className="w-5 h-5 text-primary mt-1" />

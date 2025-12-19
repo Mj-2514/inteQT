@@ -304,13 +304,15 @@ const Events = () => {
                 className="overflow-hidden border-2 rounded-xl hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-background"
               >
                 {/* IMAGE */}
-                <div className="w-full h-56 overflow-hidden">
-                  <img
-                    src={event.img}
-                    alt={event.title}
-                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                  />
-                </div>
+                <div className="w-full h-56 bg-muted flex items-center justify-center overflow-hidden">
+  <img
+    src={event.img}
+    alt={event.title}
+    loading="lazy"
+    className="max-h-full max-w-full object-contain transition-transform duration-500 hover:scale-105"
+  />
+</div>
+
 
                 {/* CONTENT */}
                 <CardContent className="p-6 space-y-4">

@@ -234,7 +234,7 @@ const Blogs = () => {
 
       {/* HERO */}
       <section
-        className="gradient-hero text-primary-foreground py-20 bg-cover bg-center bg-no-repeat"
+        className="relative gradient-hero py-24 bg-content bg-center bg-no-repeat"
         style={{
           backgroundImage:
             'url("https://gifdb.com/images/high/office-desk-background-myhb5mf4xpj1ews9.gif")',
@@ -242,24 +242,19 @@ const Blogs = () => {
           backgroundPosition: "10% center",
         }}
       >
-        <div className="
-  container mx-auto px-4 text-center
-  bg-white/10
-  backdrop-blur-sm
-  rounded-3xl
-  py-10
-  max-w-4xl
-">
-
-          <h1 className="text-black text-5xl md:text-6xl font-bold mb-6 drop-shadow-sm">
+        <div className="absolute inset-0 bg-black/50" />
+  <div className="container mx-auto px-4 text-center relative z-10">
+    {/* <Globe className="w-20 h-20 mx-auto mb-6 animate-pulse-glow" /> */}
+    <h1 className="text-white text-5xl md:text-6xl font-bold mb-6 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)] animate-fade-in">
   Blogs & Insights
 </h1>
 
-<p className="text-black text-xl md:text-2xl max-w-3xl font-bold mx-auto">
+<p className="text-white text-xl md:text-2xl max-w-3xl mx-auto font-bold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] animate-fade-in-up">
   Stay informed with the latest industry news and insights
 </p>
 
-        </div>
+
+  </div>
       </section>
 
       {/* BLOGS */}

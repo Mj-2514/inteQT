@@ -34,6 +34,52 @@ const features = [
     icon: Eye,
   },
 ];
+const caseStudies = [
+  {
+    title: "Strategic Network Deployment for Fiji's Leading Bank",
+    description:
+      "Deeper customer engagement has always been a part of culture at inte-QT. The customer do understand and appreciate the support they receive from us and this helps them to share their requirements and concerns in an open manner.",
+    image:
+      "https://i.imgur.com/diCPBGP.jpg",
+    highlights: [
+      "24×7 NSOC coverage",
+      "Sub-15 minute incident response",
+      "Zero downtime during live event",
+      "Multi-country coordination",
+    ],
+    link: "/cases/fiji",
+  },
+  {
+    title: "Rapid Connectivity for FMCG",
+    description:
+      "We accepted this requirement and took as a challenge as ‘In the middle of every difficulty, lies an opportunity’. The operations team collaborative worked with partner as well as the end customer for finalising the delivery frame work and the required configuration. We engaged with partner for speeding up the delivery process.",
+    image:
+      "https://i.imgur.com/PqG4Gaa.jpg",
+    highlights: [
+      "SLA monitoring & reporting",
+      "Latency & packet-loss optimization",
+      "Regulatory compliance support",
+      "Dedicated NSOC engineers",
+    ],
+    link: "/cases/fmcg",
+  },
+  {
+    title: "Delivering Connectivity Amid Crisis",
+    description:
+      "The technical specifications were different from the normal internet access deliveries. There was need to a install circuit of high bandwidth using copper lines and scope was work from end to end within the given time frames.",
+    image:
+      "https://i.imgur.com/rjhk18X.jpg",
+    highlights: [
+      "Threat intelligence feeds",
+      "Security event correlation",
+      "DDoS mitigation",
+      "Global visibility dashboard",
+    ],
+    link: "/cases/amid-crisis",
+  },
+];
+
+
 
 const services = [
   "Real-time Network Monitoring",
@@ -138,34 +184,72 @@ const Cases: React.FC = () => {
         </section>
 
         {/* FEATURES GRID */}
-        <section className="py-16">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-10">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">NSOC Capabilities</h2>
-              <p className="text-muted-foreground max-w-2xl mx-auto mt-3">Comprehensive network security and monitoring</p>
-            </div>
+        {/* CASE STUDIES */}
+{/* CASE STUDIES – SERVICES STYLE */}
+<section className="py-16 sm:py-20">
+  <div className="container mx-auto px-4 space-y-20">
+    <div className="text-center">
+      <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">
+        Case Studies
+      </h2>
+      <p className="text-muted-foreground max-w-2xl mx-auto mt-3">
+        How inte-QT’s NSOC delivers real-world results
+      </p>
+    </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {features.map((feature, idx) => {
-                const Icon = feature.icon;
-                return (
-                  <Card
-                    key={idx}
-                    className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border"
-                    role="article"
-                    aria-labelledby={`feature-${idx}`}
-                  >
-                    <CardContent className="p-6 text-center">
-                      <Icon className="w-10 h-10 mx-auto mb-3 text-primary" aria-hidden />
-                      <h3 id={`feature-${idx}`} className="text-lg font-semibold mb-2">{feature.title}</h3>
-                      <p className="text-sm text-muted-foreground">{feature.description}</p>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
+    {caseStudies.map((cs, index) => {
+      const reverse = index % 2 !== 0;
+
+      return (
+        <div
+          key={index}
+          className={`flex flex-col lg:flex-row ${
+            reverse ? "lg:flex-row-reverse" : ""
+          } gap-10 lg:gap-12 items-center`}
+        >
+          {/* IMAGE – FIRST ON MOBILE */}
+          <div className="flex-1 order-1 lg:order-none w-full">
+            <Card className="relative aspect-[16/9] rounded-2xl overflow-hidden border-0 shadow-xl">
+              <div
+                className="absolute inset-0 bg-cover bg-center"
+                style={{ backgroundImage: `url(${cs.image})` }}
+              />
+              <div className="absolute inset-0 bg-black/25" />
+            </Card>
           </div>
-        </section>
+
+          {/* CONTENT */}
+          <div className="flex-1 order-2 lg:order-none text-center lg:text-left">
+            <h3 className="text-2xl sm:text-3xl font-bold mb-4">
+              {cs.title}
+            </h3>
+
+            <p className="text-muted-foreground mb-6 max-w-xl mx-auto lg:mx-0">
+              {cs.description}
+            </p>
+
+            <ul className="space-y-3 mb-8 max-w-xl mx-auto lg:mx-0">
+              {cs.highlights.map((h, i) => (
+                <li key={i} className="flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-primary" />
+                  <span>{h}</span>
+                </li>
+              ))}
+            </ul>
+
+            <Button asChild size="lg">
+              <a href={cs.link}>
+                Read more <span className="ml-1">→</span>
+              </a>
+            </Button>
+          </div>
+        </div>
+      );
+    })}
+  </div>
+</section>
+
+
 
         {/* SERVICES GRID */}
         <section className="py-16 bg-muted/30">
@@ -215,9 +299,9 @@ const Cases: React.FC = () => {
                   </p>
 
                   <div className="border-t border-white/10 pt-4 w-full text-left">
-                    <p className="font-semibold text-white">Associate Director</p>
-                    <p className="text-sm text-white/70">World's Leading Tier-1 Carrier • London, UK</p>
-                    <p className="text-sm text-primary mt-2">World Championship Motor Racing</p>
+                    <p className="font-semibold text-white text-center">Associate Director</p>
+                    <p className="text-sm text-white/70 text-center">World's Leading Tier-1 Carrier • London, UK</p>
+                    <p className="text-sm text-primary mt-2 text-center">World Championship Motor Racing</p>
                   </div>
                 </div>
               </CardContent>

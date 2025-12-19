@@ -157,12 +157,12 @@ export default function GlobalNsoc(): JSX.Element {
                 {/* responsive video with fallback poster */}
                 <video
                   src="/videos/NSOC_arrow.mp4"
-                  poster="/images/nsoc-poster.jpg"
+                  poster="https://i.imgur.com/FVpCGEE.png"
                   autoPlay
                   loop
                   muted
                   playsInline
-                  className="w-full h-[220px] sm:h-[300px] md:h-[420px] object-cover"
+                  className="w-full h-[300px] sm:h-[300px] md:h-[480px] object-cover"
                   aria-label="NSOC process video"
                 >
                   {/* Fallback content for very old browsers */}

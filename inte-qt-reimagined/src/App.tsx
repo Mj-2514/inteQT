@@ -187,6 +187,10 @@ import Mali from "./africa/Mali";
 import Malta from "./europe/Malta";
 import MarshallIslands from "./ocenia/MarshalIslands";
 import Mauritius from "./africa/Mauritius";
+import Gems from "./pages/Gems";
+import CaseFiji from "./pages/CaseFiji";
+import Fmcg from "./pages/Fmcg";
+import AmidCrisis from "./pages/Amid";
 
 /* =====================
    LAYOUT
@@ -218,6 +222,7 @@ const App = () => {
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/global-nsoc" element={<GlobalNsoc />} />
+          <Route path="/gems" element={<Gems />} />
 
           {/* Main sections */}
           <Route path="/coverage" element={<PageLayout><Coverage /></PageLayout>} />
@@ -230,6 +235,9 @@ const App = () => {
 
           {/* Blog */}
           <Route path="/blog" element={<BlogPage />} />
+          <Route path="/cases/fiji" element={<CaseFiji />} />
+          <Route path="/cases/fmcg" element={<Fmcg />} />
+          <Route path="/cases/amid-crisis" element={<AmidCrisis />} />
           <Route path="/blog/:slug" element={<DetailedBlog />} />
 
           {/* Admin */}

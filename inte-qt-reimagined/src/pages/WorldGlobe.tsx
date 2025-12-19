@@ -66,6 +66,7 @@ export default function WorldGlobe(): JSX.Element {
   const [searchResults, setSearchResults] = useState<Country[]>([]);
   const [showResults, setShowResults] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
   // Refs used in animation loop
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
@@ -76,6 +77,17 @@ export default function WorldGlobe(): JSX.Element {
   const pointerInsideRef = useRef(false);
   const stickyRef = useRef(false);
   const controlsRef = useRef<OrbitControls | null>(null);
+
+  // Check for mobile devices
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Search functionality
   const handleSearch = (query: string) => {
@@ -102,7 +114,7 @@ export default function WorldGlobe(): JSX.Element {
     
     // Fly to country (gentle zoom, not too close)
     if (cameraRef.current && controlsRef.current) {
-      const targetPosition = latLonToVector3(country.lat, country.lon, 3.2);
+      const targetPosition = latLonToVector3(country.lat, country.lon, isMobile ? 2.8 : 3.2);
       controlsRef.current.enableRotate = true;
       controlsRef.current.autoRotate = false;
       
@@ -165,13 +177,21 @@ export default function WorldGlobe(): JSX.Element {
     const width = mount.clientWidth;
     const height = mount.clientHeight;
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    camera.position.set(0, 0, 3.5);
+    
+    // Adjust camera position based on screen size
+    const initialZoom = isMobile ? 4.0 : 3.5;
+    camera.position.set(0, 0, initialZoom);
     cameraRef.current = camera;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.domElement.style.display = "block";
+    
+    // Make canvas non-interactive for touch scroll
+    renderer.domElement.style.touchAction = "none";
+    renderer.domElement.style.pointerEvents = "auto";
+    
     mount.appendChild(renderer.domElement);
 
     // lighting
@@ -182,14 +202,14 @@ export default function WorldGlobe(): JSX.Element {
 
     // star backdrop
     const starGeo = new THREE.BufferGeometry();
-    const starCount = 1600;
+    const starCount = isMobile ? 1000 : 1600; // Reduce stars on mobile for performance
     const starPositions = new Float32Array(starCount * 3);
     for (let i = 0; i < starCount * 3; i++) {
       starPositions[i] = (Math.random() - 0.5) * 60;
     }
     starGeo.setAttribute("position", new THREE.BufferAttribute(starPositions, 3));
     const starMaterial = new THREE.PointsMaterial({
-      size: 0.03,
+      size: isMobile ? 0.02 : 0.03,
       color: 0xa8c4ff,
       transparent: true,
       depthWrite: false,
@@ -209,12 +229,14 @@ export default function WorldGlobe(): JSX.Element {
       undefined,
       (err) => {
         // Load error: you may want to replace with a local texture in /public if CORS blocks it
-        // console.warn("Earth texture load failed", err);
+        console.warn("Earth texture load failed, using fallback", err);
       }
     );
 
+    // Adjust sphere geometry based on screen size
+    const sphereSegments = isMobile ? 48 : 64;
     const earth = new THREE.Mesh(
-      new THREE.SphereGeometry(1, 64, 64),
+      new THREE.SphereGeometry(1, sphereSegments, sphereSegments),
       new THREE.MeshPhongMaterial({
         map: earthTexture,
         shininess: 10,
@@ -224,14 +246,15 @@ export default function WorldGlobe(): JSX.Element {
 
     // markers using CanvasTexture (emoji)
     const markerCanvas = document.createElement("canvas");
-    markerCanvas.width = markerCanvas.height = 128;
+    markerCanvas.width = markerCanvas.height = isMobile ? 64 : 128; // Smaller on mobile
     const ctx = markerCanvas.getContext("2d");
     if (ctx) {
-      ctx.clearRect(0, 0, 128, 128);
-      ctx.font = "92px system-ui, apple-color-emoji,Segoe UI Emoji, Noto Color Emoji";
+      ctx.clearRect(0, 0, markerCanvas.width, markerCanvas.height);
+      ctx.font = isMobile ? "46px system-ui, apple-color-emoji,Segoe UI Emoji, Noto Color Emoji" 
+                          : "92px system-ui, apple-color-emoji,Segoe UI Emoji, Noto Color Emoji";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillText("📍", 64, 64);
+      ctx.fillText("📍", markerCanvas.width / 2, markerCanvas.height / 2);
     }
     const markerTexture = new THREE.CanvasTexture(markerCanvas);
     markerTexture.encoding = THREE.sRGBEncoding;
@@ -246,13 +269,11 @@ export default function WorldGlobe(): JSX.Element {
     countries.forEach((c) => {
       const sprite = new THREE.Sprite(markerMaterial);
       sprite.position.copy(latLonToVector3(c.lat, c.lon, 1.05));
-      sprite.scale.setScalar(0.08);
+      sprite.scale.setScalar(isMobile ? 0.06 : 0.08); // Smaller on mobile
       (sprite as any).userData = { country: c };
       globeGroup.add(sprite);
       markersRef.current.push(sprite);
     });
-
-    // REMOVED: Sun and solar system completely
 
     // camera spline
     const spline = new THREE.CatmullRomCurve3([
@@ -275,37 +296,78 @@ export default function WorldGlobe(): JSX.Element {
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableZoom = false;
     controls.enablePan = false;
-    controls.rotateSpeed = 0.55;
+    controls.rotateSpeed = isMobile ? 0.4 : 0.55; // Slower on mobile
     controls.enableDamping = true;
     controls.dampingFactor = 0.06;
     controls.autoRotate = true;
     controls.autoRotateSpeed = 0.55;
     controls.enableRotate = false; // until fly completes
     controlsRef.current = controls;
+    controls.enableRotate = !isMobile; // desktop only by default
+
 
     const clock = new THREE.Clock();
 
     // custom wheel handler — only zoom when Ctrl/Shift/Meta pressed
     const handleWheel = (event: WheelEvent) => {
-      if (event.ctrlKey || event.shiftKey || event.metaKey) {
-        event.preventDefault();
-        if (flyDone && camera) {
-          const zoomSpeed = 0.0032;
-          const delta = event.deltaY;
-          const dir = new THREE.Vector3();
-          camera.getWorldDirection(dir);
-          camera.position.add(dir.multiplyScalar(delta * zoomSpeed));
-          const minDistance = 0.8;
-          const maxDistance = 5;
-          const distance = camera.position.length();
-          if (distance < minDistance) camera.position.normalize().multiplyScalar(minDistance);
-          if (distance > maxDistance) camera.position.normalize().multiplyScalar(maxDistance);
-        }
+      // Allow normal scroll when not holding modifier keys
+      if (!event.ctrlKey && !event.shiftKey && !event.metaKey) {
+        return; // Let the page scroll normally
+      }
+      
+      event.preventDefault();
+      if (flyDone && camera) {
+        const zoomSpeed = 0.0032;
+        const delta = event.deltaY;
+        const dir = new THREE.Vector3();
+        camera.getWorldDirection(dir);
+        camera.position.add(dir.multiplyScalar(delta * zoomSpeed));
+        const minDistance = isMobile ? 1.0 : 0.8; // Further min distance on mobile
+        const maxDistance = isMobile ? 6 : 5; // Further max distance on mobile
+        const distance = camera.position.length();
+        if (distance < minDistance) camera.position.normalize().multiplyScalar(minDistance);
+        if (distance > maxDistance) camera.position.normalize().multiplyScalar(maxDistance);
       }
     };
 
     // add wheel listener on renderer.domElement (not passive because we call preventDefault)
     renderer.domElement.addEventListener("wheel", handleWheel, { passive: false });
+
+    // Touch event handlers for mobile
+    let touchStartY = 0;
+    let isTouchOnGlobe = false;
+    
+    const handleTouchStart = (event: TouchEvent) => {
+      if (event.target === renderer.domElement) {
+        isTouchOnGlobe = true;
+        touchStartY = event.touches[0].clientY;
+      }
+    };
+    
+    const handleTouchMove = (event: TouchEvent) => {
+      if (!isTouchOnGlobe) return;
+      
+      // Check if it's a vertical swipe (for scrolling)
+      const touchY = event.touches[0].clientY;
+      const deltaY = touchY - touchStartY;
+      
+      // If it's a significant vertical movement, allow page scroll
+      if (Math.abs(deltaY) > 10) {
+        isTouchOnGlobe = false;
+        return;
+      }
+      
+      // Otherwise, prevent default to allow globe interaction
+      event.preventDefault();
+    };
+    
+    const handleTouchEnd = () => {
+      isTouchOnGlobe = false;
+    };
+
+    renderer.domElement.addEventListener('touchstart', handleTouchStart, { passive: true });
+    renderer.domElement.addEventListener('touchmove', handleTouchMove, { passive: false });
+    renderer.domElement.addEventListener('touchend', handleTouchEnd);
 
     // key handlers to track modifier keys (if you want to use them elsewhere)
     const keysPressed = new Set<string>();
@@ -322,26 +384,26 @@ export default function WorldGlobe(): JSX.Element {
       requestAnimationFrame(animate);
       const t = clock.getElapsedTime();
       markersRef.current.forEach((marker) => {
-  // Marker world position
-  const markerPos = new THREE.Vector3();
-  marker.getWorldPosition(markerPos);
+        // Marker world position
+        const markerPos = new THREE.Vector3();
+        marker.getWorldPosition(markerPos);
 
-  // Camera direction
-  const cameraDir = new THREE.Vector3();
-  camera.getWorldDirection(cameraDir);
+        // Camera direction
+        const cameraDir = new THREE.Vector3();
+        camera.getWorldDirection(cameraDir);
 
-  // Globe center to marker
-  const globeToMarker = markerPos.clone().normalize();
+        // Globe center to marker
+        const globeToMarker = markerPos.clone().normalize();
 
-  // Dot product tells us if marker faces camera
-  const dot = globeToMarker.dot(cameraDir.clone().negate());
+        // Dot product tells us if marker faces camera
+        const dot = globeToMarker.dot(cameraDir.clone().negate());
 
-  // Show only if facing camera
-  marker.visible = dot > 0.60; // tweak threshold if needed
-});
+        // Show only if facing camera
+        marker.visible = dot > (isMobile ? 0.55 : 0.60); // Different threshold for mobile
+      });
 
       // stars animation
-      (starMaterial as any).size = 0.03 + 0.015 * (1 + Math.sin(t * 4));
+      (starMaterial as any).size = (isMobile ? 0.02 : 0.03) + (isMobile ? 0.01 : 0.015) * (1 + Math.sin(t * 4));
       stars.rotation.y += 0.0005;
       stars.rotation.x += 0.0002;
 
@@ -407,6 +469,7 @@ export default function WorldGlobe(): JSX.Element {
     const handlePointerEnter = () => {
       pointerInsideRef.current = true;
     };
+    
     const handlePointerLeave = () => {
       pointerInsideRef.current = false;
       pointerPosRef.current = null;
@@ -457,7 +520,12 @@ export default function WorldGlobe(): JSX.Element {
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("keydown", handleKeyDownGlobal);
       window.removeEventListener("keyup", handleKeyUpGlobal);
+      
       renderer.domElement.removeEventListener("wheel", handleWheel);
+      renderer.domElement.removeEventListener('touchstart', handleTouchStart);
+      renderer.domElement.removeEventListener('touchmove', handleTouchMove);
+      renderer.domElement.removeEventListener('touchend', handleTouchEnd);
+      
       mount.removeEventListener("pointermove", handlePointerMove);
       mount.removeEventListener("pointerenter", handlePointerEnter);
       mount.removeEventListener("pointerleave", handlePointerLeave);
@@ -476,11 +544,8 @@ export default function WorldGlobe(): JSX.Element {
       if (renderer && renderer.domElement && renderer.domElement.parentNode) {
         renderer.domElement.parentNode.removeChild(renderer.domElement);
       }
-
-      // stop any animation frames via removing references (requestAnimationFrame will naturally stop when component unmounts)
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isMobile]);
 
   // Pointer event handlers for the overlay container (React events)
   const onPointerMove = (e: React.PointerEvent) => {
@@ -502,18 +567,19 @@ export default function WorldGlobe(): JSX.Element {
 
   // Render
   return (
-    <section className="relative w-full h-screen bg-black text-white overflow-hidden">
-      {/* Canvas mount point */}
+    <section className="relative w-full min-h-[100svh] bg-black text-white overflow-hidden">
+
+      {/* Canvas mount point - Add padding on mobile to prevent overflow */}
       <div
         ref={containerRef}
-        className="absolute inset-0 w-full h-full"
+        className="absolute inset-0 md:inset-0"
         onPointerMove={onPointerMove}
         onPointerEnter={onPointerEnter}
         onPointerLeave={onPointerLeave}
       />
 
       {/* Search Bar */}
-      <div className="absolute top-6 left-1/2 transform -translate-x-1/2 w-full max-w-2xl px-4 sm:px-6 pointer-events-auto z-10">
+      <div className="absolute top-4 md:top-6 left-1/2 -translate-x-1/2 w-full max-w-xl px-4 z-10">
         <div className="relative">
           <input
             type="text"
@@ -523,19 +589,19 @@ export default function WorldGlobe(): JSX.Element {
             onFocus={() => searchQuery.trim() && setShowResults(true)}
             onBlur={() => setTimeout(() => setShowResults(false), 200)}
             placeholder="Search for a country..."
-            className="w-full bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded-full py-3 px-6 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent text-sm sm:text-base"
+            className="w-full rounded-full bg-slate-900/80 px-4 md:px-6 py-2 md:py-3 text-sm md:text-base outline-none border border-slate-700/50"
           />
           
           {/* Search Results Dropdown */}
           {showResults && searchResults.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-slate-900/95 backdrop-blur-sm rounded-xl border border-slate-700/50 shadow-2xl overflow-hidden z-20">
+            <div className="absolute mt-1 w-full rounded-xl bg-slate-900/95 backdrop-blur-sm border border-slate-700/50 overflow-hidden max-h-60 overflow-y-auto">
               {searchResults.map((country, index) => (
                 <a
                   key={index}
                   href={country.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block w-full px-6 py-4 text-left hover:bg-slate-800/50 transition-colors border-b border-slate-700/30 last:border-b-0"
+                  className="block px-4 md:px-6 py-2 md:py-3 hover:bg-slate-800 border-b border-slate-800 last:border-b-0"
                   onClick={(e) => {
                     e.preventDefault();
                     handleSelectCountry(country);
@@ -544,11 +610,11 @@ export default function WorldGlobe(): JSX.Element {
                   }}
                 >
                   <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-medium text-white">{country.name}</h3>
-                      <p className="text-xs text-gray-300 mt-1">{country.details}</p>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-medium text-white truncate">{country.name}</h3>
+                      <p className="text-xs text-gray-300 mt-0.5 truncate">{country.details}</p>
                     </div>
-                    <span className="text-xs text-sky-300 font-medium">Visit page</span>
+                    <span className="text-xs text-sky-300 font-medium ml-2 whitespace-nowrap">Visit page</span>
                   </div>
                 </a>
               ))}
@@ -559,14 +625,14 @@ export default function WorldGlobe(): JSX.Element {
 
       {/* Selected Country Info */}
       {selectedCountry && (
-        <div className="absolute bottom-24 left-1/2 transform -translate-x-1/2 bg-slate-900/80 backdrop-blur-sm border border-sky-600/30 rounded-lg px-4 py-3 text-center pointer-events-auto z-10 max-w-md w-[90%] sm:w-auto">
-          <h3 className="text-sm font-semibold text-white mb-1">{selectedCountry.name}</h3>
-          <p className="text-xs text-gray-300 mb-2">{selectedCountry.details}</p>
+        <div className={`absolute ${isMobile ? 'bottom-16' : 'bottom-24'} left-1/2 transform -translate-x-1/2 bg-slate-900/80 backdrop-blur-sm border border-sky-600/30 rounded-lg px-3 md:px-4 py-2 md:py-3 text-center pointer-events-auto z-10 w-[90%] max-w-md`}>
+          <h3 className="text-xs md:text-sm font-semibold text-white mb-0.5 md:mb-1">{selectedCountry.name}</h3>
+          <p className="text-xs text-gray-300 mb-1.5 md:mb-2 truncate">{selectedCountry.details}</p>
           <a
             href={selectedCountry.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block text-xs font-semibold text-sky-300 hover:text-sky-200 bg-sky-900/30 hover:bg-sky-800/40 px-4 py-2 rounded-lg transition-colors"
+            className="inline-block text-xs font-semibold text-sky-300 hover:text-sky-200 bg-sky-900/30 hover:bg-sky-800/40 px-3 md:px-4 py-1.5 md:py-2 rounded-lg transition-colors"
           >
             Visit {selectedCountry.name} Page →
           </a>
@@ -574,27 +640,31 @@ export default function WorldGlobe(): JSX.Element {
       )}
 
       {/* Subtext / instructions */}
-      <p className="absolute bottom-5 w-full text-center text-xs md:text-sm text-gray-300/80 pointer-events-none px-4">
-        drag to rotate • Ctrl/Shift (or Cmd) + scroll to zoom • hover to explore • click to pin
+      <p className="absolute bottom-3 md:bottom-5 w-full text-center text-xs text-gray-300/80 pointer-events-none px-4">
+        {isMobile ? (
+          <>drag to rotate • pinch to zoom • tap to explore</>
+        ) : (
+          <>drag to rotate • Ctrl/Shift (or Cmd) + scroll to zoom • hover to explore • click to pin</>
+        )}
       </p>
 
       {/* Tooltip (outside canvas as DOM) */}
       {tooltip.visible && tooltip.country && (
         <div
-          className="fixed z-50 min-w-[200px] max-w-[300px] rounded-lg border border-sky-600/30 bg-slate-900/95 px-3 py-2 text-xs shadow-lg"
+          className="fixed z-50 bg-slate-900/95 px-3 py-2 rounded-lg border border-sky-600/30 text-xs max-w-[200px] md:max-w-none"
           style={{
             left: Math.min(Math.max(12, tooltip.x), window.innerWidth - 12),
             top: Math.min(Math.max(12, tooltip.y - 10), window.innerHeight - 12),
             transform: "translate(-50%, -120%)",
           }}
         >
-          <h3 className="mb-1 text-sm font-semibold">{tooltip.country.name}</h3>
-          <p className="mb-2 text-[11px] text-gray-200/90">{tooltip.country.details}</p>
+          <h3 className="font-semibold truncate">{tooltip.country.name}</h3>
+          <p className="text-gray-300 text-[11px] truncate">{tooltip.country.details}</p>
           <a
             href={tooltip.country.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[11px] font-semibold text-sky-300 hover:underline"
+            className="text-sky-300 font-semibold text-[11px]"
           >
             Open page →
           </a>
