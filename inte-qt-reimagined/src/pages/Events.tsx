@@ -300,9 +300,10 @@ const Events = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-7xl mx-auto">
             {upcomingEvents.map((event, index) => (
               <Card
-                key={index}
-                className="overflow-hidden border-2 rounded-xl hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-background"
-              >
+  key={index}
+  className="overflow-hidden border-2 rounded-xl rounded-xl bg-background hover:shadow-xl transition-all duration-300 hover:-translate-y-1 grid grid-rows-[auto_1fr]"
+>
+
                 {/* IMAGE */}
                 <div className="w-full h-56 bg-muted flex items-center justify-center overflow-hidden">
   <img
@@ -315,7 +316,8 @@ const Events = () => {
 
 
                 {/* CONTENT */}
-                <CardContent className="p-6 space-y-4">
+                <CardContent className="p-6 grid grid-rows-[auto_auto_1fr_auto] gap-4">
+
                   <p className="text-sm font-semibold text-primary uppercase tracking-wide">
                     {event.type}
                   </p>
@@ -347,6 +349,8 @@ const Events = () => {
 >
   See Post <ArrowRight className="ml-2 w-4 h-4" />
 </Button>
+
+
 
                 </CardContent>
               </Card>

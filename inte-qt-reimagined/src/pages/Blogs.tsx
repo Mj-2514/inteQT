@@ -243,18 +243,14 @@ const Blogs = () => {
         }}
       >
         <div className="absolute inset-0 bg-black/50" />
-  <div className="container mx-auto px-4 text-center relative z-10">
-    {/* <Globe className="w-20 h-20 mx-auto mb-6 animate-pulse-glow" /> */}
-    <h1 className="text-white text-5xl md:text-6xl font-bold mb-6 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)] animate-fade-in">
-  Blogs & Insights
-</h1>
-
-<p className="text-white text-xl md:text-2xl max-w-3xl mx-auto font-bold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] animate-fade-in-up">
-  Stay informed with the latest industry news and insights
-</p>
-
-
-  </div>
+        <div className="container mx-auto px-4 text-center relative z-10">
+          <h1 className="text-white text-5xl md:text-6xl font-bold mb-6 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)] animate-fade-in">
+            Blogs & Insights
+          </h1>
+          <p className="text-white text-xl md:text-2xl max-w-3xl mx-auto font-bold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] animate-fade-in-up">
+            Stay informed with the latest industry news and insights
+          </p>
+        </div>
       </section>
 
       {/* BLOGS */}
@@ -292,7 +288,7 @@ const Blogs = () => {
               {blogs.map((blog) => (
                 <Card
                   key={blog.id}
-                  className="overflow-hidden border-2 rounded-xl hover:shadow-xl transition-all duration-300 bg-background"
+                  className="overflow-hidden border-2 rounded-xl hover:shadow-xl transition-all duration-300 bg-background flex flex-col h-full"
                 >
                   <div className="w-full h-56 overflow-hidden bg-muted">
                     {blog.imgIsVideo ? (
@@ -315,33 +311,43 @@ const Blogs = () => {
                     )}
                   </div>
 
-                  <CardContent className="p-6 space-y-4">
-                    <p className="text-sm font-semibold uppercase text-primary">
+                  <CardContent className="p-6 flex flex-col flex-1 min-h-[320px]">
+                    {/* Category */}
+                    <p className="text-xs font-semibold uppercase text-primary tracking-wide mb-3">
                       {blog.category}
                     </p>
-                    <h3 className="text-2xl font-bold">{blog.title}</h3>
-                    <p className="text-muted-foreground text-sm">
+
+                    {/* Title */}
+                    <h3 className="text-2xl font-bold leading-snug mb-3">
+                      {blog.title}
+                    </h3>
+
+                    {/* Excerpt */}
+                    <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3 mb-4">
                       {blog.excerpt}
                     </p>
 
-                    <div className="text-sm text-muted-foreground space-y-2">
-                      <div className="flex items-center space-x-2">
+                    {/* Author and Date */}
+                    <div className="text-sm text-muted-foreground space-y-2 pt-3">
+                      <div className="flex items-center gap-2">
                         <User className="w-4 h-4" />
                         <span>{blog.author}</span>
                       </div>
-
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center gap-2">
                         <Calendar className="w-4 h-4" />
                         <span>{blog.date}</span>
                       </div>
                     </div>
 
-                    <Button
-                      className="gradient-primary w-full"
-                      onClick={() => navigate(`/blog/${blog.slug}`)}
-                    >
-                      Read More <ArrowRight className="ml-2 w-4 h-4" />
-                    </Button>
+                    {/* Button at bottom */}
+                    <div className="mt-auto pt-6">
+                      <Button
+                        className="gradient-primary w-full"
+                        onClick={() => navigate(`/blog/${blog.slug}`)}
+                      >
+                        Read More <ArrowRight className="ml-2 w-4 h-4" />
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               ))}
