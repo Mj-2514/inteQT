@@ -212,9 +212,9 @@ const WirelessConnection = () => {
               Connect with our specialists and bring secure, high-speed wireless
               connectivity to any location on the globe.
             </p>
-            <Button size="lg" variant="secondary" className="text-lg px-8">
-              Contact Sales
-            </Button>
+            <Button asChild size="lg" className="gradient-primary shadow-glow">
+                            <a href="/contact">Contact Us</a>
+                          </Button>
           </div>
         </section>
 

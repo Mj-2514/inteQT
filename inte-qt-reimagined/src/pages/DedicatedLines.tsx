@@ -230,9 +230,9 @@ const DedicatedLines = () => {
               Get in touch with our specialists and discover connectivity built
               for performance, security, and scale.
             </p>
-            <Button size="lg" variant="secondary" className="text-lg px-8">
-              Contact Sales
-            </Button>
+            <Button asChild size="lg" className="gradient-primary shadow-glow">
+                            <a href="/contact">Contact Us</a>
+                          </Button>
           </div>
         </section>
 
