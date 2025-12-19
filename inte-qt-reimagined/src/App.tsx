@@ -49,6 +49,9 @@ import NorthAmericaList from "./north-america/NorthAmerica";
 import SouthAmericaList from "./southAmerica/SouthAmerica";
 import OceaniaList from "./ocenia/Oceania";
 import Gems from "./pages/Gems";
+import CaseFiji from "./pages/CaseFiji";
+import Fmcg from "./pages/Fmcg";
+import AmidCrisis from "./pages/Amid";
 
 /* =====================
    LAYOUT
@@ -108,6 +111,9 @@ const App = () => {
           <Route path="/services/dedicated-lines" element={<DedicatedLines />} />
           <Route path="/services/wireless-connect" element={<WirelessConnection />} />
           <Route path="/services/business-broadband" element={<BusinessBroadband />} />
+          <Route path="/cases/fiji" element={<CaseFiji />} />
+          <Route path="/cases/fmcg" element={<Fmcg />} />
+          <Route path="/cases/amid-crisis" element={<AmidCrisis />} />
 
           {/* Regions */}
           <Route path="/coverage/asia" element={<Asia />} />
