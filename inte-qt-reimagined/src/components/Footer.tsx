@@ -1,61 +1,84 @@
 import { Link } from "react-router-dom";
-import { Mail, Phone, MapPin, Wifi, Linkedin, Twitter, Instagram, Facebook } from "lucide-react";
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Linkedin,
+  Twitter,
+  Instagram,
+  Facebook,
+} from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
 
   return (
-  <footer className="bg-gradient-to-br from-[#005582] to-[#0a6ea3] text-primary-foreground">
+    <footer
+      className="
+        relative overflow-hidden
+        bg-gradient-to-br
+        from-[#0b2a3f]
+        via-[#0f4c75]
+        to-[#1b6ca8]
+        text-white
+      "
+    >
+      
 
-      <div className="container mx-auto px-4 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-          {/* Company Info */}
+      <div className="relative container mx-auto px-6 lg:px-12 py-20">
+        {/* Main Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-14">
+
+          {/* Brand */}
           <div>
-            <div className="flex items-center space-x-2 mb-4">
-              {/* <Wifi className="w-8 h-8" /> */}
-              <img
-      src={theme === "dark" ? "/logo1.png" : "/logo-dark.png"}
-      alt="inte-QT"
-      className="w-13 h-12 object-contain transition-transform group-hover:scale-105"
-    />
-            </div>
-            <p className="text-sm opacity-90 mb-4">
+            <img
+              src={theme === "dark" ? "/logo1.png" : "/logo-dark.png"}
+              alt="inte-QT"
+              className="w-32 h-auto mb-4"
+            />
+
+            <p className="text-sm opacity-90 mb-6">
               Your Global Access Enabler in 190+ Countries
             </p>
-            <div className="flex space-x-4">
+
+            {/* Social Icons — FIXED */}
+            <div className="flex gap-4">
               <a
                 href="https://www.linkedin.com/company/bitsandbyteglobal/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-secondary transition-colors"
+                className="hover:text-yellow-300 transition"
               >
-                <Linkedin className="w-5 h-5" />
+                <Linkedin className="w-6 h-6" />
               </a>
+
               <a
                 href="https://twitter.com/BITSBYTEGLOBAL"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-secondary transition-colors"
+                className="hover:text-yellow-300 transition"
               >
-                <Twitter className="w-5 h-5" />
+                <Twitter className="w-6 h-6" />
               </a>
+
               <a
                 href="https://www.instagram.com/inte_qt/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-secondary transition-colors"
+                className="hover:text-yellow-300 transition"
               >
-                <Instagram className="w-5 h-5" />
+                <Instagram className="w-6 h-6" />
               </a>
+
               <a
                 href="https://www.facebook.com/intelligentquotingtechnology/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-secondary transition-colors"
+                className="hover:text-yellow-300 transition"
               >
-                <Facebook className="w-5 h-5" />
+                <Facebook className="w-6 h-6" />
               </a>
             </div>
           </div>
@@ -63,24 +86,24 @@ const Footer = () => {
           {/* Quick Links */}
           <div>
             <h4 className="font-semibold text-lg mb-4">Quick Links</h4>
-            <ul className="space-y-2">
+            <ul className="space-y-2 text-sm opacity-90">
               <li>
-                <Link to="/global-nsoc" className="text-sm opacity-90 hover:text-secondary transition-colors">
+                <Link to="/global-nsoc" className="hover:text-yellow-300 transition">
                   Global NSOC
                 </Link>
               </li>
               <li>
-                <Link to="/services" className="text-sm opacity-90 hover:text-secondary transition-colors">
+                <Link to="/services" className="hover:text-yellow-300 transition">
                   Services
                 </Link>
               </li>
               <li>
-                <Link to="/partner-center" className="text-sm opacity-90 hover:text-secondary transition-colors">
+                <Link to="/partner-center" className="hover:text-yellow-300 transition">
                   Partner Center
                 </Link>
               </li>
               <li>
-                <Link to="/cases" className="text-sm opacity-90 hover:text-secondary transition-colors">
+                <Link to="/cases" className="hover:text-yellow-300 transition">
                   Cases
                 </Link>
               </li>
@@ -90,48 +113,52 @@ const Footer = () => {
           {/* Resources */}
           <div>
             <h4 className="font-semibold text-lg mb-4">Resources</h4>
-            <ul className="space-y-2">
+            <ul className="space-y-2 text-sm opacity-90">
               <li>
-                <Link to="/events" className="text-sm opacity-90 hover:text-secondary transition-colors">
+                <Link to="/events" className="hover:text-yellow-300 transition">
                   Events
                 </Link>
               </li>
               <li>
-                <Link to="/blogs" className="text-sm opacity-90 hover:text-secondary transition-colors">
+                <Link to="/blogs" className="hover:text-yellow-300 transition">
                   Blogs
                 </Link>
               </li>
               <li>
-                <a href="/privacy-policy" className="text-sm opacity-90 hover:text-secondary transition-colors">
+                <Link to="/privacy-policy" className="hover:text-yellow-300 transition">
                   Privacy Policy
-                </a>
+                </Link>
               </li>
-              
             </ul>
           </div>
 
           {/* Contact */}
           <div>
             <h4 className="font-semibold text-lg mb-4">Contact Us</h4>
-            <ul className="space-y-3">
-              <li className="flex items-start space-x-2 text-sm opacity-90">
-                <Mail className="w-4 h-4 mt-0.5 flex-shrink-0" />
+            <ul className="space-y-4 text-sm opacity-90">
+              <li className="flex items-start gap-2">
+                <Mail className="w-5 h-5 mt-1" />
                 <span>info@inte-qt.com</span>
               </li>
-              <li className="flex items-start space-x-2 text-sm opacity-90">
-                <Phone className="w-4 h-4 mt-0.5 flex-shrink-0" />
+
+              <li className="flex items-start gap-2">
+                <Phone className="w-5 h-5 mt-1" />
                 <span>+1 (555) 123-4567</span>
               </li>
-              <li className="flex items-start space-x-2 text-sm opacity-90">
-                <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                <span>Global Headquarters<br />Technology Park, Suite 100</span>
+
+              <li className="flex items-start gap-2">
+                <MapPin className="w-5 h-5 mt-1" />
+                <span>
+                  Global Headquarters <br />
+                  Technology Park, Suite 100
+                </span>
               </li>
             </ul>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-primary-foreground/20 pt-8 text-center">
+        <div className="border-t border-white/25 pt-8 text-center">
           <p className="text-sm opacity-90">
             © {currentYear} inte-QT. All rights reserved. Managed L3 Internet Global Services.
           </p>
