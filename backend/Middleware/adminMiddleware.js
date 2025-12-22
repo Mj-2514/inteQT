@@ -1,5 +1,5 @@
 // middleware/adminMiddleware.js
-module.exports = (req, res, next) => {
+export default function admin(req, res, next){
   if (req.user && req.user.isAdmin) {
     return next();
   }
