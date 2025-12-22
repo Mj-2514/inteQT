@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Calendar, User } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
+import Footer from "@/components/Footer";
 
 const API_BASE = import.meta.env.DEV
   ? "http://localhost:5000"
@@ -355,6 +356,7 @@ const Blogs = () => {
           )}
         </div>
       </section>
+      <Footer />
     </div>
   );
 };

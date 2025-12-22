@@ -186,6 +186,10 @@ import Australia from "./ocenia/Australia";
 import Fiji from "./ocenia/Fiji";
 import Kiribati from "./ocenia/Kiribati";
 import MarshallIslands from "./ocenia/MarshalIslands";
+import EventAuth from "./pages/EventAuth";
+import CreateEvent from "./pages/CreateEvent";
+import EditEvent from "./pages/EditEvent";
+import Aeta from "./pages/Aeta";
 
 
 /* =====================
@@ -195,7 +199,7 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => (
   <>
     <Navbar />
     {children}
-    <Footer />
+
   </>
 );
 
@@ -231,6 +235,12 @@ const App = () => {
           <Route path="/events" element={<PageLayout><Events /></PageLayout>} />
           <Route path="/blogs" element={<PageLayout><Blogs /></PageLayout>} />
           <Route path="/contact" element={<PageLayout><Contact /></PageLayout>} />
+          <Route path="/events/auth" element={<PageLayout><EventAuth /></PageLayout>} />
+          <Route path="/events/create" element={<PageLayout><CreateEvent /></PageLayout>} />
+          <Route path="/events/edit/:id" element={<PageLayout><EditEvent /></PageLayout>} />
+          <Route path="/services/aeta" element={<PageLayout><Aeta /></PageLayout>} />
+          
+
           /* =====================
    ASIA – COUNTRIES
 ===================== */

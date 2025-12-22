@@ -1,4 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
+import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
@@ -97,7 +98,7 @@ const Services = () => {
       icon: Server,
       image:
         "https://res.cloudinary.com/dmhhkhgny/video/upload/v1745406688/website/vzw7z92zdvomwfvwlguc.mp4",
-      link: "https://portal.inte-qt.com/",
+      link: "/services/aeta",
       external: true,
     },
   ];
@@ -276,6 +277,7 @@ const Services = () => {
           </Button>
         </div>
       </section>
+      <Footer />
     </div>
   );
 };

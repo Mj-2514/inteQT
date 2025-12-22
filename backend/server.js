@@ -1,97 +1,98 @@
 // server.js
-require("dotenv").config();
-const express = require("express");
-const path = require("path");
-const helmet = require("helmet");
-const cors = require("cors");
-const rateLimit = require("express-rate-limit");
-const fs = require("fs");
+import dotenv from "dotenv";
+dotenv.config();
+
+
+import express from "express";
+import path from "path";
+import helmet from "helmet";
+import cors from "cors";
+import rateLimit from "express-rate-limit";
+import { fileURLToPath } from "url";
+
 
 // utils
-const connectDB = require("./utils/db");
+import connectDB from "./utils/db.js";
 
 // routes
-const authRoutes = require("./routes/authRoutes");
-const blogRoutes = require("./routes/blogRoutes");
-const formRoutes= require("./routes/formRoutes")
-const socialRoutes = require('./routes/socialRoutes');
+import authRoutes from "./routes/authRoutes.js";
+import blogRoutes from "./routes/blogRoutes.js";
+import formRoutes from "./routes/formRoutes.js";
+import socialRoutes from "./routes/socialRoutes.js";
+import eventRoutes from "./routes/EventRoutes.js";
+import eventAuthRoutes from "./routes/eventAuthRoutes.js";
+
 
 // middleware
-const errorHandler = require("./Middleware/errorMiddleware");
+import errorHandler from "./Middleware/errorMiddleware.js";
 
 const app = express();
-app.use(express.urlencoded({ extended: true }));
 const PORT = process.env.PORT || 5000;
 
-// ---------- Ensure uploads directory exists ----------
-const uploadsDir = path.join(__dirname, "uploads");
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-  console.log("Created uploads directory at", uploadsDir);
-}
+// Needed for __dirname in ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // ---------- Connect to MongoDB ----------
 if (!process.env.MONGO_URI) {
-  console.warn("WARN: MONGO_URI not set. DB connection will fail if not provided.");
+  console.warn("⚠️  MONGO_URI not set");
 }
 connectDB(process.env.MONGO_URI);
 
-// ---------- Security + body parsing middlewares ----------
+// ---------- Security + body parsing ----------
 app.use(helmet());
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-// ---------- CORS CONFIG ----------
+// ---------- CORS ----------
 const allowedOrigins = [
-  "http://localhost:5173",        // Vite dev (default)
-  "http://localhost:8080",        // if you ever run frontend here
-  "https://inte-qt.vercel.app",   // Vercel app
-  "https://inte-qt.com",          // custom domain
+  "http://localhost:5173",
+  "http://localhost:8080",
+  "https://inte-qt.vercel.app",
+  "https://inte-qt.com",
   "https://www.inte-qt.com",
 ];
 
 app.use(
   cors({
     origin(origin, callback) {
-      // Allow non-browser tools / same-origin / curl / Postman etc.
       if (!origin || allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
       console.log("❌ Blocked by CORS:", origin);
-      return callback(new Error("Not allowed by CORS"));
+      callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
   })
 );
 
 // ---------- Rate limiter ----------
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200,                  // requests per IP per window
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-app.use(limiter);
-
-// ---------- Static files (uploaded images etc.) ----------
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use(
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 200,
+    standardHeaders: true,
+    legacyHeaders: false,
+  })
+);
 
 // ---------- Routes ----------
-app.use("/api/auth", authRoutes);   // login/register
-app.use("/api/blogs", blogRoutes);  // blog routes
-app.use("/api/forms", formRoutes); //form routes
-app.use('/api/social', socialRoutes); //linkedin
-// Health check
+app.use("/api/auth", authRoutes);
+app.use("/api/blogs", blogRoutes);
+app.use("/api/forms", formRoutes);
+app.use("/api/social", socialRoutes);
+app.use("/api/events", eventRoutes);
+app.use("/api/events/auth", eventAuthRoutes);
+
+// ---------- Health ----------
 app.get("/api/health", (req, res) => {
   res.json({ up: true, time: new Date().toISOString() });
 });
 
-// ---------- Error handler (must be last) ----------
+// ---------- Error handler ----------
 app.use(errorHandler);
 
-// ---------- Start server ----------
+// ---------- Start ----------
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
-
-

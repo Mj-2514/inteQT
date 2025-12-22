@@ -1,5 +1,6 @@
 // src/pages/PartnerCenter.tsx
 import React, { Fragment } from "react";
+import Footer from "@/components/Footer";
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -330,6 +331,7 @@ const PartnerCenter: React.FC = () => {
           </div>
         </section>
       </main>
+      <Footer />
     </Fragment>
   );
 };

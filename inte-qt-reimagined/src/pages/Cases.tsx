@@ -1,5 +1,6 @@
 // src/pages/Cases.tsx
 import React, { Fragment } from "react";
+import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Eye, Shield, Award, Clock, CheckCircle } from "lucide-react";
@@ -360,6 +361,7 @@ const Cases: React.FC = () => {
             </div>
           </div>
         </section>
+        <Footer />
       </main>
     </Fragment>
   );

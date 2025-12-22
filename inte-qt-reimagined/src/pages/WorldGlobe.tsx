@@ -1,5 +1,6 @@
 // src/pages/WorldGlobe.tsx
 import React, { useEffect, useRef, useState } from "react";
+import Footer from "@/components/Footer";
 import { useNavigate } from "react-router-dom";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
@@ -333,6 +334,8 @@ const InteractiveGlobe3D: React.FC<{
 
   return (
     <div ref={containerRef} className="absolute inset-0 w-full h-full" style={{ touchAction: "pan-y" }} />
+    
+    
   );
 };
 
@@ -423,6 +426,7 @@ const InteractiveMap2D: React.FC<{
           className="absolute inset-0 pointer-events-none"
         />
       </div>
+      
     </div>
   );
 };
@@ -621,6 +625,8 @@ export default function WorldGlobe(): JSX.Element {
           <>Type country name above to pinpoint • Click map to visit page</>
         )}
       </p>
+      
     </section>
+    
   );
 }

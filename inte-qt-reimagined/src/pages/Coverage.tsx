@@ -3,6 +3,7 @@ import { Globe, MapPin, Network, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Canvas } from "@react-three/fiber";
 import WorldGlobe from "./WorldGlobe";
+import Footer from "@/components/Footer";
 import { Link } from "react-router-dom";
 
 const Coverage = () => {
@@ -156,6 +157,7 @@ const Coverage = () => {
           <Link to="/contact">Get Started Today</Link>
         </Button>
       </section>
+      <Footer />
     </div>
   );
 };

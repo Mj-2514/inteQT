@@ -182,13 +182,14 @@ export default function GlobalNsoc(): JSX.Element {
     </div>
 
     {/* SUPPORTING VISUAL */}
-    <div className="relative rounded-2xl overflow-hidden shadow-2xl border bg-black">
-      <img
-        src="https://i.imgur.com/FVpCGEE.png"
-        alt="NSOC end-to-end operational workflow visualization"
-        className="w-full h-[260px] sm:h-[360px] md:h-[460px] object-contain"
-        loading="lazy"
-      />
+    <div className="relative inline-block rounded-2xl overflow-hidden shadow-2xl border bg-black">
+  <img
+    src="https://i.imgur.com/FVpCGEE.png"
+    alt="NSOC end-to-end operational workflow visualization"
+    className="w-full h-auto block"
+    loading="lazy"
+  />
+
 
       {/* subtle bottom gradient */}
       <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/40 to-transparent" />
