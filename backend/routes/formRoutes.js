@@ -1,44 +1,26 @@
-// routes/formRoutes.js
-const express = require("express");
-const nodemailer = require("nodemailer");
+import express from "express";
+import nodemailer from "nodemailer";
 
 const router = express.Router();
 
 // === SMTP TRANSPORTER ===
-// .env should already be loaded in server.js via require('dotenv').config()
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: 465,
-  secure: true, // SSL on connect
+  secure: true,
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
 });
 
-
-// Optional: verify once when this file loads
 transporter.verify((error, success) => {
-  if (error) {
-    console.error("SMTP connection error:", error);
-  }
+  if (error) console.error("SMTP connection error:", error);
 });
 
-// === EMAIL BODY BUILDERS ===
-
+// === EMAIL BUILDERS ===
 const buildSupportEmailHtml = (body) => {
-  const {
-    firstName,
-    lastName,
-    companyName,
-    serviceId,
-    email,
-    phone,
-    countryCode,
-    region,
-    concern,
-  } = body;
-
+  const { firstName, lastName, companyName, serviceId, email, phone, countryCode, region, concern } = body;
   return `
     <h2>New Support Request</h2>
     <p><strong>Name:</strong> ${firstName} ${lastName}</p>
@@ -53,19 +35,7 @@ const buildSupportEmailHtml = (body) => {
 };
 
 const buildSalesEmailHtml = (body) => {
-  const {
-    company,
-    fullName,
-    email,
-    phone,
-    address,
-    postal,
-    product,
-    contractYear,
-    ip,
-    message,
-  } = body;
-
+  const { company, fullName, email, phone, address, postal, product, contractYear, ip, message } = body;
   return `
     <h2>New Sales Enquiry</h2>
     <p><strong>Company:</strong> ${company}</p>
@@ -84,7 +54,6 @@ const buildSalesEmailHtml = (body) => {
 
 const buildGeneralEmailHtml = (body) => {
   const { name, email, message } = body;
-
   return `
     <h2>New General Contact Message</h2>
     <p><strong>Name:</strong> ${name}</p>
@@ -95,35 +64,11 @@ const buildGeneralEmailHtml = (body) => {
 };
 
 // === ROUTES ===
-
-// SUPPORT FORM → globalsupport@inte-qt.com
 router.post("/support", async (req, res) => {
   try {
-    const {
-      firstName,
-      lastName,
-      companyName,
-      serviceId,
-      email,
-      phone,
-      region,
-      concern,
-    } = req.body;
-
-    if (
-      !firstName ||
-      !lastName ||
-      !companyName ||
-      !serviceId ||
-      !email ||
-      !phone ||
-      !region ||
-      !concern
-    ) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Missing required fields" });
-    }
+    const { firstName, lastName, companyName, serviceId, email, phone, region, concern } = req.body;
+    if (!firstName || !lastName || !companyName || !serviceId || !email || !phone || !region || !concern)
+      return res.status(400).json({ success: false, message: "Missing required fields" });
 
     await transporter.sendMail({
       from: `"inte-QT Support" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
@@ -131,48 +76,18 @@ router.post("/support", async (req, res) => {
       subject: "New Support Request",
       html: buildSupportEmailHtml(req.body),
     });
-
-    return res.json({ success: true, message: "Support email sent" });
+    res.json({ success: true, message: "Support email sent" });
   } catch (err) {
     console.error("Support email error:", err);
-    return res
-      .status(500)
-      .json({ success: false, message: "Failed to send support email" });
+    res.status(500).json({ success: false, message: "Failed to send support email" });
   }
 });
 
-// SALES FORM → sales@inte-qt.com
 router.post("/sales", async (req, res) => {
   try {
-    const {
-      company,
-      fullName,
-      email,
-      phone,
-      address,
-      postal,
-      product,
-      contractYear,
-      ip,
-      message,
-    } = req.body;
-
-    if (
-      !company ||
-      !fullName ||
-      !email ||
-      !phone ||
-      !address ||
-      !postal ||
-      !product ||
-      !contractYear ||
-      !ip ||
-      !message
-    ) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Missing required fields" });
-    }
+    const { company, fullName, email, phone, address, postal, product, contractYear, ip, message } = req.body;
+    if (!company || !fullName || !email || !phone || !address || !postal || !product || !contractYear || !ip || !message)
+      return res.status(400).json({ success: false, message: "Missing required fields" });
 
     await transporter.sendMail({
       from: `"inte-QT Sales" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
@@ -180,26 +95,17 @@ router.post("/sales", async (req, res) => {
       subject: "New Sales Enquiry",
       html: buildSalesEmailHtml(req.body),
     });
-
-    return res.json({ success: true, message: "Sales email sent" });
+    res.json({ success: true, message: "Sales email sent" });
   } catch (err) {
     console.error("Sales email error:", err);
-    return res
-      .status(500)
-      .json({ success: false, message: "Failed to send sales email" });
+    res.status(500).json({ success: false, message: "Failed to send sales email" });
   }
 });
 
-// GENERAL FORM → generalops@inte-qt.com
 router.post("/general", async (req, res) => {
   try {
     const { name, email, message } = req.body;
-
-    if (!name || !email || !message) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Missing required fields" });
-    }
+    if (!name || !email || !message) return res.status(400).json({ success: false, message: "Missing required fields" });
 
     await transporter.sendMail({
       from: `"inte-QT Contact" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
@@ -207,14 +113,11 @@ router.post("/general", async (req, res) => {
       subject: "New General Contact Message",
       html: buildGeneralEmailHtml(req.body),
     });
-
-    return res.json({ success: true, message: "General email sent" });
+    res.json({ success: true, message: "General email sent" });
   } catch (err) {
     console.error("General email error:", err);
-    return res
-      .status(500)
-      .json({ success: false, message: "Failed to send general email" });
+    res.status(500).json({ success: false, message: "Failed to send general email" });
   }
 });
 
-module.exports = router;
+export default router;
