@@ -237,7 +237,7 @@ export default function EventAuth(): JSX.Element {
                   <input
                     type="email"
                     placeholder="you@gmail.com"
-                    className="w-full pl-10 pr-4 py-3 rounded-xl"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl text-black"
                     value={formData.email}
                     onChange={(e) =>
                       handleInputChange("email", e.target.value)
