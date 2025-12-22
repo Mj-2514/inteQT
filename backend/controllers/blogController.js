@@ -1,7 +1,6 @@
 // controllers/blogController.js
-const Blog = require('../models/blogs');
-const cloudinary = require('../config/Cloudinary'); // make sure this exports configured cloudinary.uploader
-// const { uploadBufferToImgur } = require('../utils/imgur'); // not used here
+import Blog from "../models/blogs.js";
+import cloudinary from "../config/Cloudinary.js";
 
 // -------------------- helpers --------------------
 function countWords(text = '') {
@@ -25,15 +24,10 @@ function formatDateYYYYMMDD(d) {
 }
 
 function uploadBufferToCloudinary(buffer, folder, opts = {}) {
-  // opts: { resource_type: 'image' | 'video' | 'auto' }
   const resource_type = opts.resource_type || 'auto';
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
-      {
-        folder,
-        resource_type,
-        // request a derived mp4 for gifs? optional: use eager to create mp4
-      },
+      { folder, resource_type },
       (error, result) => {
         if (error) return reject(error);
         resolve(result);
@@ -42,7 +36,6 @@ function uploadBufferToCloudinary(buffer, folder, opts = {}) {
     stream.end(buffer);
   });
 }
-
 
 function mediaTypeFromMime(mime) {
   if (!mime) return 'external';
@@ -60,11 +53,25 @@ function mediaTypeFromUrl(url) {
   if (lower.match(/\.(jpg|jpeg|png|webp)$/)) return 'image';
   return 'external';
 }
+
+function cloudinaryDirectUrl(maybeUrlOrPublicId) {
+  if (!maybeUrlOrPublicId) return null;
+  const s = String(maybeUrlOrPublicId);
+  if (s.startsWith('http://') || s.startsWith('https://')) return s;
+  try {
+    const cloudName = (cloudinary.config && cloudinary.config().cloud_name) || process.env.CLOUDINARY_CLOUD_NAME;
+    if (!cloudName) return s;
+    return `https://res.cloudinary.com/${cloudName}/raw/upload/${encodeURIComponent(s)}`;
+  } catch {
+    return s;
+  }
+}
 // -------------------- end helpers --------------------
 
+// -------------------- BLOG CONTROLLERS --------------------
 
 // POST /api/blogs/add
-exports.createBlog = async (req, res) => {
+export const createBlog = async (req, res) => {
   try {
     const {
       title,
@@ -75,49 +82,43 @@ exports.createBlog = async (req, res) => {
       description,
       conclusion,
       published,
-      // optional external URL fields (frontend may send these instead of files)
       introImageUrl,
       descriptionImageUrl
     } = req.body;
 
-    // minimal required field checks (title/authorName/introduction/description)
     if (!title || !authorName || !introduction || !description) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
     const folder = process.env.CLOUDINARY_FOLDER || 'inteqt-blogs';
-
-    let introImageUrlSaved = null;
-    let descriptionImageUrlSaved = null;
+    let introUrl = introImageUrl || null;
+    let descUrl = descriptionImageUrl || null;
     let introMediaType = 'image';
     let descriptionMediaType = 'image';
 
-    // If files uploaded via multer (memoryStorage) -> req.files.introImage[0].buffer
-    if (req.files && req.files.introImage && req.files.introImage[0] && req.files.introImage[0].buffer) {
-      const file = req.files.introImage[0];
-      const result = await uploadBufferToCloudinary(file.buffer, folder);
-      introImageUrlSaved = result.secure_url;
-      introMediaType = mediaTypeFromMime(file.mimetype) || mediaTypeFromUrl(result.secure_url);
-    } else if (introImageUrl && typeof introImageUrl === 'string' && introImageUrl.trim()) {
-      // If frontend provided an external URL instead of file
-      introImageUrlSaved = introImageUrl.trim();
-      introMediaType = mediaTypeFromUrl(introImageUrlSaved);
+    // handle intro image (upload or external)
+    if (req.files?.introImage?.[0]?.buffer) {
+      const result = await uploadBufferToCloudinary(req.files.introImage[0].buffer, folder);
+      introUrl = result.secure_url;
+      introMediaType = mediaTypeFromMime(req.files.introImage[0].mimetype) || mediaTypeFromUrl(result.secure_url);
+    } else if (introUrl && typeof introUrl === 'string' && introUrl.trim()) {
+      introUrl = introUrl.trim();
+      introMediaType = mediaTypeFromUrl(introUrl);
+      if (introMediaType === 'external') introMediaType = 'image';
     }
 
-    if (req.files && req.files.descriptionImage && req.files.descriptionImage[0] && req.files.descriptionImage[0].buffer) {
-      const file = req.files.descriptionImage[0];
-      const result = await uploadBufferToCloudinary(file.buffer, folder);
-      descriptionImageUrlSaved = result.secure_url;
-      descriptionMediaType = mediaTypeFromMime(file.mimetype) || mediaTypeFromUrl(result.secure_url);
-    } else if (descriptionImageUrl && typeof descriptionImageUrl === 'string' && descriptionImageUrl.trim()) {
-      descriptionImageUrlSaved = descriptionImageUrl.trim();
-      descriptionMediaType = mediaTypeFromUrl(descriptionImageUrlSaved);
+    // handle description image (upload or external)
+    if (req.files?.descriptionImage?.[0]?.buffer) {
+      const result = await uploadBufferToCloudinary(req.files.descriptionImage[0].buffer, folder);
+      descUrl = result.secure_url;
+      descriptionMediaType = mediaTypeFromMime(req.files.descriptionImage[0].mimetype) || mediaTypeFromUrl(result.secure_url);
+    } else if (descUrl && typeof descUrl === 'string' && descUrl.trim()) {
+      descUrl = descUrl.trim();
+      descriptionMediaType = mediaTypeFromUrl(descUrl);
+      if (descriptionMediaType === 'external') descriptionMediaType = 'image';
     }
 
-    // convert tags into array if needed
-    let tagArray = [];
-    if (Array.isArray(tags)) tagArray = tags;
-    else if (typeof tags === 'string' && tags.trim()) tagArray = tags.split(',').map(t => t.trim()).filter(Boolean);
+    const tagArray = Array.isArray(tags) ? tags : (typeof tags === 'string' ? tags.split(',').map(t => t.trim()).filter(Boolean) : []);
 
     const blog = new Blog({
       title: title.trim(),
@@ -127,113 +128,30 @@ exports.createBlog = async (req, res) => {
       introduction: introduction?.trim() || '',
       description: description?.trim() || '',
       conclusion: conclusion?.trim() || '',
-      introImage: introImageUrlSaved,
+      introImage: introUrl,
       introMediaType,
-      descriptionImage: descriptionImageUrlSaved,
+      descriptionImage: descUrl,
       descriptionMediaType,
       published: published !== undefined ? (published === 'true' || published === true) : true,
-      createdBy: req.user && req.user._id ? req.user._id : undefined,
+      createdBy: req.user?._id
     });
 
     const saved = await blog.save();
     return res.status(201).json(saved);
+
   } catch (err) {
     console.error('Error creating blog:', err);
     return res.status(500).json({ message: 'Server error creating blog', error: err.message });
   }
 };
 
-
-// Helper: build a secure cloudinary URL from an upload result or public_id
-function cloudinaryDirectUrl(maybeUrlOrPublicId) {
-  if (!maybeUrlOrPublicId) return null;
-  const s = String(maybeUrlOrPublicId);
-  // if it's already an http(s) URL, return as-is (prefer secure_url)
-  if (s.startsWith('http://') || s.startsWith('https://')) return s;
-  // otherwise assume it's a Cloudinary public_id and build a secure URL (example)
-  // adjust 'your-cloud-name' if you use a different env var or cloudinary config
-  try {
-    const cloudName = (cloudinary.config && cloudinary.config().cloud_name) || process.env.CLOUDINARY_CLOUD_NAME;
-    if (!cloudName) return s;
-    // default to video resource_type if extension indicates video is unknown — resource_type=auto would also work
-    return `https://res.cloudinary.com/${cloudName}/raw/upload/${encodeURIComponent(s)}`;
-  } catch (e) {
-    return s;
-  }
-}
-
-// GET /api/blogs/all
-exports.getBlogs = async (req, res, next) => {
-  try {
-    const { q, tag, page = 1, limit = 20 } = req.query || {};
-    const filter = { published: true };
-    if (q) filter.$or = [
-      { title: new RegExp(q, 'i') },
-      { introduction: new RegExp(q, 'i') },
-      { description: new RegExp(q, 'i') }
-    ];
-    if (tag) filter.tags = tag;
-    const skip = (Math.max(1, Number(page)) - 1) * Number(limit);
-
-    const blogs = await Blog.find(filter)
-      .select('-description') // keep list lightweight
-      .sort('-publicationDate')
-      .skip(skip)
-      .limit(Number(limit));
-
-    const out = blogs.map(b => {
-      const o = b.toObject();
-
-      // ensure we have consistent, direct URLs and media type
-      o.introImage = o.introImage ? cloudinaryDirectUrl(o.introImage) : null;
-      o.descriptionImage = o.descriptionImage ? cloudinaryDirectUrl(o.descriptionImage) : null;
-
-      o.introMediaType = o.introMediaType || (o.introImage ? mediaTypeFromUrl(o.introImage) : null);
-      o.descriptionMediaType = o.descriptionMediaType || (o.descriptionImage ? mediaTypeFromUrl(o.descriptionImage) : null);
-
-      o.publicationDate = formatDateYYYYMMDD(o.publicationDate);
-      return o;
-    });
-
-    res.json(out);
-  } catch (err) {
-    next(err);
-  }
-};
-
-// GET /api/blogs/slug/:slug
-exports.getBlogBySlug = async (req, res, next) => {
-  try {
-    const blog = await Blog.findOne({ slug: req.params.slug, published: true });
-    if (!blog) return res.status(404).json({ message: 'Blog not found' });
-
-    const o = blog.toObject();
-
-    // make sure frontend always receives a direct playable URL (or null)
-    o.introImage = o.introImage ? cloudinaryDirectUrl(o.introImage) : null;
-    o.descriptionImage = o.descriptionImage ? cloudinaryDirectUrl(o.descriptionImage) : null;
-
-    // ensure media type is present and correct
-    o.introMediaType = o.introMediaType || (o.introImage ? mediaTypeFromUrl(o.introImage) : null);
-    o.descriptionMediaType = o.descriptionMediaType || (o.descriptionImage ? mediaTypeFromUrl(o.descriptionImage) : null);
-
-    o.publicationDate = formatDateYYYYMMDD(o.publicationDate);
-
-    res.json(o);
-  } catch (err) {
-    next(err);
-  }
-};
-
-
-// PUT /api/blogs/:id  (admin only)
-exports.updateBlog = async (req, res, next) => {
+// PUT /api/blogs/:id
+export const updateBlog = async (req, res, next) => {
   try {
     const blogId = req.params.id;
     const blog = await Blog.findById(blogId);
     if (!blog) return res.status(404).json({ message: 'Blog not found' });
 
-    // destructure incoming fields
     const {
       title,
       authorName,
@@ -243,18 +161,15 @@ exports.updateBlog = async (req, res, next) => {
       description,
       conclusion,
       published,
-      // optional external URL replacements
-      introImageUrl: newIntroImageUrl,
-      descriptionImageUrl: newDescriptionImageUrl
+      introImageUrl: newIntroUrl,
+      descriptionImageUrl: newDescUrl
     } = req.body;
 
-    // update basic fields if present
     if (title) blog.title = title.trim();
     if (authorName) blog.authorName = authorName.trim();
     if (authorLinkedin !== undefined) blog.authorLinkedin = authorLinkedin?.trim() || undefined;
     if (tags) blog.tags = parseTags(tags);
 
-    // validate word counts if changed
     if (introduction !== undefined) {
       if (countWords(introduction) > 330) return res.status(400).json({ message: 'Introduction exceeds 330-word limit' });
       blog.introduction = introduction;
@@ -269,68 +184,104 @@ exports.updateBlog = async (req, res, next) => {
     }
     if (published !== undefined) blog.published = (published === 'true' || published === true);
 
-    // handle files (multer memoryStorage) OR external URL replacements
-    const introFile = (req.files && req.files.introImage && req.files.introImage[0]) || null;
-    const descFile = (req.files && req.files.descriptionImage && req.files.descriptionImage[0]) || null;
-
     const folder = process.env.CLOUDINARY_FOLDER || 'inteqt-blogs';
 
-    // Intro image/file handling
-    if (introFile) {
-      try {
-        const result = await uploadBufferToCloudinary(introFile.buffer, folder);
-        blog.introImage = result.secure_url;
-        blog.introMediaType = mediaTypeFromMime(introFile.mimetype) || mediaTypeFromUrl(result.secure_url);
-      } catch (err) {
-        console.error('Intro upload failed', err);
-        return res.status(500).json({ message: 'Intro image upload failed: ' + (err.message || err.toString()) });
-      }
-    } else if (newIntroImageUrl && typeof newIntroImageUrl === 'string' && newIntroImageUrl.trim()) {
-      blog.introImage = newIntroImageUrl.trim();
+    // update intro image
+    if (req.files?.introImage?.[0]?.buffer) {
+      const result = await uploadBufferToCloudinary(req.files.introImage[0].buffer, folder);
+      blog.introImage = result.secure_url;
+      blog.introMediaType = mediaTypeFromMime(req.files.introImage[0].mimetype) || mediaTypeFromUrl(result.secure_url);
+    } else if (newIntroUrl && typeof newIntroUrl === 'string' && newIntroUrl.trim()) {
+      blog.introImage = newIntroUrl.trim();
       blog.introMediaType = mediaTypeFromUrl(blog.introImage);
+      if (blog.introMediaType === 'external') blog.introMediaType = 'image';
     }
 
-    // Description image/file handling
-    if (descFile) {
-      try {
-        const result = await uploadBufferToCloudinary(descFile.buffer, folder);
-        blog.descriptionImage = result.secure_url;
-        blog.descriptionMediaType = mediaTypeFromMime(descFile.mimetype) || mediaTypeFromUrl(result.secure_url);
-      } catch (err) {
-        console.error('Description upload failed', err);
-        return res.status(500).json({ message: 'Description image upload failed: ' + (err.message || err.toString()) });
-      }
-    } else if (newDescriptionImageUrl && typeof newDescriptionImageUrl === 'string' && newDescriptionImageUrl.trim()) {
-      blog.descriptionImage = newDescriptionImageUrl.trim();
+    // update description image
+    if (req.files?.descriptionImage?.[0]?.buffer) {
+      const result = await uploadBufferToCloudinary(req.files.descriptionImage[0].buffer, folder);
+      blog.descriptionImage = result.secure_url;
+      blog.descriptionMediaType = mediaTypeFromMime(req.files.descriptionImage[0].mimetype) || mediaTypeFromUrl(result.secure_url);
+    } else if (newDescUrl && typeof newDescUrl === 'string' && newDescUrl.trim()) {
+      blog.descriptionImage = newDescUrl.trim();
       blog.descriptionMediaType = mediaTypeFromUrl(blog.descriptionImage);
+      if (blog.descriptionMediaType === 'external') blog.descriptionMediaType = 'image';
     }
 
-    // save and respond
     await blog.save();
     const out = blog.toObject();
     out.publicationDate = formatDateYYYYMMDD(out.publicationDate);
     res.json(out);
+
   } catch (err) {
-    console.error('Error in updateBlog:', err);
+    console.error('Error updating blog:', err);
     next(err);
   }
 };
 
+// GET /api/blogs/all
+export const getBlogs = async (req, res, next) => {
+  try {
+    const { q, tag, page = 1, limit = 20 } = req.query || {};
+    const filter = { published: true };
+    if (q) filter.$or = [
+      { title: new RegExp(q, 'i') },
+      { introduction: new RegExp(q, 'i') },
+      { description: new RegExp(q, 'i') }
+    ];
+    if (tag) filter.tags = tag;
+    const skip = (Math.max(1, Number(page)) - 1) * Number(limit);
 
+    const blogs = await Blog.find(filter)
+      .select('-description')
+      .sort('-publicationDate')
+      .skip(skip)
+      .limit(Number(limit));
 
-// DELETE /api/blogs/:id  (admin)
-exports.deleteBlog = async (req, res, next) => {
+    const out = blogs.map(b => {
+      const o = b.toObject();
+      o.introImage = o.introImage ? cloudinaryDirectUrl(o.introImage) : null;
+      o.descriptionImage = o.descriptionImage ? cloudinaryDirectUrl(o.descriptionImage) : null;
+      o.introMediaType = o.introMediaType || (o.introImage ? mediaTypeFromUrl(o.introImage) : null);
+      o.descriptionMediaType = o.descriptionMediaType || (o.descriptionImage ? mediaTypeFromUrl(o.descriptionImage) : null);
+      o.publicationDate = formatDateYYYYMMDD(o.publicationDate);
+      return o;
+    });
+
+    res.json(out);
+  } catch (err) {
+    next(err);
+  }
+};
+
+// GET /api/blogs/slug/:slug
+export const getBlogBySlug = async (req, res, next) => {
+  try {
+    const blog = await Blog.findOne({ slug: req.params.slug, published: true });
+    if (!blog) return res.status(404).json({ message: 'Blog not found' });
+
+    const o = blog.toObject();
+    o.introImage = o.introImage ? cloudinaryDirectUrl(o.introImage) : null;
+    o.descriptionImage = o.descriptionImage ? cloudinaryDirectUrl(o.descriptionImage) : null;
+    o.introMediaType = o.introMediaType || (o.introImage ? mediaTypeFromUrl(o.introImage) : null);
+    o.descriptionMediaType = o.descriptionMediaType || (o.descriptionImage ? mediaTypeFromUrl(o.descriptionImage) : null);
+    o.publicationDate = formatDateYYYYMMDD(o.publicationDate);
+
+    res.json(o);
+  } catch (err) {
+    next(err);
+  }
+};
+
+// DELETE /api/blogs/:id
+export const deleteBlog = async (req, res, next) => {
   try {
     const { id } = req.params;
-
     const blog = await Blog.findById(id);
-    if (!blog) {
-      return res.status(404).json({ message: 'Blog not found' });
-    }
+    if (!blog) return res.status(404).json({ message: 'Blog not found' });
 
     await Blog.deleteOne({ _id: id });
-
-    return res.json({ message: 'Blog deleted successfully' });
+    res.json({ message: 'Blog deleted successfully' });
   } catch (err) {
     console.error('Error deleting blog:', err);
     return res.status(500).json({ message: 'Server error deleting blog', error: err.message });

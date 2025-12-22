@@ -11,4 +11,5 @@ const socialReactionSchema = new mongoose.Schema({
 
 socialReactionSchema.index({ targetType: 1, targetId: 1, user: 1 }, { unique: true });
 
-module.exports = mongoose.model("SocialReaction", socialReactionSchema);
+const SocialReaction = mongoose.model("SocialReaction", socialReactionSchema);
+export default SocialReaction;

@@ -18,7 +18,6 @@ import connectDB from "./utils/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import blogRoutes from "./routes/blogRoutes.js";
 import formRoutes from "./routes/formRoutes.js";
-import socialRoutes from "./routes/socialRoutes.js";
 import eventRoutes from "./routes/EventRoutes.js";
 import eventAuthRoutes from "./routes/eventAuthRoutes.js";
 
@@ -80,7 +79,6 @@ app.use(
 app.use("/api/auth", authRoutes);
 app.use("/api/blogs", blogRoutes);
 app.use("/api/forms", formRoutes);
-app.use("/api/social", socialRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/events/auth", eventAuthRoutes);
 

@@ -9,5 +9,5 @@ const socialCommentSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   deleted: { type: Boolean, default: false },
 });
-
-module.exports = mongoose.model("SocialComment", socialCommentSchema);
+const SocialComment = mongoose.model("SocialComment", socialCommentSchema);
+export default SocialComment;

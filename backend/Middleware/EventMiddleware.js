@@ -1,4 +1,3 @@
-// middleware/eventUpload.js
 import multer from "multer";
 
 const storage = multer.memoryStorage();
@@ -13,8 +12,7 @@ const fileFilter = (req, file, cb) => {
     "video/webm",
   ];
 
-  if (allowed.includes(file.mimetype)) cb(null, true);
-  else cb(new Error("Unsupported file type"), false);
+  allowed.includes(file.mimetype) ? cb(null, true) : cb(new Error("Unsupported file type"), false);
 };
 
 const eventUpload = multer({

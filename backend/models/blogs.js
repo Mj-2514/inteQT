@@ -1,6 +1,6 @@
 // models/blogs.js
-const mongoose = require('mongoose');
-const slugify = require('slugify');
+import mongoose from 'mongoose';
+import slugify from 'slugify';
 
 const blogSchema = new mongoose.Schema({
   authorName: { type: String, required: true, trim: true },
@@ -32,4 +32,5 @@ blogSchema.pre('validate', function () {
   this.updatedAt = Date.now();
 });
 
-module.exports = mongoose.model('Blog', blogSchema);
+const Blog = mongoose.model('Blog', blogSchema);
+export default Blog;

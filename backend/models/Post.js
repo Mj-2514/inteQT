@@ -12,4 +12,5 @@ const socialPostSchema = new mongoose.Schema({
   deleted: { type: Boolean, default: false },
 });
 
-module.exports = mongoose.model("SocialPost", socialPostSchema);
+const SocialPost = mongoose.model("SocialPost", socialPostSchema);
+export default SocialPost;

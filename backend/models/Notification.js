@@ -12,4 +12,5 @@ const socialNotificationSchema = new mongoose.Schema({
 
 socialNotificationSchema.index({ user: 1, read: 1, createdAt: -1 });
 
-module.exports = mongoose.model("SocialNotification", socialNotificationSchema);
+const SocialNotification = mongoose.model("SocialNotification", socialNotificationSchema);
+export default SocialNotification;

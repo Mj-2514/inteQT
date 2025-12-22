@@ -24,4 +24,5 @@ const socialUserSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model("SocialUser", socialUserSchema);
+const SocialUser = mongoose.model("SocialUser", socialUserSchema);
+export default SocialUser;
