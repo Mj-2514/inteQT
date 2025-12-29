@@ -1,9 +1,9 @@
 import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { ArrowLeft, Calendar, User, Tag } from "lucide-react";
+import { ArrowLeft, Calendar, User, Tag, Share2 } from "lucide-react";
 import { motion } from "framer-motion";
-import Navbar from "../components/Navbar"; // adjust path if needed
+import Navbar from "../components/Navbar";
 
 const API_BASE = import.meta.env.DEV
   ? "http://localhost:5000"
@@ -50,16 +50,42 @@ function extLooksLikeVideo(url?: string | null) {
   if (!url) return false;
   return /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url.split("?")[0]);
 }
+
 function extLooksLikeGif(url?: string | null) {
   if (!url) return false;
   return /\.gif(\?.*)?$/i.test(url.split("?")[0]);
 }
 
+// FIXED: Proper URL normalization for both local and external URLs
 const normalizeUrl = (url?: string | null): string | null => {
-  if (!url) return null;
+  if (!url || url.trim() === "") return null;
+  
   const s = url.trim();
-  if (/^https?:\/\//i.test(s)) return s;
-  return `https://${s}`;
+  
+  console.log("Normalizing URL:", s); // Debug log
+  
+  // If it's already a full URL, return as is
+  if (/^https?:\/\//i.test(s)) {
+    console.log("Already a full URL:", s);
+    return s;
+  }
+  
+  // If it starts with /uploads/ or /tmp/, it's a local path - prepend the API base URL
+  if (s.startsWith('/uploads/') || s.startsWith('/tmp/') || s.startsWith('/')) {
+    const fullUrl = `${API_BASE}${s}`;
+    console.log("Local path converted to:", fullUrl);
+    return fullUrl;
+  }
+  
+  // If it doesn't have a protocol but looks like a domain, add https://
+  if (s.includes('.') && !s.startsWith('http')) {
+    const withProtocol = `https://${s}`;
+    console.log("Added protocol:", withProtocol);
+    return withProtocol;
+  }
+  
+  console.log("URL not normalized, returning as is:", s);
+  return s;
 };
 
 const DetailedBlog = () => {
@@ -69,6 +95,10 @@ const DetailedBlog = () => {
   const [blog, setBlog] = useState<BlogFromApi | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [imageError, setImageError] = useState({
+    intro: false,
+    description: false,
+  });
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -81,6 +111,7 @@ const DetailedBlog = () => {
       try {
         setLoading(true);
         setError(null);
+        setImageError({ intro: false, description: false });
 
         const endpoint = `${API_BASE}/api/blogs/slug/${encodeURIComponent(slug)}`;
         console.log("Fetching blog detail from:", endpoint);
@@ -92,6 +123,16 @@ const DetailedBlog = () => {
         try {
           data = text ? JSON.parse(text) : ({} as any);
           console.log("Blog detail JSON:", data);
+          
+          // Debug: Check what URLs we're getting
+          const b = data as BlogFromApi;
+          console.log("Original URLs:", {
+            introImage: b.introImage,
+            descriptionImage: b.descriptionImage,
+            introMediaType: b.introMediaType,
+            descriptionMediaType: b.descriptionMediaType
+          });
+          
         } catch (parseErr) {
           console.error("Failed to parse blog response:", parseErr, "text:", text);
           throw new Error("Failed to parse blog response");
@@ -103,8 +144,13 @@ const DetailedBlog = () => {
 
         // Normalize potential non-http urls in returned media fields
         const b = data as BlogFromApi;
-        b.introImage = normalizeUrl(b.introImage) || null;
-        b.descriptionImage = normalizeUrl(b.descriptionImage) || null;
+        b.introImage = normalizeUrl(b.introImage);
+        b.descriptionImage = normalizeUrl(b.descriptionImage);
+        
+        console.log("Normalized URLs:", {
+          introImage: b.introImage,
+          descriptionImage: b.descriptionImage
+        });
 
         setBlog(b);
       } catch (err: any) {
@@ -121,6 +167,45 @@ const DetailedBlog = () => {
   const tags = normalizeTags(blog?.tags);
   const pubDate = blog ? formatDate(blog.publicationDate) : "";
   const pageTitle = blog ? `${blog.title} | inte-QT Blog` : "Blog | inte-QT";
+
+  // Share functionality
+  const handleShare = async () => {
+    if (navigator.share && blog) {
+      try {
+        await navigator.share({
+          title: blog.title,
+          text: blog.introduction?.slice(0, 100) || "Check out this blog on inte-QT",
+          url: window.location.href,
+        });
+      } catch (err) {
+        console.log("Share cancelled:", err);
+        // Fallback: Copy to clipboard
+        copyToClipboard();
+      }
+    } else {
+      // Fallback for browsers that don't support Web Share API
+      copyToClipboard();
+    }
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(window.location.href)
+      .then(() => {
+        // Show a temporary notification
+        alert("Link copied to clipboard!");
+      })
+      .catch(err => {
+        console.error("Failed to copy:", err);
+        // Fallback for older browsers
+        const textArea = document.createElement("textarea");
+        textArea.value = window.location.href;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+        alert("Link copied to clipboard!");
+      });
+  };
 
   const structuredData = useMemo(() => {
     if (!blog) return null;
@@ -164,19 +249,47 @@ const DetailedBlog = () => {
   const introIsVideo = decideIsVideo(blog?.introImage ?? null, blog?.introMediaType ?? null);
   const descIsVideo = decideIsVideo(blog?.descriptionImage ?? null, blog?.descriptionMediaType ?? null);
 
-  // renderer for media with autoplay + loop + muted
+  console.log("Media decisions:", {
+    introImage: blog?.introImage,
+    introIsVideo,
+    introMediaType: blog?.introMediaType,
+    descriptionImage: blog?.descriptionImage,
+    descIsVideo,
+    descriptionMediaType: blog?.descriptionMediaType
+  });
+
+  // FIXED: MediaBlock with better error handling and fallback
   const MediaBlock: React.FC<{
     src?: string | null;
     alt?: string;
     isVideo?: boolean;
     className?: string;
-  }> = ({ src, alt, isVideo, className }) => {
-    if (!src) return null;
+    type?: 'intro' | 'description';
+  }> = ({ src, alt = "Blog media", isVideo, className, type = 'intro' }) => {
+    if (!src) {
+      console.log(`No src provided for ${type} media`);
+      return (
+        <div className={`${className} bg-slate-800/50 flex items-center justify-center`}>
+          <div className="text-slate-400 text-center p-4">
+            <p>No media available</p>
+          </div>
+        </div>
+      );
+    }
+
+    const handleError = (e: any) => {
+      console.error(`Error loading ${type} media:`, src, e);
+      if (type === 'intro') {
+        setImageError(prev => ({ ...prev, intro: true }));
+      } else {
+        setImageError(prev => ({ ...prev, description: true }));
+      }
+    };
+
     if (isVideo) {
       return (
         <video
           src={src}
-          // autoplay+loop+muted so it plays continuously until user interacts
           autoPlay
           loop
           muted
@@ -185,14 +298,34 @@ const DetailedBlog = () => {
           preload="metadata"
           className={className}
           crossOrigin="anonymous"
-          onError={(e) => console.error("Detailed blog video error:", e, src)}
+          onError={handleError}
+          onLoadStart={() => console.log(`Loading video: ${src}`)}
+          onCanPlay={() => console.log(`Video can play: ${src}`)}
         />
       );
     }
-    // GIFs and images
-    return <img src={src} alt={alt} className={className} onError={(e) => console.error("Detailed blog image error:", e, src)} />;
+    
+    // For images/GIFs
+    return (
+      <img 
+        src={src} 
+        alt={alt} 
+        className={className}
+        onError={handleError}
+        onLoad={() => console.log(`Image loaded: ${src}`)}
+        crossOrigin="anonymous"
+      />
+    );
   };
-<Helmet>
+
+  // Fallback image URL
+  const getFallbackImage = () => {
+    return "https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80";
+  };
+
+  return (
+    <>
+      <Helmet>
         <title>{pageTitle}</title>
 
         {blog && (
@@ -202,25 +335,22 @@ const DetailedBlog = () => {
 
             <meta property="og:title" content={blog.title} />
             <meta property="og:description" content={blog.introduction?.slice(0, 200) || "Expert insights from inte-QT."} />
-            <meta property="og:image" content={blog.introImage || blog.descriptionImage || "https://imgur.com/QihDOBg.jpg"} />
+            <meta property="og:image" content={blog.introImage || blog.descriptionImage || getFallbackImage()} />
             <meta property="og:url" content={`https://www.inte-qt.com/blog/${blog.slug}`} />
             <meta property="og:type" content="article" />
 
             <meta name="twitter:card" content="summary_large_image" />
             <meta name="twitter:title" content={blog.title} />
             <meta name="twitter:description" content={blog.introduction?.slice(0, 200) || "Expert insights from inte-QT."} />
-            <meta name="twitter:image" content={blog.introImage || blog.descriptionImage || "https://imgur.com/QihDOBg.jpg"} />
+            <meta name="twitter:image" content={blog.introImage || blog.descriptionImage || getFallbackImage()} />
 
             {structuredData && <script type="application/ld+json">{JSON.stringify(structuredData)}</script>}
           </>
         )}
       </Helmet>
-  return (
-    <>
-      
 
       <div className="min-h-screen bg-slate-950 text-slate-50">
-       
+        <Navbar />
 
         <div className="pointer-events-none fixed inset-0 -z-10">
           <div className="absolute -top-40 -left-10 h-72 w-72 rounded-full bg-indigo-500/30 blur-3xl" />
@@ -228,10 +358,19 @@ const DetailedBlog = () => {
         </div>
 
         <header className="sticky top-0 z-20 border-b border-white/10 bg-slate-950/80 backdrop-blur">
-          <div className="mx-auto flex max-w-5xl items-center gap-3 px-4 py-3">
+          <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
             <button onClick={() => navigate("/blogs")} className="inline-flex items-center gap-2 text-sm text-slate-200 hover:text-white hover:-translate-x-0.5 transition-transform">
               <ArrowLeft className="h-4 w-4" />
               <span>Back to Blogs</span>
+            </button>
+            
+            {/* Share Button */}
+            <button
+              onClick={handleShare}
+              className="inline-flex items-center gap-2 text-sm text-slate-200 hover:text-white hover:scale-105 transition-transform"
+            >
+              <Share2 className="h-4 w-4" />
+              <span>Share</span>
             </button>
           </div>
         </header>
@@ -269,9 +408,15 @@ const DetailedBlog = () => {
           {!loading && !error && blog && (
             <motion.article initial={{ opacity: 0, y: 20, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.5, ease: "easeOut" }} className="overflow-hidden rounded-3xl border border-white/10 bg-slate-900/80 shadow-2xl shadow-black/50">
               {/* Top media */}
-              {blog.introImage && (
+              {blog.introImage && !imageError.intro ? (
                 <motion.div initial={{ opacity: 0, scale: 1.02 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2, duration: 0.5 }} className="relative h-64 w-full overflow-hidden md:h-80">
-                  <MediaBlock src={blog.introImage} alt={blog.title} isVideo={introIsVideo} className="h-full w-full object-cover" />
+                  <MediaBlock 
+                    src={blog.introImage} 
+                    alt={blog.title} 
+                    isVideo={introIsVideo} 
+                    className="h-full w-full object-cover"
+                    type="intro"
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/40 to-transparent" />
                   <div className="absolute bottom-4 left-4 right-4 flex flex-wrap items-center justify-between gap-3">
                     <div className="max-w-xl">
@@ -284,6 +429,13 @@ const DetailedBlog = () => {
                     </div>
                   </div>
                 </motion.div>
+              ) : (
+                <div className="relative h-64 w-full overflow-hidden md:h-80 bg-slate-800/50 flex items-center justify-center">
+                  <div className="text-slate-400 text-center">
+                    <p className="text-lg font-semibold">{blog.title}</p>
+                    <p className="text-sm mt-2">Image not available</p>
+                  </div>
+                </div>
               )}
 
               <div className="grid gap-8 p-6 md:grid-cols-[minmax(0,2.4fr)_minmax(0,1fr)] md:p-8">
@@ -335,10 +487,20 @@ const DetailedBlog = () => {
                   )}
 
                   {/* Description media */}
-                  {blog.descriptionImage && (
+                  {blog.descriptionImage && !imageError.description ? (
                     <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={1} className="overflow-hidden rounded-2xl border border-white/10 bg-slate-900/60">
-                      <MediaBlock src={blog.descriptionImage} alt={`${blog.title} illustration`} isVideo={descIsVideo} className="max-h-[420px] w-full object-cover" />
+                      <MediaBlock 
+                        src={blog.descriptionImage} 
+                        alt={`${blog.title} illustration`} 
+                        isVideo={descIsVideo} 
+                        className="max-h-[420px] w-full object-cover"
+                        type="description"
+                      />
                     </motion.div>
+                  ) : (
+                    <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-8 text-center">
+                      <p className="text-slate-400">Description image not available</p>
+                    </div>
                   )}
 
                   {/* Conclusion */}
@@ -363,8 +525,18 @@ const DetailedBlog = () => {
                       </div>
                     )}
 
+                    {/* Share section in sidebar */}
                     <div className="mt-4 rounded-xl bg-slate-800/70 px-3 py-3 text-xs text-slate-300">
-                      <p>Share this blog with your team or save it to revisit.</p>
+                      <div className="flex items-center justify-between">
+                        <p>Share this blog with your team</p>
+                        <button
+                          onClick={handleShare}
+                          className="inline-flex items-center gap-1 text-indigo-400 hover:text-indigo-300 transition-colors"
+                        >
+                          <Share2 className="h-3 w-3" />
+                          <span>Share</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
 

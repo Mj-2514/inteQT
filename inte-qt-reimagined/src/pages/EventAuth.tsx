@@ -1,326 +1,253 @@
-import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { Mail, Lock, Eye, EyeOff } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { gsap } from "gsap";
+import MonkeySVG, { MonkeySVGRef } from "../components/MonkeySVG";
+import { Eye, EyeOff } from "lucide-react";
 
-type AuthMode = "login" | "register";
+const EventAuth = () => {
+  const API_BASE = import.meta.env.DEV
+    ? "http://localhost:5000"
+    : "https://inteqt.onrender.com";
 
-const API_BASE = import.meta.env.DEV
-  ? "http://localhost:5000"
-  : "https://inteqt.onrender.com";
-
-export default function EventAuth(): JSX.Element {
-  const [mode, setMode] = useState<AuthMode>("login");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [monkeyExpression, setMonkeyExpression] =
-    useState<"normal" | "surprised">("normal");
-  const [error, setError] = useState<string | null>(null);
-  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [isPasswordFocused, setIsPasswordFocused] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const navigate = useNavigate();
+  const monkeyRef = useRef<MonkeySVGRef>(null);
+  const emailInputRef = useRef<HTMLInputElement>(null);
 
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
+  /* ===========================
+     MONKEY EYE ANIMATIONS
+  =========================== */
 
-  /* =============================
-     Monkey animation
-  ============================== */
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setMonkeyExpression(Math.random() > 0.75 ? "surprised" : "normal");
-      setTimeout(() => setMonkeyExpression("normal"), 600);
-    }, 3000);
-    return () => clearInterval(interval);
+  const moveEyes = useCallback((cursorPosition: number, inputLength: number) => {
+    if (!monkeyRef.current) return;
+    const { leftPupil, rightPupil } = monkeyRef.current;
+    if (!leftPupil || !rightPupil) return;
+
+    const maxMove = 6;
+    const progress =
+      inputLength > 0 ? cursorPosition / Math.max(inputLength, 1) : 0.5;
+    const xOffset = (progress - 0.5) * maxMove * 2;
+
+    gsap.to([leftPupil, rightPupil], {
+      attr: {
+        cx: (i) => (i === 0 ? 75 + xOffset : 125 + xOffset),
+        cy: 97,
+      },
+      duration: 0.2,
+      ease: "power2.out",
+    });
   }, []);
 
-  const handleInputChange = (
-    field: keyof typeof formData,
-    value: string
-  ) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+  const resetEyes = useCallback(() => {
+    if (!monkeyRef.current) return;
+    const { leftPupil, rightPupil } = monkeyRef.current;
+    if (!leftPupil || !rightPupil) return;
+
+    gsap.to([leftPupil, rightPupil], {
+      attr: {
+        cx: (i) => (i === 0 ? 75 : 125),
+        cy: 95,
+      },
+      duration: 0.3,
+      ease: "power2.out",
+    });
+  }, []);
+
+  const coverEyes = useCallback(() => {
+    if (!monkeyRef.current) return;
+    const { leftHand, rightHand } = monkeyRef.current;
+    if (!leftHand || !rightHand) return;
+
+    gsap.to(leftHand, { x: 25, y: -35, duration: 0.35, ease: "power2.out" });
+    gsap.to(rightHand, { x: -25, y: -35, duration: 0.35, ease: "power2.out" });
+  }, []);
+
+  const uncoverEyes = useCallback(() => {
+    if (!monkeyRef.current) return;
+    const { leftHand, rightHand } = monkeyRef.current;
+    if (!leftHand || !rightHand) return;
+
+    gsap.to([leftHand, rightHand], {
+      x: 0,
+      y: 0,
+      duration: 0.35,
+      ease: "power2.out",
+    });
+  }, []);
+
+  const peekThroughFingers = useCallback(() => {
+    if (!monkeyRef.current) return;
+    const { leftHand, rightHand } = monkeyRef.current;
+    if (!leftHand || !rightHand) return;
+
+    gsap.to(leftHand, { x: 15, y: -25, duration: 0.25 });
+    gsap.to(rightHand, { x: -15, y: -25, duration: 0.25 });
+  }, []);
+
+  /* ===========================
+     HAND / FOCUS BEHAVIOR
+  =========================== */
+
+  useEffect(() => {
+    if (isPasswordFocused) {
+      showPassword ? peekThroughFingers() : coverEyes();
+    } else {
+      uncoverEyes();
+    }
+  }, [isPasswordFocused, showPassword, coverEyes, uncoverEyes, peekThroughFingers]);
+
+  useEffect(() => {
+    if (!isPasswordFocused && emailInputRef.current) {
+      const cursorPos = emailInputRef.current.selectionStart || 0;
+      moveEyes(cursorPos, email.length);
+    }
+  }, [email, isPasswordFocused, moveEyes]);
+
+  const toggleShowPassword = () => {
+    setShowPassword((prev) => {
+      const next = !prev;
+      if (isPasswordFocused) {
+        next ? peekThroughFingers() : coverEyes();
+      }
+      return next;
+    });
   };
 
-  /* =============================
-     Validation
-  ============================== */
-  const validate = (): string | null => {
-    if (!formData.email.trim() || !formData.password.trim()) {
-      return "Please enter email and password.";
-    }
+  /* ===========================
+     LOGIN HANDLER (FIXED)
+  =========================== */
 
-    if (!formData.email.toLowerCase().endsWith("@inte-qt.com")) {
-      return "Only admin email users can manage events.";
-    }
-
-    if (mode === "register") {
-      if (!formData.name.trim()) return "Please enter your name.";
-      if (formData.password.length < 8)
-        return "Password must be at least 8 characters.";
-      if (formData.password !== formData.confirmPassword)
-        return "Passwords do not match.";
-      if (!termsAccepted)
-        return "You must accept the Privacy Policy.";
-    }
-
-    return null;
-  };
-
-  /* =============================
-     Submit
-  ============================== */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
+    setError("");
 
-    const validationError = validate();
-    if (validationError) {
-      setError(validationError);
+    if (!email || !password) {
+      setError("Enter both email and password.");
       return;
     }
 
-    setIsLoading(true);
-    setMonkeyExpression("surprised");
+    if (!/^[^\s@]+@inte-qt\.com$/.test(email)) {
+      setError("Use your @inte-qt.com email");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
+
+    setLoading(true);
 
     try {
-      const path =
-        mode === "login"
-          ? "/api/events/auth/login"
-          : "/api/events/auth/register";
-
-      const payload =
-        mode === "login"
-          ? {
-              email: formData.email.trim(),
-              password: formData.password,
-            }
-          : {
-              name: formData.name.trim(),
-              email: formData.email.trim(),
-              password: formData.password,
-            };
-
-      const res = await fetch(`${API_BASE}${path}`, {
+      const res = await fetch(`${API_BASE}/api/event-auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ email, password }),
       });
 
-      const text = await res.text();
-      let data: any;
-      try {
-        data = text ? JSON.parse(text) : {};
-      } catch {
-        data = { message: text };
-      }
+      const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data?.message || "Authentication failed");
+        throw new Error(data.message || "Login failed");
       }
 
-      localStorage.setItem("eventToken", data.token);
-      localStorage.setItem("eventUser", JSON.stringify(data.user));
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
 
-      navigate("/events/create", { replace: true });
+      window.location.href = data.user.isAdmin
+        ? "/event/admin-dashboard"
+        : "/event/dashboard";
     } catch (err: any) {
-      setError(err?.message || "Something went wrong.");
+      console.error(err);
+      setError(err.message || "Network error. Try again.");
     } finally {
-      setIsLoading(false);
-      setMonkeyExpression("normal");
+      setLoading(false);
     }
   };
 
+  /* ===========================
+     UI
+  =========================== */
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center p-4">
-      <Helmet>
-        <title>
-          {mode === "login"
-            ? "Event Login - inte-QT"
-            : "Event Register - inte-QT"}
-        </title>
-      </Helmet>
-
-      <div className="w-full max-w-6xl flex flex-col lg:flex-row gap-8 items-center">
-        {/* ================= LEFT — MONKEY ================= */}
-        <div className="lg:w-1/2 flex flex-col items-center justify-center px-4">
-          <div className="relative w-72 h-72 sm:w-80 sm:h-80">
-            <motion.div
-              animate={{ y: [0, -8, 0] }}
-              transition={{ duration: 2.2, repeat: Infinity }}
-              className="relative w-full h-full"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-[#ffd166] via-[#ffb347] to-[#ff9671] rounded-[40%]" />
-              <div className="absolute inset-4 bg-gradient-to-br from-[#ffb347] to-[#ff9671] rounded-[35%]" />
-
-              <div className="absolute -left-2 top-8 w-14 h-14 bg-[#ff7b47] rounded-full" />
-              <div className="absolute -right-2 top-8 w-14 h-14 bg-[#ff7b47] rounded-full" />
-
-              <div className="absolute top-14 left-0 right-0 flex justify-around px-8">
-                {[0, 1].map((i) => (
-                  <motion.div
-                    key={i}
-                    animate={{
-                      scaleY:
-                        monkeyExpression === "surprised"
-                          ? [1, 1.2, 1]
-                          : 1,
-                    }}
-                    className="w-12 h-16 bg-white rounded-full relative"
-                  >
-                    <div className="absolute w-8 h-8 bg-black rounded-full top-2 left-2" />
-                  </motion.div>
-                ))}
-              </div>
-
-              <div className="absolute top-36 left-1/2 -translate-x-1/2 w-10 h-4 bg-[#ff5e62] rounded-full" />
-              <motion.div
-                animate={{
-                  scaleY:
-                    monkeyExpression === "surprised"
-                      ? [0.6, 0.9, 0.6]
-                      : [0.6, 0.7, 0.6],
-                }}
-                className="absolute top-44 left-1/2 -translate-x-1/2 w-16 h-7 bg-[#ff2e63] rounded-full"
-              />
-            </motion.div>
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        {/* Monkey */}
+        <div className="relative w-48 h-48 mx-auto -mb-12 z-10">
+          <div className="w-full h-full rounded-full bg-card flex items-center justify-center shadow-lg">
+            <div className="w-36 h-36">
+              <MonkeySVG ref={monkeyRef} />
+            </div>
           </div>
-
-          <p className="text-white/80 text-center mt-6 max-w-md">
-            Login or register to manage company events.
-          </p>
         </div>
 
-        {/* ================= RIGHT — FORM ================= */}
-        <div className="lg:w-1/2 flex justify-center w-full">
-          <div className="w-full max-w-md">
-            <motion.div className="bg-white/10 backdrop-blur rounded-3xl p-8 border border-white/20 shadow-2xl">
-              {/* Toggle */}
-              <div className="flex mb-6 bg-white/10 rounded-xl p-1">
-                {["login", "register"].map((m) => (
-                  <button
-                    key={m}
-                    type="button"
-                    onClick={() => {
-                      setMode(m as AuthMode);
-                      setError(null);
-                    }}
-                    className={`flex-1 py-3 rounded-lg text-sm font-medium ${
-                      mode === m
-                        ? "bg-white text-purple-600"
-                        : "text-white"
-                    }`}
-                  >
-                    {m === "login" ? "Login" : "Register"}
-                  </button>
-                ))}
-              </div>
+        {/* Form */}
+        <div className="bg-card rounded-3xl p-8 pt-16 shadow-2xl">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label className="block text-sm font-semibold mb-2">Email</label>
+              <input
+                ref={emailInputRef}
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onFocus={() => setIsPasswordFocused(false)}
+                onBlur={resetEyes}
+                onSelect={(e) =>
+                  moveEyes(
+                    (e.target as HTMLInputElement).selectionStart || 0,
+                    email.length
+                  )
+                }
+                className="login-input text-black"
+                disabled={loading}
+              />
+            </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
-                {mode === "register" && (
-                  <input
-                    placeholder="Full name"
-                    className="w-full px-4 py-3 rounded-xl text-black"
-                    value={formData.name}
-                    onChange={(e) =>
-                      handleInputChange("name", e.target.value)
-                    }
-                  />
-                )}
-
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-black/50" />
-                  <input
-                    type="email"
-                    placeholder="you@gmail.com"
-                    className="w-full pl-10 pr-4 py-3 rounded-xl text-black"
-                    value={formData.email}
-                    onChange={(e) =>
-                      handleInputChange("email", e.target.value)
-                    }
-                  />
-                </div>
-
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-black/50" />
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Password"
-                    className="w-full pl-10 pr-10 py-3 rounded-xl text-black"
-                    value={formData.password}
-                    onChange={(e) =>
-                      handleInputChange("password", e.target.value)
-                    }
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword((s) => !s)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2"
-                  >
-                    {showPassword ? <EyeOff /> : <Eye />}
-                  </button>
-                </div>
-
-                {mode === "register" && (
-                  <input
-                    type="password"
-                    placeholder="Confirm password"
-                    className="w-full px-4 py-3 rounded-xl text-black"
-                    value={formData.confirmPassword}
-                    onChange={(e) =>
-                      handleInputChange("confirmPassword", e.target.value)
-                    }
-                  />
-                )}
-
-                {/* ✅ TERMS & PRIVACY */}
-                {mode === "register" && (
-                  <div className="flex items-start gap-2">
-                    <input
-                      type="checkbox"
-                      checked={termsAccepted}
-                      onChange={(e) =>
-                        setTermsAccepted(e.target.checked)
-                      }
-                      className="mt-1 h-4 w-4"
-                    />
-                    <p className="text-sm text-white/80">
-                      I agree to the{" "}
-                      <a
-                        href="/privacy-policy"
-                        target="_blank"
-                        className="underline"
-                      >
-                        Privacy Policy
-                      </a>{" "}
-                    </p>
-                  </div>
-                )}
-
-                {error && (
-                  <p className="text-sm text-rose-300">{error}</p>
-                )}
-
+            <div>
+              <label className="block text-sm font-semibold mb-2">Password</label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onFocus={() => setIsPasswordFocused(true)}
+                  onBlur={() => setIsPasswordFocused(false)}
+                  className="login-input pr-12 text-black"
+                  disabled={loading}
+                />
                 <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full py-3 bg-white text-purple-600 rounded-xl font-semibold"
+                  type="button"
+                  onClick={toggleShowPassword}
+                  className="absolute right-3 top-1/2 -translate-y-1/2"
                 >
-                  {isLoading
-                    ? "Please wait..."
-                    : mode === "login"
-                    ? "Sign In"
-                    : "Create Account"}
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
-              </form>
-            </motion.div>
+              </div>
+            </div>
+
+            {error && (
+              <p className="text-sm text-red-600 text-center">{error}</p>
+            )}
+
+            <button className="login-button" disabled={loading}>
+              {loading ? "Logging in..." : "Log In"}
+            </button>
+          </form>
+
+          <div className="mt-6 text-center">
+            <a className="text-sm text-muted-foreground hover:text-card-foreground">
+              Forgot password?
+            </a>
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default EventAuth;

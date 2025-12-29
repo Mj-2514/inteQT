@@ -11,6 +11,13 @@ import rateLimit from "express-rate-limit";
 import { fileURLToPath } from "url";
 
 
+
+import eventRoutes from "./routes/eventRoutes.js";
+import eventAdminRoutes from "./routes/eventAdminRoutes.js";
+import eventAuthRoutes from "./routes/eventAuthRoutes.js";
+import eventUserRoutes from "./routes/eventUserRoutes.js"
+
+
 // utils
 import connectDB from "./utils/db.js";
 
@@ -18,8 +25,9 @@ import connectDB from "./utils/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import blogRoutes from "./routes/blogRoutes.js";
 import formRoutes from "./routes/formRoutes.js";
-import eventRoutes from "./routes/EventRoutes.js";
-import eventAuthRoutes from "./routes/eventAuthRoutes.js";
+
+
+import adminBlogRoutes from "./routes/adminBlogRoutes.js";
 
 
 // middleware
@@ -27,7 +35,7 @@ import errorHandler from "./Middleware/errorMiddleware.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-
+app.use(express.json());
 // Needed for __dirname in ESM
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -79,8 +87,14 @@ app.use(
 app.use("/api/auth", authRoutes);
 app.use("/api/blogs", blogRoutes);
 app.use("/api/forms", formRoutes);
+app.use("/api/admin", adminBlogRoutes);
+app.use("/uploads", express.static("uploads"));
+app.use("/api/events/auth", eventAdminRoutes);
 app.use("/api/events", eventRoutes);
-app.use("/api/events/auth", eventAuthRoutes);
+app.use("/api/event-auth", eventAuthRoutes)
+app.use("/api/events/user", eventUserRoutes)
+
+
 
 // ---------- Health ----------
 app.get("/api/health", (req, res) => {

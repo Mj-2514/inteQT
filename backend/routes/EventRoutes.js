@@ -1,47 +1,51 @@
 import express from "express";
-import { authEvent } from "../Middleware/AuthEventMiddleware.js";
-import { eventAdminOnly } from "../Middleware/eventAdmin.js";
-import eventUpload from "../Middleware/uploadMiddleware.js";
 import {
-  getEvents,
-  addEvent,
-  updateEvent,
-  deleteEvent,
-   getEventById
+  createEvent,
+  getMyEvents,
+  getPublishedEvents,
+  getEventBySlug
 } from "../controllers/eventController.js";
+import dotenv from "dotenv";
+dotenv.config();
+
+
+import { eventProtect } from "../Middleware/auth.middleware.js";
+import {upload} from "../Middleware/upload.js";
 
 const router = express.Router();
 
-/* =========================
-   GET ALL EVENTS
-========================= */
-router.get("/", getEvents);
+/* ===============================
+   PUBLIC ROUTES
+================================ */
 
-/* =========================
-   ADD EVENT (FIXED)
-   POST /api/events/add
-========================= */
+// Get all published events
+// GET /api/events
+router.get("/all-events", getPublishedEvents);
+
+// Get single event by slug + increment views
+// GET /api/events/:slug
+router.get("/:slug", getEventBySlug);
+
+
+/* ===============================
+   USER ROUTES
+================================ */
+
+// Create event (user/admin)
+// POST /api/events
 router.post(
-  "/add",
-  authEvent,
-  eventUpload.single("media"), // MUST be "media"
-  addEvent
+  "/create",
+  eventProtect,
+  upload.single("media"), // Cloudinary upload
+  createEvent
 );
+
+// Get logged-in user's events
+// GET /api/events/my
 router.get(
-  "/:id",
-  authEvent,
-  eventAdminOnly,
-  getEventById
+  "/my",
+  eventProtect,
+  getMyEvents
 );
-
-/* =========================
-   UPDATE EVENT
-========================= */
-router.put("/:id", authEvent, eventAdminOnly, updateEvent);
-
-/* =========================
-   DELETE EVENT
-========================= */
-router.delete("/:id", authEvent, eventAdminOnly, deleteEvent);
 
 export default router;

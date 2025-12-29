@@ -31,6 +31,7 @@ import DetailedBlog from "./pages/DetailedBlog";
 import CreateBlog from "./pages/CreateBlog";
 import AdminBlogList from "./pages/AdminBlogList";
 import NotFound from "./pages/NotFound";
+import CreateUser from "./pages/admin/CreateUser";
 
 /* =====================
    SERVICES
@@ -113,7 +114,7 @@ import Liechtenstein from "./europe/Liechtenstein";
 import Lithuania from "./europe/Lithuania";
 import Luxembourg from "./europe/Luxemborg";
 import Malta from "./europe/Malta";
-
+import UserCreateBlog from "./pages/CreateUserBlog";
 
 /* ===================== AFRICA ===================== */
 import Algeria from "./africa/Algeria";
@@ -170,6 +171,13 @@ import Haiti from "./north-america/Haiti";
 import Honduras from "./north-america/Honduras";
 import Jamaica from "./north-america/Jamaica";
 import Mexico from "./north-america/Mexico";
+import AdminDashboard from "./pages/AdminDashboard";
+import PendingBlogs from "./pages/admin/PendingBlogs";
+import ApprovedBlogs from "./pages/admin/ApprovedBlogs";
+import RejectedBlogs from "./pages/admin/RejectedBlogs";
+import ManageUsers from "./pages/admin/AllBlogs";
+import UserDashboard from "./pages/UserDashboard";
+import EventManageUsers from "./pages/ManageUsers";
 
 
 /* ===================== SOUTH AMERICA ===================== */
@@ -180,6 +188,9 @@ import Chile from "./southAmerica/Chile";
 import Colombia from "./southAmerica/Colombia";
 import Ecuador from "./southAmerica/Ecuador";
 import Guyana from "./southAmerica/Guyana";
+import ProtectedRoute from "./components/ProtectedRoute";
+import EventProtectedRoute from "./components/EventProtectedRoutes";
+
 
 /* ===================== OCEANIA ===================== */
 import Australia from "./ocenia/Australia";
@@ -187,15 +198,24 @@ import Fiji from "./ocenia/Fiji";
 import Kiribati from "./ocenia/Kiribati";
 import MarshallIslands from "./ocenia/MarshalIslands";
 import EventAuth from "./pages/EventAuth";
-import CreateEvent from "./pages/CreateEvent";
+import CreateEvent from "./pages/CreateEvents";
 import EditEvent from "./pages/EditEvent";
 import Aeta from "./pages/Aeta";
+import EventAdminDashboard from "./pages/EventAdminDashboard";
+import RejectedEvents from "./pages/RejectedEvents";
+import PendingEvents from "./pages/PendingEvents";
+import AllEvents from "./pages/AllEvents";
+import EventCreateUser from "./pages/EventCreateUSer";
+import EventUserDashboard from "./pages/EventUserDashboard";
+import EventReview from "./pages/EventReview";
+
 
 
 /* =====================
    LAYOUT
 ===================== */
 const PageLayout = ({ children }: { children: React.ReactNode }) => (
+  
   <>
     <Navbar />
     {children}
@@ -207,6 +227,8 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => (
    APP
 ===================== */
 const App = () => {
+  
+  
   return (
     <TooltipProvider>
       <Toaster />
@@ -226,25 +248,93 @@ const App = () => {
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/global-nsoc" element={<GlobalNsoc />} />
           <Route path="/gems" element={<Gems />} />
+          <Route
+  path="/admin-dashboard"
+  element={
+    <ProtectedRoute adminOnly>
+      <AdminDashboard />
+    </ProtectedRoute>
+  }
+/>
+
 
           {/* Main sections */}
           <Route path="/coverage" element={<PageLayout><Coverage /></PageLayout>} />
+          <Route path="/events/login" element={<PageLayout><EventAuth /></PageLayout>} />
           <Route path="/services" element={<PageLayout><Services /></PageLayout>} />
           <Route path="/partner-center" element={<PageLayout><PartnerCenter /></PageLayout>} />
           <Route path="/cases" element={<PageLayout><Cases /></PageLayout>} />
           <Route path="/events" element={<PageLayout><Events /></PageLayout>} />
           <Route path="/blogs" element={<PageLayout><Blogs /></PageLayout>} />
           <Route path="/contact" element={<PageLayout><Contact /></PageLayout>} />
-          <Route path="/events/auth" element={<PageLayout><EventAuth /></PageLayout>} />
-          <Route path="/events/create" element={<PageLayout><CreateEvent /></PageLayout>} />
           <Route path="/events/edit/:id" element={<PageLayout><EditEvent /></PageLayout>} />
           <Route path="/services/aeta" element={<PageLayout><Aeta /></PageLayout>} />
-          
+          <Route path="/user-dashboard" element={
+  <ProtectedRoute>
+    <UserDashboard />
+  </ProtectedRoute>
+} />
+
+<Route path="/event-admin-dashboard/rejected" element={
+  <EventProtectedRoute>
+    <RejectedEvents />
+  </EventProtectedRoute>
+} />
+<Route path="/admin/create-event" element={
+  <EventProtectedRoute>
+    <CreateEvent />
+  </EventProtectedRoute>
+} />
+<Route path="/event/dashboard" element={
+  <EventProtectedRoute>
+    <EventUserDashboard />
+  </EventProtectedRoute>
+} />
+
+<Route path="event-admin-dashboard/events/:id" element={
+              <ProtectedRoute>
+                <EventReview />
+              </ProtectedRoute>
+            } />
+
+<Route path="/event/admin-dashboard" element={
+  <EventProtectedRoute>
+    <EventAdminDashboard />
+  </EventProtectedRoute>
+} />
+
+<Route path="/event-admin-dashboard/pending" element={
+  <EventProtectedRoute>
+    <PendingEvents />
+  </EventProtectedRoute>
+} />
+
+ <Route path="/event-admin-dashboard/create-user" element={<PageLayout><EventCreateUser /></PageLayout>} />
+
+<Route path="/event-admin-dashboard/events" element={
+  <EventProtectedRoute>
+    <AllEvents />
+  </EventProtectedRoute>
+} />
+
+<Route path="/event-admin-dashboard/manage-users" element={
+  <EventProtectedRoute>
+    <EventManageUsers />
+  </EventProtectedRoute>
+} />
+
+<Route path="/create-blog" element={
+  <ProtectedRoute>
+    <UserCreateBlog />
+  </ProtectedRoute>
+} />
+
 
           /* =====================
    ASIA – COUNTRIES
 ===================== */
 <Route path="/coverage/asia/afghanistan" element={<PageLayout><Afghanistan /></PageLayout>} />
+<Route path="/admin/create-user" element={<ProtectedRoute adminOnly><CreateUser/></ProtectedRoute>} />
 <Route path="/coverage/asia/armenia" element={<PageLayout><Armenia /></PageLayout>} />
 <Route path="/coverage/asia/azerbaijan" element={<PageLayout><Azerbaijan /></PageLayout>} />
 <Route path="/coverage/asia/bahrain" element={<PageLayout><Bahrain /></PageLayout>} />
@@ -387,8 +477,20 @@ const App = () => {
           <Route path="/blog/:slug" element={<DetailedBlog />} />
 
           {/* Admin */}
-          <Route path="/create" element={<CreateBlog />} />
+          <Route
+  path="/admin/create-blog"
+  element={
+    <ProtectedRoute adminOnly>
+      <CreateBlog />
+    </ProtectedRoute>
+  }
+/>
           <Route path="/admin/blogs" element={<AdminBlogList />} />
+          <Route path="/admin-dashboard/pending" element={<ProtectedRoute adminOnly><PendingBlogs /></ProtectedRoute>} />
+<Route path="/admin-dashboard/approved" element={<ProtectedRoute adminOnly><ApprovedBlogs /></ProtectedRoute>} />
+<Route path="/admin-dashboard/rejected" element={<ProtectedRoute adminOnly><RejectedBlogs /></ProtectedRoute>} />
+<Route path="/admin-dashboard/deleted-users" element={<ProtectedRoute adminOnly><ManageUsers /></ProtectedRoute>} />
+
 
           {/* Services */}
           <Route path="/support" element={<Support />} />

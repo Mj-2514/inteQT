@@ -21,6 +21,22 @@ const blogSchema = new mongoose.Schema({
   published: { type: Boolean, default: true },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
+  status: {
+  type: String,
+  enum: ["pending", "approved", "rejected"],
+  default: "pending"
+},
+
+adminNote: {
+  type: String,
+  default: ""
+},
+
+reviewedBy: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "User"
+},
+
 });
 
 // pre validate same as before

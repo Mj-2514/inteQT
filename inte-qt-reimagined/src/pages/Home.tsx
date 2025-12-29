@@ -10,8 +10,8 @@ import {
   Shield,
   Network,
   ArrowRight,
-  Users,
   TrendingUp,
+  Users,
   Award,
   Eye,
   Plane,
@@ -25,6 +25,7 @@ import {
 const nsocImage = "https://www.hrcloud.com/hubfs/workplace.gif";
 
 const Home: React.FC = () => {
+  
   const services = [
     {
       title: "Dedicated Lines",
@@ -50,14 +51,6 @@ const Home: React.FC = () => {
         "https://www.gadgetmatch.com/wp-content/uploads/2018/12/GadgetMatch-20181219-5G-Explainer-03.gif",
       icon: Globe,
     },
-  ];
-
-  const partnerBenefits = [
-    { title: "Global", subtitle: "Interfacing", icon: Globe },
-    { title: "Transparency of", subtitle: "Deal Cycle", icon: TrendingUp },
-    { title: "A Forum to", subtitle: "Gain", icon: Users },
-    { title: "Opportunity to", subtitle: "Grow", icon: Award },
-    { title: "Efficient", subtitle: "Quote to Cash", icon: DollarSign },
   ];
 
   const industries = [
@@ -91,6 +84,13 @@ const Home: React.FC = () => {
       location: "InterContinental London - The O2",
       img: "https://i.imgur.com/XAx622Y.jpg",
     },
+  ];
+    const partnerBenefits = [
+    { title: "Global", subtitle: "Interfacing", icon: Globe },
+    { title: "Transparency of", subtitle: "Deal Cycle", icon: TrendingUp },
+    { title: "A Forum to", subtitle: "Gain", icon: Users },
+    { title: "Opportunity to", subtitle: "Grow", icon: Award },
+    { title: "Efficient", subtitle: "Quote to Cash", icon: DollarSign },
   ];
 
   // === SEO values ===
@@ -178,7 +178,7 @@ const Home: React.FC = () => {
           orgJson,
           websiteJson,
           breadcrumbJson,
-          backlinkJson, // ← added backlink JSON-LD
+          backlinkJson,
         ]}
       />
 
@@ -212,9 +212,6 @@ const Home: React.FC = () => {
   Managed L3 Internet Global Services — Dedicated Lines, DIA, SD-WAN
   underlay and 24×7 NSOC.
 </p>
-
-
-
 
           <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
             <Button
@@ -318,7 +315,41 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* PARTNER BENEFITS */}
+      {/* FULL-SCREEN VIDEO SECTION */}
+      <Link 
+        to="/services/aeta" 
+        className="block relative w-full group cursor-pointer overflow-hidden bg-black"
+      >
+        {/* Video fills entire section */}
+        <video
+          src="https://res.cloudinary.com/dmhhkhgny/video/upload/v1745406688/website/vzw7z92zdvomwfvwlguc.mp4"
+          className="w-full h-auto block"
+          autoPlay
+          muted
+          loop
+          playsInline
+        />
+        
+        {/* Overlay that darkens on hover */}
+        <div className="absolute inset-0  transition-all duration-500" />
+        
+        {/* Content overlay */}
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-4">
+          <div className="max-w-4xl mx-auto">
+            
+            
+            
+            {/* Click indicator - appears on hover */}
+            
+          </div>
+
+          {/* Global coverage badge - fixed at bottom */}
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+            
+          </div>
+        </div>
+      </Link>
+
       <section className="py-16 sm:py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
@@ -382,7 +413,6 @@ const Home: React.FC = () => {
     py-6
   "
 >
-
 
            <div className="flex items-center gap-4 mb-4">
   <Eye className="w-10 h-10 text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]" />

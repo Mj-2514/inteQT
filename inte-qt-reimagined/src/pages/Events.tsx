@@ -1,24 +1,51 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
-import Footer from '../components/Footer';
+import Footer from "../components/Footer";
 import { Button } from "@/components/ui/button";
 import {
   Calendar,
   MapPin,
-  ArrowRight,
   Plus,
   Pencil,
   Trash2,
+  LogIn,
+  User,
+  Shield,
+  ExternalLink,
 } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 
+/* =========================
+   API BASE
+========================= */
 const API_BASE = import.meta.env.DEV
   ? "http://localhost:5000"
   : "https://inteqt.onrender.com";
 
 /* =========================
-   Helpers
+   TYPES (MATCH BACKEND)
+========================= */
+interface EventItem {
+  _id: string;
+  title: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  location?: string;
+  city?: string;
+  type: string;
+  introMedia?: string;
+  mediaType?: "image" | "video" | "gif" | "none";
+  linkedPostUrl?: string; // ✅ MATCHES SCHEMA
+  status: "pending" | "published" | "rejected";
+  slug: string;
+  views: number;
+  tags?: string[];
+}
+
+/* =========================
+   AUTH HELPER
 ========================= */
 const getEventUser = () => {
   try {
@@ -30,7 +57,7 @@ const getEventUser = () => {
 };
 
 /* =========================
-   Date Formatter
+   DATE FORMATTER
 ========================= */
 const formatEventDateRange = (start: string, end: string) => {
   const s = new Date(start);
@@ -42,16 +69,6 @@ const formatEventDateRange = (start: string, end: string) => {
       month: "short",
       year: "numeric",
     });
-  }
-
-  const sameMonth = s.getMonth() === e.getMonth();
-  const sameYear = s.getFullYear() === e.getFullYear();
-
-  if (sameMonth && sameYear) {
-    return `${s.getDate()} – ${e.getDate()} ${s.toLocaleDateString("en-IN", {
-      month: "short",
-      year: "numeric",
-    })}`;
   }
 
   return `${s.toLocaleDateString("en-IN", {
@@ -66,272 +83,266 @@ const formatEventDateRange = (start: string, end: string) => {
 };
 
 /* =========================
-   Types
+   COMPONENT
 ========================= */
-type EventItem = {
-  _id?: string;
-  title: string;
-  startDate: string;
-  endDate: string;
-  location: string;
-  city: string;
-  description: string;
-  type: string;
-  link?: string;
-  mediaUrl?: string;
-};
-
 export default function Events() {
   const navigate = useNavigate();
+  const [events, setEvents] = useState<EventItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const eventUser = getEventUser();
   const isLoggedIn = Boolean(eventUser);
-  const isAdmin = Boolean(eventUser?.isAdmin === true);
-
-  const [events, setEvents] = useState<EventItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const isAdmin = Boolean(eventUser?.isAdmin);
 
   /* =========================
-     Fetch Events
+     FETCH PUBLISHED EVENTS
   ========================= */
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const res = await fetch(`${API_BASE}/api/events`);
+        const res = await fetch(`${API_BASE}/api/events/all-events`);
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
         const data = await res.json();
-        setEvents(data || []);
-      } catch {
+
+        // 🔒 GUARANTEE ARRAY
+        const safeEvents: EventItem[] = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.events)
+          ? data.events
+          : [];
+
+        setEvents(safeEvents);
+        setError(null);
+      } catch (err) {
+        console.error("Fetch error:", err);
+        setError("Failed to load events.");
         setEvents([]);
       } finally {
         setLoading(false);
       }
     };
+
     fetchEvents();
   }, []);
 
   /* =========================
-     Delete Event (ADMIN)
+     DELETE (ADMIN ONLY)
   ========================= */
-  const handleDelete = async (id?: string) => {
-    if (!id) return;
-    if (!window.confirm("Delete this event?")) return;
+  const handleDelete = async (id: string) => {
+    if (!window.confirm("Delete this event permanently?")) return;
 
     const token = localStorage.getItem("eventToken");
+    if (!token) return navigate("/events/login");
 
-    await fetch(`${API_BASE}/api/events/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    try {
+      const res = await fetch(`${API_BASE}/api/events/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    setEvents((prev) => prev.filter((e) => e._id !== id));
+      if (!res.ok) throw new Error("Delete failed");
+
+      setEvents((prev) => prev.filter((e) => e._id !== id));
+    } catch {
+      alert("Failed to delete event.");
+    }
   };
 
-  const sortedEvents = [...events].sort(
-    (a, b) =>
-      new Date(b.startDate).getTime() -
-      new Date(a.startDate).getTime()
-  );
-  <Helmet>
-  <title>Telecom Events & Exhibitions | Global Conferences & Meetups – inte-QT</title>
+  /* =========================
+     SORT (SAFE)
+  ========================= */
+  const sortedEvents = Array.isArray(events)
+    ? [...events].sort(
+        (a, b) =>
+          new Date(b.startDate).getTime() -
+          new Date(a.startDate).getTime()
+      )
+    : [];
 
-  <meta
-    name="description"
-    content="Explore all global telecom events and exhibitions attended by inte-QT, including ITW, Capacity Europe, Channel Partners Expo, PTC, and more. Meet us at the world’s biggest telecom and connectivity conferences."
-  />
+  /* =========================
+     AUTH CTA BUTTONS
+  ========================= */
+  const renderAuthButtons = () => {
+    if (!isLoggedIn) {
+      return (
+        <Button onClick={() => navigate("/events/login")}>
+          <LogIn className="w-4 h-4 mr-2" />
+          Login to Event Portal
+        </Button>
+      );
+    }
 
-  <meta
-    name="keywords"
-    content="telecom events, telecom exhibitions, ITW conference, capacity europe, enterprise connectivity events, telecom expo, global telecom conferences, networking events telecom"
-  />
+    if (isAdmin) {
+      return (
+        <div className="flex gap-4 justify-center">
+          <Button onClick={() => navigate("/event/admin-dashboard")}>
+            <Shield className="w-4 h-4 mr-2" />
+            Admin Dashboard
+          </Button>
+          <Button variant="outline" onClick={() => navigate("/events/create")}>
+            <Plus className="w-4 h-4 mr-2" />
+            Create Event
+          </Button>
+        </div>
+      );
+    }
 
-  <link rel="canonical" href="https://www.inte-qt.com/events" />
+    return (
+      <div className="flex gap-4 justify-center">
+        <Button onClick={() => navigate("/events/dashboard")}>
+          <User className="w-4 h-4 mr-2" />
+          My Events
+        </Button>
+        <Button variant="outline" onClick={() => navigate("/events/create")}>
+          <Plus className="w-4 h-4 mr-2" />
+          Submit Event
+        </Button>
+      </div>
+    );
+  };
 
-  {/* OpenGraph */}
-  <meta property="og:title" content="Telecom Events & Exhibitions | inte-QT" />
-  <meta
-    property="og:description"
-    content="Meet inte-QT at global telecom, connectivity, and cloud networking events worldwide. Explore our upcoming and past event participation."
-  />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://www.inte-qt.com/events" />
-  <meta property="og:image" content="https://imgur.com/y1G9poB.png" />
-
-  {/* Twitter */}
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Telecom Events & Exhibitions | inte-QT" />
-  <meta
-    name="twitter:description"
-    content="Your gateway to major telecom exhibitions and conferences where inte-QT participates globally."
-  />
-  <meta name="twitter:image" content="https://imgur.com/y1G9poB.png" />
-
-  {/* JSON-LD */}
-  <script type="application/ld+json">
-    {`
-      {
-        "@context": "https://schema.org",
-        "@type": "CollectionPage",
-        "name": "Telecom Events & Exhibitions",
-        "description": "A global list of telecom conferences, expos, and events attended by inte-QT.",
-        "url": "https://www.inte-qt.com/events",
-        "publisher": {
-          "@type": "Organization",
-          "name": "inte-QT",
-          "url": "https://www.inte-qt.com"
-        }
-      }
-    `}
-  </script>
-</Helmet>
+  /* =========================
+     RENDER
+  ========================= */
   return (
     <div className="min-h-screen pt-20">
       <Helmet>
-        <title>Telecom Events & Exhibitions | inte-QT</title>
+        <title>Events & Exhibitions | inte-QT</title>
         <meta
           name="description"
-          content="Explore global telecom events, conferences, and exhibitions where inte-QT participates."
+          content="Explore global telecom events and exhibitions attended by inte-QT."
         />
       </Helmet>
 
       {/* HERO */}
       <section
-        className="relative gradient-hero py-24 bg-content bg-center bg-no-repeat"
-        style={{
-          backgroundImage:
-            'url("https://dipoletechi.co.uk/wp-content/uploads/2023/07/ezgif.com-optimize-6.gif")',
-          backgroundSize: "600px",
-          backgroundPosition: "96% center",
-        }}
-      >
-        <div className="absolute inset-0 bg-black/50" />
-        <div className="container mx-auto px-4 text-center relative z-10">
-          <h1 className="text-white text-5xl md:text-6xl font-bold mb-6">
-            Events & Exhibitions
-          </h1>
-          <p className="text-white text-xl md:text-2xl max-w-3xl mx-auto font-bold">
-            Meet us at global industry events
-          </p>
+  className="relative gradient-hero py-24 bg-content bg-center bg-no-repeat"
+  style={{
+    backgroundImage:
+      'url("https://dipoletechi.co.uk/wp-content/uploads/2023/07/ezgif.com-optimize-6.gif")',
+    backgroundSize: "600px",
+    backgroundPosition: "96% center",
+  }}
+>
+  {/* Same overlay strength as original */}
+  <div className="absolute inset-0 bg-black/50" />
 
-          {/* ADMIN ONLY */}
-          
-            <div className="mt-8">
-              <Button
-                className="gradient-primary"
-                onClick={() => navigate("/events/auth")}
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Add Event
-              </Button>
-            </div>
-          
-        </div>
-      </section>
+  {/* Content */}
+  <div className="container mx-auto px-4 text-center relative z-10">
+    <h1 className="text-white text-5xl md:text-6xl font-bold mb-6">
+      Events & Exhibitions
+    </h1>
 
-      {/* EVENTS GRID */}
+    <p className="text-white text-xl md:text-2xl max-w-3xl mx-auto font-bold">
+      Meet us at global industry events
+    </p>
+
+    <div className="flex justify-center gap-4 mt-3">
+      {renderAuthButtons()}
+    </div>
+  </div>
+</section>
+
+
+
+
+
+      {/* EVENTS */}
       <section className="py-20">
         <div className="container mx-auto px-4">
-          {loading && (
+          {loading && <p className="text-center">Loading events…</p>}
+          {error && <p className="text-center text-red-600">{error}</p>}
+
+          {!loading && !error && sortedEvents.length === 0 && (
             <p className="text-center text-muted-foreground">
-              Loading events…
+              No published events yet.
             </p>
           )}
 
-          {!loading && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-7xl mx-auto">
-              {sortedEvents.map((event) => (
-                <Card
-                  key={event._id}
-                  className="overflow-hidden rounded-xl hover:shadow-xl transition flex flex-col"
-                >
-                  {/* IMAGE — NO CROPPING */}
-                  {event.mediaUrl && (
-                    <div className="w-full aspect-[16/9] bg-muted flex items-center justify-center">
-                      <img
-                        src={event.mediaUrl}
-                        alt={event.title}
-                        className="max-w-full max-h-full object-contain"
-                      />
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+            {sortedEvents.map((event) => (
+              <Card key={event._id} className="flex flex-col">
+                {event.introMedia && (
+                  <img
+                    src={event.introMedia}
+                    alt={event.title}
+                    className="aspect-video object-cover"
+                  />
+                )}
+
+                <CardContent className="p-6 flex flex-col flex-1">
+                  <h3 className="text-2xl font-bold mb-2">
+                    {event.title}
+                  </h3>
+
+                  <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
+                    {event.description}
+                  </p>
+
+                  <div className="text-sm space-y-2 mb-6">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4" />
+                      {formatEventDateRange(
+                        event.startDate,
+                        event.endDate
+                      )}
                     </div>
+                    {(event.location || event.city) && (
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4" />
+                        {event.location}
+                        {event.city ? `, ${event.city}` : ""}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* ✅ READ MORE */}
+                  {event.linkedPostUrl && (
+                    <Button
+                      variant="outline"
+                      className="mb-4 flex items-center gap-2"
+                      onClick={() =>
+                        window.open(event.linkedPostUrl, "_blank")
+                      }
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                      Read more
+                    </Button>
                   )}
 
-                  <CardContent className="p-6 flex flex-col flex-1">
-                    <p className="text-xs font-semibold uppercase text-primary mb-2">
-                      {event.type}
-                    </p>
-
-                    <h3 className="text-2xl font-bold mb-3">
-                      {event.title}
-                    </h3>
-
-                    <p className="text-muted-foreground text-sm line-clamp-3 mb-4">
-                      {event.description}
-                    </p>
-
-                    <div className="text-sm text-muted-foreground space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4" />
-                        {formatEventDateRange(
-                          event.startDate,
-                          event.endDate
-                        )}
-                      </div>
-
-                      <div className="flex items-start gap-2">
-                        <MapPin className="w-4 h-4 mt-0.5" />
-                        <span>
-                          {event.location}
-                          <br />
-                          {event.city}
-                        </span>
-                      </div>
+                  {isAdmin && (
+                    <div className="mt-auto flex gap-2">
+                      <Button
+                        size="sm"
+                        onClick={() =>
+                          navigate(`/events/edit/${event._id}`)
+                        }
+                      >
+                        <Pencil className="w-3 h-3 mr-1" />
+                        Edit
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => handleDelete(event._id)}
+                      >
+                        <Trash2 className="w-3 h-3 mr-1" />
+                        Delete
+                      </Button>
                     </div>
-
-                    <div className="mt-auto pt-6 space-y-2">
-                      {event.link && (
-                        <Button
-                          className="w-full"
-                          onClick={() =>
-                            window.open(event.link!, "_blank")
-                          }
-                        >
-                          See Event <ArrowRight className="ml-2 w-4 h-4" />
-                        </Button>
-                      )}
-
-                      {/* ADMIN ONLY */}
-                      {isAdmin && event._id && (
-                        <div className="flex gap-2">
-                          <Button
-                            variant="outline"
-                            className="w-full"
-                            onClick={() =>
-                              navigate(`/events/edit/${event._id}`)
-                            }
-                          >
-                            <Pencil className="w-4 h-4 mr-1" />
-                            Edit
-                          </Button>
-
-                          <Button
-                            variant="destructive"
-                            className="w-full"
-                            onClick={() => handleDelete(event._id)}
-                          >
-                            <Trash2 className="w-4 h-4 mr-1" />
-                            Delete
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+                  )}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
       </section>
+
       <Footer />
     </div>
   );

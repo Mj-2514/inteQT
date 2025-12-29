@@ -1,16 +1,43 @@
-// models/SocialNotification.js
-const mongoose = require("mongoose");
+import mongoose from 'mongoose';
 
-const socialNotificationSchema = new mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: "SocialUser", required: true }, // recipient
-  actor: { type: mongoose.Schema.Types.ObjectId, ref: "SocialUser" }, // who triggered it
-  type: { type: String, required: true }, // post_like, comment, mention, reply, reaction
-  data: { type: mongoose.Schema.Types.Mixed }, // { postId, commentId, reactionType, snippet, ... }
-  read: { type: Boolean, default: false },
-  createdAt: { type: Date, default: Date.now },
+const userSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true,
+    lowercase: true,
+    validate: {
+      validator: function(v) {
+        return /^[^\s@]+@inte-qt\.com$/.test(v);
+      },
+      message: 'Email must be from @inte-qt.com domain'
+    }
+  },
+  password: {
+    type: String,
+    required: true
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false
+  },
+  isDeleted: {
+    type: Boolean,
+    default: false
+  },
+  deletedAt: {
+    type: Date,
+    default: null
+  }
+}, {
+  timestamps: true
 });
 
-socialNotificationSchema.index({ user: 1, read: 1, createdAt: -1 });
-
-const SocialNotification = mongoose.model("SocialNotification", socialNotificationSchema);
-export default SocialNotification;
+const User = mongoose.model('User', userSchema);
+export default User;

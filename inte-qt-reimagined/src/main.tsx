@@ -2,6 +2,7 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { HelmetProvider } from "react-helmet-async";
+import { AuthProvider } from "./context/AuthContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ThemeProvider from "./context/ThemeContext";
 import App from "./App";
@@ -14,7 +15,9 @@ createRoot(document.getElementById("root")!).render(
     <HelmetProvider>
       <ThemeProvider>
         <QueryClientProvider client={queryClient}>
+          <AuthProvider>
           <App />
+          </AuthProvider>
         </QueryClientProvider>
       </ThemeProvider>
     </HelmetProvider>

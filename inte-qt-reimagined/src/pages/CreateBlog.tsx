@@ -2,8 +2,6 @@ import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { BookOpen, CheckCircle2, AlertTriangle } from "lucide-react";
-
-// adjust this path to your actual Navbar component
 import Navbar from "../components/Navbar";
 
 const API_BASE = import.meta.env.DEV
@@ -22,10 +20,6 @@ function looksLikeUrl(s: string) {
   } catch {
     return false;
   }
-}
-
-function urlLooksLikeVideo(url = "") {
-  return /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url);
 }
 
 function isVideoFile(f?: File | null) {
@@ -58,15 +52,14 @@ const CreateBlog: React.FC = () => {
   const [introImageFile, setIntroImageFile] = useState<File | null>(null);
   const [descImageFile, setDescImageFile] = useState<File | null>(null);
 
-  // external URL options (user can paste a hosted GIF/image/video)
+  // external URL options
   const [introImageUrl, setIntroImageUrl] = useState<string>("");
   const [descImageUrl, setDescImageUrl] = useState<string>("");
 
-  // preview (either object URL of file or the external URL)
+  // preview
   const [introPreview, setIntroPreview] = useState<string | null>(null);
   const [descPreview, setDescPreview] = useState<string | null>(null);
 
-  // whether each preview is a video (controls whether to render <video> vs <img>)
   const [introIsVideo, setIntroIsVideo] = useState(false);
   const [descIsVideo, setDescIsVideo] = useState(false);
 
@@ -84,21 +77,24 @@ const CreateBlog: React.FC = () => {
     if (!authorName.trim()) return "Author name is required.";
     if (!introduction.trim()) return "Introduction is required.";
     if (!description.trim()) return "Description is required.";
+    if (!conclusion.trim()) return "Conclusion is required.";
+    
     if (introWords > 330) return `Introduction exceeds 330 words (${introWords}).`;
     if (descWords > 1500) return `Description exceeds 1500 words (${descWords}).`;
     if (conclWords > 650) return `Conclusion exceeds 650 words (${conclWords}).`;
 
-    // If user provided an external URL, ensure it's a valid URL
-    if (introImageUrl && !looksLikeUrl(introImageUrl)) return "Intro image/video URL is not valid.";
-    if (descImageUrl && !looksLikeUrl(descImageUrl)) return "Description image/video URL is not valid.";
+    // Validate URLs if provided
+    if (introImageUrl && !looksLikeUrl(introImageUrl)) return "Intro URL is not valid.";
+    if (descImageUrl && !looksLikeUrl(descImageUrl)) return "Description URL is not valid.";
 
-    // description image/video is mandatory per your UI
-    if (!descImageFile && !descImageUrl) return "Description image or hosted video/image URL is required.";
+    // Check media - file OR URL for both
+    if (!introImageFile && !introImageUrl) return "Intro image/video is required.";
+    if (!descImageFile && !descImageUrl) return "Description image/video is required.";
 
     return null;
   };
 
-  // handle file selection (keeps file + clears the external URL for that slot)
+  // Handle file selection
   const handleFile = (
     f: File | null,
     setterFile: (f: File | null) => void,
@@ -106,9 +102,13 @@ const CreateBlog: React.FC = () => {
     clearUrlSetter?: (v: string) => void,
     setIsVideo?: (b: boolean) => void
   ) => {
-    // revoke previous preview if it was a blob URL to avoid leaks
-    // we'll check the existing preview via the setter's companion state by reading the current preview (we don't have it here),
-    // so callers should revoke before calling handleFile if they know the preview. To keep it simple, we only set new and rely on revoke elsewhere.
+    // Clean up previous blob URL
+    if (setterPreview === setIntroPreview && introPreview && introPreview.startsWith("blob:")) {
+      revokeIfBlobUrl(introPreview);
+    }
+    if (setterPreview === setDescPreview && descPreview && descPreview.startsWith("blob:")) {
+      revokeIfBlobUrl(descPreview);
+    }
 
     setterFile(f);
 
@@ -124,7 +124,7 @@ const CreateBlog: React.FC = () => {
     if (setIsVideo) setIsVideo(isVideoFile(f));
   };
 
-  // when user types/pastes an external URL, clear file and set preview to that URL
+  // Handle URL change
   const handleUrlChange = (
     url: string,
     setterUrl: (v: string) => void,
@@ -134,103 +134,106 @@ const CreateBlog: React.FC = () => {
   ) => {
     setterUrl(url);
     if (clearFileSetter) clearFileSetter(null);
+    
+    // Clear previous blob URL
+    if (setterPreview === setIntroPreview && introPreview && introPreview.startsWith("blob:")) {
+      revokeIfBlobUrl(introPreview);
+    }
+    if (setterPreview === setDescPreview && descPreview && descPreview.startsWith("blob:")) {
+      revokeIfBlobUrl(descPreview);
+    }
+    
     if (!url) {
       setterPreview && setterPreview(null);
       if (setIsVideo) setIsVideo(false);
       return;
     }
     setterPreview && setterPreview(url);
-    if (setIsVideo) setIsVideo(urlLooksLikeVideo(url));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    const v = validate();
-    if (v) {
-      setError(v);
-      return;
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setError(null);
+
+  const validationError = validate();
+  if (validationError) {
+    setError(validationError);
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("Authentication required");
+
+    const formData = new FormData();
+
+    // =========================
+    // 🔑 BACKEND EXPECTS THIS
+    // =========================
+    const payload = {
+      title: title.trim(),
+      authorLinkedin: authorLinkedin.trim(),
+      tags,
+      introduction: introduction.trim(),
+      description: description.trim(),
+      conclusion: conclusion.trim(),
+      introImageUrl: introImageUrl.trim() || undefined,
+      descriptionImageUrl: descImageUrl.trim() || undefined,
+      published,
+    };
+
+    formData.append("data", JSON.stringify(payload));
+
+    // =========================
+    // FILES (multer reads these)
+    // =========================
+    if (introImageFile) {
+      formData.append("introImage", introImageFile);
     }
 
-    setLoading(true);
-
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) throw new Error("Not authenticated. Please login.");
-
-      const fd = new FormData();
-      fd.append("title", title.trim());
-      fd.append("authorName", authorName.trim());
-      if (authorLinkedin.trim()) {
-        fd.append("authorLinkedin", authorLinkedin.trim());
-      }
-
-      fd.append(
-        "tags",
-        tags
-          .split(",")
-          .map((t) => t.trim())
-          .filter(Boolean)
-          .join(",")
-      );
-      fd.append("introduction", introduction.trim());
-      fd.append("description", description.trim());
-      fd.append("conclusion", conclusion.trim());
-      fd.append("published", String(published));
-
-      // priority: if a file is present, send file; otherwise send external URL field
-      if (introImageFile) {
-        fd.append("introImage", introImageFile);
-      } else if (introImageUrl && looksLikeUrl(introImageUrl)) {
-        fd.append("introImageUrl", introImageUrl.trim());
-      }
-
-      if (descImageFile) {
-        fd.append("descriptionImage", descImageFile);
-      } else if (descImageUrl && looksLikeUrl(descImageUrl)) {
-        fd.append("descriptionImageUrl", descImageUrl.trim());
-      }
-
-      const res = await fetch(`${API_BASE}/api/blogs/add`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: fd,
-      });
-
-      const text = await res.text();
-      let data: any;
-      try {
-        data = text ? JSON.parse(text) : {};
-      } catch {
-        data = text;
-      }
-
-      if (!res.ok) {
-        const msg =
-          (data &&
-            (data.message ||
-              (Array.isArray(data.errors)
-                ? data.errors.map((x: any) => x.msg).join(", ")
-                : JSON.stringify(data)))) ||
-          `Failed: ${res.status}`;
-        throw new Error(msg);
-      }
-
-      setSubmitted(true);
-
-      // revoke object URLs to avoid memory leaks
-      revokeIfBlobUrl(introPreview ?? null);
-      revokeIfBlobUrl(descPreview ?? null);
-
-      setTimeout(() => navigate("/blogs"), 900);
-    } catch (err: any) {
-      setError(err?.message || "Submit failed");
-    } finally {
-      setLoading(false);
+    if (descImageFile) {
+      formData.append("descriptionImage", descImageFile);
     }
-  };
+
+    // DEBUG — this WILL now show "data"
+    console.log("FORM DATA");
+    for (const [k, v] of formData.entries()) {
+      console.log(k, v);
+    }
+
+    const res = await fetch(`${API_BASE}/api/blogs/add`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    const result = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      throw new Error(result?.message || "Blog creation failed");
+    }
+
+    setSubmitted(true);
+    revokeIfBlobUrl(introPreview);
+    revokeIfBlobUrl(descPreview);
+
+    setTimeout(() => navigate("/blogs"), 1000);
+
+  } catch (err: any) {
+    console.error("Submit error:", err);
+    setError(err.message || "Something went wrong");
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
+
 
   const wordBar = (used: number, max: number, colorActive: string, label: string) => {
     const ratio = Math.min(used / max, 1);
@@ -263,19 +266,14 @@ const CreateBlog: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* If Navbar is already in your layout, REMOVE this line */}
       <Navbar />
 
-      {/* Simple top padding so content isn't under the navbar.
-          Adjust pt-16/pt-20 to match your navbar height. */}
       <main className="mx-auto max-w-6xl px-4 pb-10 pt-20 md:pt-24">
-        {/* subtle gradient that respects theme (only strong in dark) */}
         <div className="pointer-events-none fixed inset-0 -z-10">
           <div className="absolute -top-40 left-0 h-72 w-72 rounded-full bg-sky-500/10 blur-3xl dark:bg-sky-500/30" />
           <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-indigo-500/5 blur-3xl dark:bg-indigo-500/30" />
         </div>
 
-        {/* Header row */}
         <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="space-y-1">
             <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground">
@@ -290,31 +288,22 @@ const CreateBlog: React.FC = () => {
 
           <div className="flex flex-wrap gap-2">
             <button
-              onClick={() => navigate("/admin/blogs")}
+              onClick={() => navigate("/admin-dashboard")}
               className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground hover:bg-accent hover:text-accent-foreground"
             >
-              Manage blogs
-            </button>
-            <button
-              onClick={() => navigate("/blogs")}
-              className="inline-flex items-center gap-2 rounded-full bg-primary px-3.5 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90"
-            >
-              View public blog list
+              Back to Dashboard
             </button>
           </div>
         </div>
 
-        {/* Content grid */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
           className="grid gap-6 md:grid-cols-[minmax(0,2.2fr)_minmax(0,1.1fr)]"
         >
-          {/* Main form card */}
           <div className="rounded-3xl border border-border bg-card p-5 shadow-md md:p-6">
             <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Title */}
               <div>
                 <label className="mb-1 block text-sm font-medium">
                   Title <span className="text-destructive">*</span>
@@ -324,10 +313,10 @@ const CreateBlog: React.FC = () => {
                   onChange={(e) => setTitle(e.target.value)}
                   className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none ring-0 placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/40"
                   placeholder="Understanding SD-WAN vs MPLS in Enterprise Networks"
+                  required
                 />
               </div>
 
-              {/* Author + LinkedIn */}
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <label className="mb-1 block text-sm font-medium">
@@ -338,6 +327,7 @@ const CreateBlog: React.FC = () => {
                     onChange={(e) => setAuthorName(e.target.value)}
                     className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none ring-0 placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/40"
                     placeholder="Your name"
+                    required
                   />
                 </div>
 
@@ -352,7 +342,6 @@ const CreateBlog: React.FC = () => {
                 </div>
               </div>
 
-              {/* Tags */}
               <div>
                 <label className="mb-1 block text-sm font-medium">Tags (comma separated)</label>
                 <input
@@ -363,13 +352,12 @@ const CreateBlog: React.FC = () => {
                 />
               </div>
 
-              {/* Introduction */}
               <div>
                 <div className="flex items-center justify-between">
                   <label className="mb-1 block text-sm font-medium">
                     Introduction <span className="text-destructive">*</span>
                   </label>
-                  <p className="text-[11px] text-muted-foreground">Max 330 words — keep it crisp and clear.</p>
+                  <p className="text-[11px] text-muted-foreground">Max 330 words</p>
                 </div>
                 <textarea
                   value={introduction}
@@ -377,15 +365,15 @@ const CreateBlog: React.FC = () => {
                   rows={4}
                   className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none ring-0 placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/40"
                   placeholder="Set the context and hook the reader..."
+                  required
                 />
               </div>
 
-              {/* Intro image/video (file or external URL) */}
               <div className="grid gap-4 md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] md:items-center">
                 <div>
-                  <label className="mb-1 block text-sm font-medium">Intro Image / Video</label>
-
-                  {/* file input - allow images + videos */}
+                  <label className="mb-1 block text-sm font-medium">
+                    Intro Image / Video <span className="text-destructive">*</span>
+                  </label>
                   <input
                     type="file"
                     accept="image/*,video/*"
@@ -393,21 +381,17 @@ const CreateBlog: React.FC = () => {
                       handleFile(
                         e.target.files?.[0] || null,
                         setIntroImageFile,
-                        (p) => {
-                          // revoke old if it was a blob and different from new
-                          if (introPreview && introPreview.startsWith("blob:") && p !== introPreview) revokeIfBlobUrl(introPreview);
-                          setIntroPreview(p);
-                        },
+                        setIntroPreview,
                         setIntroImageUrl,
                         setIntroIsVideo
                       )
                     }
                     className="block w-full text-xs text-muted-foreground file:mr-3 file:rounded-full file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-primary-foreground hover:file:bg-primary/90"
                   />
-                  <p className="mt-1 text-[11px] text-muted-foreground">Ideal: 1200×630, under 50MB for videos, clean header media.</p>
+                  <p className="mt-1 text-[11px] text-muted-foreground">Or use URL below</p>
 
                   <div className="mt-2">
-                    <label className="mb-1 block text-[12px] font-medium">Or paste a hosted GIF / image / video URL</label>
+                    <label className="mb-1 block text-[12px] font-medium">Intro URL</label>
                     <input
                       value={introImageUrl}
                       onChange={(e) =>
@@ -415,17 +399,13 @@ const CreateBlog: React.FC = () => {
                           e.target.value,
                           setIntroImageUrl,
                           setIntroImageFile,
-                          (p) => {
-                            if (introPreview && introPreview.startsWith("blob:")) revokeIfBlobUrl(introPreview);
-                            setIntroPreview(p);
-                          },
+                          setIntroPreview,
                           setIntroIsVideo
                         )
                       }
-                      placeholder="https://media.giphy.com/... or https://site.com/video.mp4"
+                      placeholder="https://media.giphy.com/..."
                       className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none ring-0 placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/40"
                     />
-                    <p className="mt-1 text-[11px] text-muted-foreground">Tip: paste a Giphy/Tenor link or hosted MP4 — we will save the external URL.</p>
                   </div>
                 </div>
 
@@ -440,27 +420,28 @@ const CreateBlog: React.FC = () => {
                 )}
               </div>
 
-              {/* Description */}
               <div>
                 <div className="flex items-center justify-between">
                   <label className="mb-1 block text-sm font-medium">
                     Description <span className="text-destructive">*</span>
                   </label>
-                  <p className="text-[11px] text-muted-foreground">Max 1500 words — main body of your article.</p>
+                  <p className="text-[11px] text-muted-foreground">Max 1500 words</p>
                 </div>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   rows={8}
                   className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none ring-0 placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/40"
-                  placeholder="Break down the concept with sections, examples, and use cases..."
+                  placeholder="Main content..."
+                  required
                 />
               </div>
 
-              {/* Description image/video (file or external URL) */}
               <div className="grid gap-4 md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] md:items-center">
                 <div>
-                  <label className="mb-1 block text-sm font-medium">Description Image / Video (Mandatory)</label>
+                  <label className="mb-1 block text-sm font-medium">
+                    Description Image / Video <span className="text-destructive">*</span>
+                  </label>
                   <input
                     type="file"
                     accept="image/*,video/*"
@@ -468,19 +449,17 @@ const CreateBlog: React.FC = () => {
                       handleFile(
                         e.target.files?.[0] || null,
                         setDescImageFile,
-                        (p) => {
-                          if (descPreview && descPreview.startsWith("blob:") && p !== descPreview) revokeIfBlobUrl(descPreview);
-                          setDescPreview(p);
-                        },
+                        setDescPreview,
                         setDescImageUrl,
                         setDescIsVideo
                       )
                     }
                     className="block w-full text-xs text-muted-foreground file:mr-3 file:rounded-full file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-primary-foreground hover:file:bg-primary/90"
                   />
+                  <p className="mt-1 text-[11px] text-muted-foreground">Or use URL below</p>
 
                   <div className="mt-2">
-                    <label className="mb-1 block text-[12px] font-medium">Or paste a hosted GIF / image / video URL</label>
+                    <label className="mb-1 block text-[12px] font-medium">Description URL</label>
                     <input
                       value={descImageUrl}
                       onChange={(e) =>
@@ -488,17 +467,13 @@ const CreateBlog: React.FC = () => {
                           e.target.value,
                           setDescImageUrl,
                           setDescImageFile,
-                          (p) => {
-                            if (descPreview && descPreview.startsWith("blob:")) revokeIfBlobUrl(descPreview);
-                            setDescPreview(p);
-                          },
+                          setDescPreview,
                           setDescIsVideo
                         )
                       }
-                      placeholder="https://media.giphy.com/... or https://site.com/video.mp4"
+                      placeholder="https://media.giphy.com/..."
                       className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none ring-0 placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/40"
                     />
-                    <p className="mt-1 text-[11px] text-muted-foreground">Required: provide either a file or a hosted image/video URL.</p>
                   </div>
                 </div>
 
@@ -513,22 +488,23 @@ const CreateBlog: React.FC = () => {
                 )}
               </div>
 
-              {/* Conclusion */}
               <div>
                 <div className="flex items-center justify-between">
-                  <label className="mb-1 block text-sm font-medium">Conclusion(Mandatory)</label>
-                  <p className="text-[11px] text-muted-foreground">Max 650 words — key takeaways & CTA.</p>
+                  <label className="mb-1 block text-sm font-medium">
+                    Conclusion <span className="text-destructive">*</span>
+                  </label>
+                  <p className="text-[11px] text-muted-foreground">Max 650 words</p>
                 </div>
                 <textarea
                   value={conclusion}
                   onChange={(e) => setConclusion(e.target.value)}
                   rows={4}
                   className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none ring-0 placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/40"
-                  placeholder="Summarize and tell the reader what to do next..."
+                  placeholder="Summarize..."
+                  required
                 />
               </div>
 
-              {/* Error / success */}
               {error && (
                 <div className="flex items-start gap-2 rounded-xl border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive">
                   <AlertTriangle className="mt-0.5 h-4 w-4" />
@@ -539,11 +515,10 @@ const CreateBlog: React.FC = () => {
               {submitted && !error && (
                 <div className="flex items-center gap-2 rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-500">
                   <CheckCircle2 className="h-4 w-4" />
-                  <p>Submitted! Redirecting to blogs…</p>
+                  <p>Submitted! Redirecting...</p>
                 </div>
               )}
 
-              {/* CTA buttons */}
               <div className="mt-4 flex flex-wrap gap-3">
                 <button
                   type="submit"
@@ -555,23 +530,21 @@ const CreateBlog: React.FC = () => {
 
                 <button
                   type="button"
-                  onClick={() => navigate("/blogs")}
+                  onClick={() => navigate("/admin-dashboard")}
                   className="inline-flex items-center justify-center rounded-full border border-border bg-background px-5 py-2.5 text-sm text-foreground hover:bg-accent hover:text-accent-foreground"
                 >
-                  Cancel & go to blogs
+                  Cancel
                 </button>
               </div>
             </form>
           </div>
 
-          {/* Side panel */}
           <div className="space-y-4">
-            {/* Publish toggle + status */}
             <div className="rounded-3xl border border-border bg-card p-4 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Publish status</p>
-                  <p className="mt-1 text-sm">{published ? "Will be live after submit" : "Saved as draft"}</p>
+                  <p className="mt-1 text-sm">{published ? "Will be live" : "Saved as draft"}</p>
                 </div>
                 <button
                   type="button"
@@ -583,24 +556,22 @@ const CreateBlog: React.FC = () => {
                   <span className={`inline-block h-5 w-5 transform rounded-full bg-background transition ${published ? "translate-x-6" : "translate-x-1"}`} />
                 </button>
               </div>
-              <p className="mt-2 text-[11px] text-muted-foreground">Toggle this to quickly switch between published and draft without losing your content.</p>
             </div>
 
-            {/* Word counters */}
             <div className="space-y-4 rounded-3xl border border-border bg-card p-4 shadow-sm">
               <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Content health</p>
-              {wordBar(introWords, 330, "bg-sky-500", "Introduction words")}
-              {wordBar(descWords, 1500, "bg-indigo-500", "Description words")}
-              {wordBar(conclWords, 650, "bg-emerald-500", "Conclusion words")}
+              {wordBar(introWords, 330, "bg-sky-500", "Introduction")}
+              {wordBar(descWords, 1500, "bg-indigo-500", "Description")}
+              {wordBar(conclWords, 650, "bg-emerald-500", "Conclusion")}
             </div>
 
-            {/* Tips */}
             <div className="rounded-3xl border border-border bg-card p-4 text-xs text-muted-foreground shadow-sm">
-              <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Writing tips</p>
+              <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Tips</p>
               <ul className="list-disc space-y-1 pl-4">
-                <li>Use headings and short paragraphs in the description.</li>
-                <li>Make intro clear enough that even non-networking people understand it.</li>
-                <li>End conclusion with a clear CTA or next step.</li>
+                <li>All fields with * are required</li>
+                <li>Both images/videos are mandatory</li>
+                <li>Use file upload OR URL for each</li>
+                <li>Files take priority over URLs</li>
               </ul>
             </div>
           </div>

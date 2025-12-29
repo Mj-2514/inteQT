@@ -1,28 +1,134 @@
 import mongoose from "mongoose";
 
-const EventSchema = new mongoose.Schema(
+const eventSchema = new mongoose.Schema(
   {
-    mediaUrl: { type: String, required: true },
-    mediaType: {
+    title: {
       type: String,
-      enum: ["image", "gif", "video"],
+      required: true,
+      trim: true,
+      maxlength: 200
+    },
+
+    slug: {
+      type: String,
+      unique: true,
+      lowercase: true,
+      index: true
+    },
+
+    description: {
+      type: String,
       required: true,
     },
-    title: { type: String, required: true },
-    startDate: { type: Date, required: true },
-    endDate: { type: Date, required: true },
-    location: { type: String, required: true },
-    city: { type: String, required: true },
-    description: { type: String, required: true },
-    type: { type: String, required: true },
-    link: String,
+
+    startDate: {
+      type: Date,
+      required: true
+    },
+
+    endDate: {
+      type: Date,
+      required: true,
+      validate: {
+        validator(v) {
+          return v > this.startDate;
+        },
+        message: "End date must be after start date"
+      }
+    },
+
+    location: String,
+    city: String,
+
+    type: {
+      type: String,
+      enum: [
+        "conference",
+        "workshop",
+        "meeting",
+        "seminar",
+        "networking",
+        "webinar",
+        "hackathon",
+        "other"
+      ],
+      default: "meeting"
+    },
+
+    tags: [String],
+
+    introMedia: String,
+
+    mediaType: {
+      type: String,
+      enum: ["image", "video", "gif", "none"],
+      default: "none"
+    },
+    introMedia: {
+    type: String,
+    default: null
+  },
+
+    linkedPostUrl: {
+  type: String,
+  trim: true
+},
+
+
+    status: {
+      type: String,
+      enum: ["pending", "published", "rejected"],
+      default: "pending"
+    },
+
+    rejectionNote: String,
+
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "EventUser",
-      required: true,
+      required: true
     },
+
+    views: {
+      type: Number,
+      default: 0
+    },
+
+    isDeleted: {
+      type: Boolean,
+      default: false
+    },
+
+    deletedAt: Date
   },
   { timestamps: true }
 );
 
-export default mongoose.model("Event", EventSchema);
+/* ===============================
+   SLUG GENERATION (SAFE & CLEAN)
+================================ */
+eventSchema.pre("save", async function () {
+  if (!this.isModified("title")) return;
+
+  const baseSlug = this.title
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/--+/g, "-")
+    .trim();
+
+  let slug = baseSlug;
+  let count = 1;
+
+  const Event = mongoose.model("Event");
+
+  while (await Event.exists({ slug })) {
+    slug = `${baseSlug}-${count++}`;
+  }
+
+  this.slug = slug;
+});
+
+
+
+export default mongoose.model("Event", eventSchema);

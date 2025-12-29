@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Calendar, User } from "lucide-react";
+import { ArrowRight, Calendar, User, Loader2 } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import Footer from "@/components/Footer";
+import { useAuth } from "../context/AuthContext";
 
 const API_BASE = import.meta.env.DEV
   ? "http://localhost:5000"
@@ -39,7 +40,7 @@ type BlogCard = {
   mediaType?: string | null;
 };
 
-const fallbackImage = "https://via.placeholder.com/600x400?text=Blog";
+const fallbackImage = "https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80";
 
 const formatDate = (dateValue?: string | Date): string => {
   if (!dateValue) return "Unknown date";
@@ -52,42 +53,123 @@ const formatDate = (dateValue?: string | Date): string => {
   });
 };
 
+const normalizeUrl = (url?: string | null): string => {
+  if (!url) return fallbackImage;
+  const s = url.trim();
+  
+  // If it's already a full URL, return as is
+  if (/^https?:\/\//i.test(s)) return s;
+  
+  // If it starts with /, it's a local path - prepend the API base URL
+  if (s.startsWith('/')) {
+    // Check if it's a Cloudinary URL that might have been stored incorrectly
+    if (s.includes('cloudinary')) {
+      // If it's a Cloudinary path without protocol, add https
+      return `https:${s}`;
+    }
+    return `${API_BASE}${s}`;
+  }
+  
+  // If it looks like a Cloudinary path without protocol
+  if (s.includes('cloudinary.com') && !s.startsWith('http')) {
+    return `https://${s}`;
+  }
+  
+  return fallbackImage;
+};
+
 function urlLooksLikeVideo(url?: string | null) {
   if (!url) return false;
   return /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url.split("?")[0]);
 }
 
-const mapBlogToCard = (blog: BlogFromApi): BlogCard => {
-  const candidateUrl = blog.descriptionImage || blog.introImage || fallbackImage;
-  const mediaType = blog.descriptionMediaType || blog.introMediaType || null;
-  const imgIsVideo =
-    (mediaType && mediaType.toLowerCase() === "video") ||
-    urlLooksLikeVideo(candidateUrl);
+const decideIsVideo = (url?: string | null, mediaType?: string | null): boolean => {
+  if (!url) return false;
+  
+  // First check the mediaType field from database
+  if (mediaType && mediaType.toLowerCase() === "video") {
+    return true;
+  }
+  
+  // Fallback to URL extension check
+  if (urlLooksLikeVideo(url)) {
+    return true;
+  }
+  
+  return false;
+};
 
-  let category = "";
-  if (Array.isArray(blog.tags)) {
-    category = blog.tags.join(" / ");
-  } else if (typeof blog.tags === "string") {
-    category = blog.tags;
+const mapBlogToCard = (blog: BlogFromApi): BlogCard => {
+  // Try description image first, then intro image, then fallback
+  const candidateUrl = blog.descriptionImage || blog.introImage || null;
+  const normalizedUrl = normalizeUrl(candidateUrl);
+  
+  const mediaType = blog.descriptionMediaType || blog.introMediaType || null;
+  const imgIsVideo = decideIsVideo(candidateUrl, mediaType);
+
+  let category = "Technology";
+  if (blog.tags) {
+    if (Array.isArray(blog.tags)) {
+      category = blog.tags.slice(0, 2).join(" • ");
+    } else if (typeof blog.tags === "string") {
+      category = blog.tags;
+    }
   }
 
   const baseText = blog.introduction || blog.description || "";
-  const maxLen = 220;
+  const maxLen = 160;
   const excerpt =
     baseText.length > maxLen ? baseText.slice(0, maxLen).trim() + "..." : baseText;
 
   return {
     id: blog._id,
-    img: candidateUrl,
+    img: normalizedUrl,
     imgIsVideo,
     mediaType,
     title: blog.title,
-    excerpt: excerpt || "Read this blog to learn more.",
-    author: blog.authorName,
+    excerpt: excerpt || "Explore insights on technology and innovation.",
+    author: blog.authorName || "Anonymous",
     date: formatDate(blog.publicationDate),
-    category: category || "General",
+    category: category || "Technology",
     slug: blog.slug,
   };
+};
+
+const MediaPreview: React.FC<{
+  src: string;
+  alt: string;
+  isVideo: boolean;
+  className?: string;
+}> = ({ src, alt, isVideo, className }) => {
+  const [error, setError] = useState(false);
+
+  if (isVideo && !error) {
+    return (
+      <video
+        src={src}
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="metadata"
+        className={`w-full h-full object-cover ${className}`}
+        onError={() => setError(true)}
+      >
+        <source src={src} type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+    );
+  }
+
+  return (
+    <img
+      src={error ? fallbackImage : src}
+      alt={alt}
+      className={`w-full h-full object-cover ${className}`}
+      onError={() => setError(true)}
+      loading="lazy"
+    />
+  );
 };
 
 const Blogs = () => {
@@ -96,39 +178,50 @@ const Blogs = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  const auth = useAuth();
+  const user = auth?.user ?? null;
+  const isAuthenticated = !!user;
+
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        const endpoint = `${API_BASE}/api/blogs/all`;
-        const res = await fetch(endpoint);
+        console.log("Fetching blogs from:", `${API_BASE}/api/blogs/all`);
+        const res = await fetch(`${API_BASE}/api/blogs/all`);
+        
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        }
+        
         const text = await res.text();
-
         let data: BlogFromApi[] = [];
+
         try {
           data = text ? JSON.parse(text) : [];
-        } catch (e) {
-          throw new Error("Failed to parse blogs response");
+          console.log(`Successfully loaded ${data.length} blogs`);
+          
+          // Debug first blog data
+          if (data.length > 0) {
+            console.log("First blog media info:", {
+              title: data[0].title,
+              introImage: data[0].introImage,
+              descriptionImage: data[0].descriptionImage,
+              introMediaType: data[0].introMediaType,
+              descriptionMediaType: data[0].descriptionMediaType,
+            });
+          }
+        } catch (parseErr) {
+          console.error("Failed to parse JSON:", parseErr, "Text:", text);
+          throw new Error("Invalid response format from server");
         }
 
-        if (!res.ok) {
-          const serverMessage =
-            (data as any)?.message || `Failed with status ${res.status}`;
-          throw new Error(serverMessage);
-        }
-
-        const mapped = data
-          .map((b) => mapBlogToCard(b))
-          .sort(
-            (a, b) =>
-              new Date(b.date).getTime() - new Date(a.date).getTime()
-          );
-
+        const mapped = data.map((b) => mapBlogToCard(b));
         setBlogs(mapped);
       } catch (err: any) {
-        setError(err?.message || "Unable to fetch blogs");
+        console.error("Error fetching blogs:", err);
+        setError(err?.message || "Unable to fetch blogs. Please try again later.");
       } finally {
         setLoading(false);
       }
@@ -137,222 +230,182 @@ const Blogs = () => {
     fetchBlogs();
   }, []);
 
-  // --------------------------
-  // SEO JSON-LD BLOCKS
-  // --------------------------
-
-  const canonical = "https://www.inte-qt.com/blog";
-
-  const orgJson = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: "inteQT",
-    url: "https://www.inte-qt.com",
-    logo: "https://www.inte-qt.com/logo.png",
-    sameAs: [
-      "https://www.linkedin.com/company/bitsandbyteglobal/posts/?feedView=all",
-    ],
+  const handleCreateOrDashboard = () => {
+    if (!isAuthenticated) return navigate("/auth");
+    if (user?.isAdmin) return navigate("/admin-dashboard");
+    return navigate("/user/dashboard");
   };
 
-  const websiteJson = {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    url: "https://www.inte-qt.com",
-    name: "inteQT",
-    potentialAction: {
-      "@type": "SearchAction",
-      target: "https://www.inte-qt.com/search?q={search_term_string}",
-      "query-input": "required name=search_term_string",
-    },
-  };
-
-  const breadcrumbJson = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: "https://www.inte-qt.com",
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Blogs",
-        item: canonical,
-      },
-    ],
-  };
-
-  const blogListJson = {
-    "@context": "https://schema.org",
-    "@type": "Blog",
-    url: canonical,
-    name: "inteQT Blog",
-    description:
-      "Insights on SD-WAN, MPLS, telecom, routing, NSOC operations, and enterprise connectivity.",
-    blogPost: blogs.map((blog) => ({
-      "@type": "BlogPosting",
-      headline: blog.title,
-      image: blog.img,
-      author: {
-        "@type": "Person",
-        name: blog.author,
-      },
-      datePublished: blog.date,
-      url: `https://www.inte-qt.com/blog/${blog.slug}`,
-      description: blog.excerpt,
-    })),
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen pt-20 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 animate-spin mx-auto text-indigo-600" />
+          <p className="mt-4 text-lg text-gray-600">Loading blogs...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen pt-20">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       <Helmet>
-        <title>
-          Blogs & Insights | Telecom, SD-WAN, Internet Access, Automation –
-          inte-QT
-        </title>
-
+        <title>Blogs & Insights | inte-QT</title>
         <meta
           name="description"
           content="Explore blogs and insights on SD-WAN, MPLS, NSOC operations, network monitoring, global connectivity, IoT, automation, SLA management, and enterprise internet solutions from inte-QT."
         />
-        <link rel="canonical" href={canonical} />
-
-        {/* SEO JSON-LD */}
-        <script type="application/ld+json">{JSON.stringify(orgJson)}</script>
-        <script type="application/ld+json">
-          {JSON.stringify(websiteJson)}
-        </script>
-        <script type="application/ld+json">
-          {JSON.stringify(breadcrumbJson)}
-        </script>
-        <script type="application/ld+json">
-          {JSON.stringify(blogListJson)}
-        </script>
+        <link rel="canonical" href="https://www.inte-qt.com/blog" />
       </Helmet>
 
       {/* HERO */}
       <section
-        className="relative gradient-hero py-24 bg-content bg-center bg-no-repeat"
-        style={{
-          backgroundImage:
-            'url("https://gifdb.com/images/high/office-desk-background-myhb5mf4xpj1ews9.gif")',
-          backgroundSize: "500px",
-          backgroundPosition: "10% center",
-        }}
+  className="relative gradient-hero py-24 bg-content bg-center bg-no-repeat"
+  style={{
+    backgroundImage:
+      'url("https://gifdb.com/images/high/office-desk-background-myhb5mf4xpj1ews9.gif")',
+    backgroundSize: "500px",
+    backgroundPosition: "10% center",
+  }}
+>
+  {/* Dark overlay for contrast */}
+  <div className="absolute inset-0 bg-black/50" />
+
+  {/* Content */}
+  <div className="container mx-auto px-4 text-center relative z-10">
+    <div className="max-w-3xl mx-auto text-center">
+      <h1 className="text-white text-5xl md:text-6xl font-bold mb-6 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)] animate-fade-in">
+        Blogs & Insights
+      </h1>
+
+      <p className="text-white text-xl md:text-2xl max-w-3xl mx-auto font-bold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] animate-fade-in-up">
+        Stay informed with the latest industry news, technology insights, and expert analysis
+      </p>
+
+      <button
+        onClick={handleCreateOrDashboard}
+        className="inline-flex items-center px-6 py-3 bg-white text-indigo-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors shadow-lg hover:shadow-xl mt-3"
       >
-        <div className="absolute inset-0 bg-black/50" />
-        <div className="container mx-auto px-4 text-center relative z-10">
-          <h1 className="text-white text-5xl md:text-6xl font-bold mb-6 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)] animate-fade-in">
-            Blogs & Insights
-          </h1>
-          <p className="text-white text-xl md:text-2xl max-w-3xl mx-auto font-bold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] animate-fade-in-up">
-            Stay informed with the latest industry news and insights
-          </p>
-        </div>
-      </section>
+        {isAuthenticated
+          ? user?.isAdmin
+            ? "Go to Admin Dashboard"
+            : "Go to Dashboard"
+          : "Login to Contribute"}
+      </button>
+    </div>
+  </div>
+</section>
 
-      {/* BLOGS */}
-      <section className="py-20">
+
+      {/* BLOGS SECTION */}
+      <section className="py-16">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">Blogs</h2>
-            <p className="text-xl text-muted-foreground">
-              Explore industry insights, trends, and expert opinions
-            </p>
-            <button
-              onClick={() => navigate("/auth")}
-              className="mt-4 px-4 py-2 rounded-lg bg-indigo-600 text-white"
-            >
-              Login to add Blog
-            </button>
-          </div>
-
-          {loading && (
-            <div className="text-center text-muted-foreground">
-              Loading blogs...
-            </div>
-          )}
-          {error && !loading && (
-            <div className="text-center text-rose-500 mb-6">{error}</div>
-          )}
-          {!loading && !error && blogs.length === 0 && (
-            <div className="text-center text-muted-foreground">
-              No blogs found.
-            </div>
-          )}
-
-          {!loading && !error && blogs.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-7xl mx-auto">
-              {blogs.map((blog) => (
-                <Card
-                  key={blog.id}
-                  className="overflow-hidden border-2 rounded-xl hover:shadow-xl transition-all duration-300 bg-background flex flex-col h-full"
+          {error && (
+            <div className="mb-10 max-w-2xl mx-auto">
+              <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+                <h3 className="text-lg font-semibold text-red-800 mb-2">Unable to Load Blogs</h3>
+                <p className="text-red-600 mb-4">{error}</p>
+                <Button 
+                  onClick={() => window.location.reload()} 
+                  variant="outline"
+                  className="border-red-300 text-red-700 hover:bg-red-50"
                 >
-                  <div className="w-full h-56 overflow-hidden bg-muted">
-                    {blog.imgIsVideo ? (
-                      <video
-                        src={blog.img}
-                        autoPlay
-                        loop
-                        muted
-                        controls
-                        playsInline
-                        preload="metadata"
-                        className="w-full h-full object-cover hover:scale-105 transition"
-                      />
-                    ) : (
-                      <img
+                  Try Again
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {!error && blogs.length === 0 && (
+            <div className="text-center py-20">
+              <div className="max-w-md mx-auto">
+                <div className="text-gray-400 mb-4">
+                  <User className="h-16 w-16 mx-auto" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-700 mb-2">No Blogs Yet</h3>
+                <p className="text-gray-500 mb-6">Be the first to share your insights!</p>
+                <Button onClick={handleCreateOrDashboard}>
+                  Create Your First Blog
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {!error && blogs.length > 0 && (
+            <>
+              <div className="mb-12 text-center">
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+                  Latest Articles
+                </h2>
+                <p className="text-gray-600 text-lg">
+                  Discover our collection of {blogs.length} articles
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+                {blogs.map((blog) => (
+                  <Card
+                    key={blog.id}
+                    className="overflow-hidden border border-gray-200 rounded-2xl hover:shadow-2xl transition-all duration-300 bg-white flex flex-col h-full hover:border-indigo-200 group"
+                  >
+                    <div className="w-full h-56 md:h-64 overflow-hidden relative">
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
+                      <MediaPreview
                         src={blog.img}
                         alt={blog.title}
-                        className="w-full h-full object-cover hover:scale-105 transition"
+                        isVideo={blog.imgIsVideo}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
-                    )}
-                  </div>
-
-                  <CardContent className="p-6 flex flex-col flex-1 min-h-[320px]">
-                    {/* Category */}
-                    <p className="text-xs font-semibold uppercase text-primary tracking-wide mb-3">
-                      {blog.category}
-                    </p>
-
-                    {/* Title */}
-                    <h3 className="text-2xl font-bold leading-snug mb-3">
-                      {blog.title}
-                    </h3>
-
-                    {/* Excerpt */}
-                    <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3 mb-4">
-                      {blog.excerpt}
-                    </p>
-
-                    {/* Author and Date */}
-                    <div className="text-sm text-muted-foreground space-y-2 pt-3">
-                      <div className="flex items-center gap-2">
-                        <User className="w-4 h-4" />
-                        <span>{blog.author}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4" />
-                        <span>{blog.date}</span>
+                      {blog.imgIsVideo && (
+                        <div className="absolute top-3 right-3 z-20">
+                          <span className="bg-black/80 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                            <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                            Video
+                          </span>
+                        </div>
+                      )}
+                      <div className="absolute bottom-4 left-4 z-20">
+                        <span className="inline-block px-3 py-1 bg-white/90 backdrop-blur-sm text-gray-800 text-xs font-semibold rounded-full">
+                          {blog.category}
+                        </span>
                       </div>
                     </div>
 
-                    {/* Button at bottom */}
-                    <div className="mt-auto pt-6">
-                      <Button
-                        className="gradient-primary w-full"
-                        onClick={() => navigate(`/blog/${blog.slug}`)}
-                      >
-                        Read More <ArrowRight className="ml-2 w-4 h-4" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                    <CardContent className="p-6 flex flex-col flex-1">
+                      <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-indigo-600 transition-colors">
+                        {blog.title}
+                      </h3>
+                      
+                      <p className="text-gray-600 text-sm leading-relaxed line-clamp-3 mb-4 flex-1">
+                        {blog.excerpt}
+                      </p>
+
+                      <div className="pt-4 border-t border-gray-100">
+                        <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                          <div className="flex items-center gap-2">
+                            <User className="w-4 h-4 text-gray-400" />
+                            <span className="font-medium text-gray-700">{blog.author}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Calendar className="w-4 h-4 text-gray-400" />
+                            <span>{blog.date}</span>
+                          </div>
+                        </div>
+
+                        <Button
+                          className="w-full group/btn"
+                          onClick={() => navigate(`/blog/${blog.slug}`)}
+                          variant="outline"
+                        >
+                          <span>Read Article</span>
+                          <ArrowRight className="ml-2 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </>
           )}
         </div>
       </section>

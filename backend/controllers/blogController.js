@@ -1,78 +1,246 @@
-// controllers/blogController.js
 import Blog from "../models/blogs.js";
-import cloudinary from "../config/Cloudinary.js";
+import User from "../models/user.js";
+import { v2 as cloudinary } from "cloudinary";
+import sendEmail from "../utils/sendMail.js";
+import dotenv from "dotenv";
+dotenv.config();
 
-// -------------------- helpers --------------------
-function countWords(text = '') {
+
+/* =========================
+   CLOUDINARY CONFIGURATION
+========================= */
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+/* =========================
+   HELPERS
+========================= */
+function countWords(text = "") {
   return (text.trim().match(/\S+/g) || []).length;
 }
 
 function parseTags(tags) {
   if (!tags) return [];
   if (Array.isArray(tags)) return tags.map(t => t.trim()).filter(Boolean);
-  return tags.split(',').map(t => t.trim()).filter(Boolean);
-}
-
-function formatDateYYYYMMDD(d) {
-  if (!d) return null;
-  const dt = new Date(d);
-  if (isNaN(dt.getTime())) return null;
-  const yyyy = dt.getFullYear();
-  const mm = String(dt.getMonth() + 1).padStart(2, '0');
-  const dd = String(dt.getDate()).padStart(2, '0');
-  return `${yyyy}/${mm}/${dd}`;
-}
-
-function uploadBufferToCloudinary(buffer, folder, opts = {}) {
-  const resource_type = opts.resource_type || 'auto';
-  return new Promise((resolve, reject) => {
-    const stream = cloudinary.uploader.upload_stream(
-      { folder, resource_type },
-      (error, result) => {
-        if (error) return reject(error);
-        resolve(result);
-      }
-    );
-    stream.end(buffer);
-  });
+  return tags.split(",").map(t => t.trim()).filter(Boolean);
 }
 
 function mediaTypeFromMime(mime) {
-  if (!mime) return 'external';
-  if (mime === 'image/gif') return 'gif';
-  if (mime.startsWith('image/')) return 'image';
-  if (mime.startsWith('video/')) return 'video';
-  return 'external';
+  if (!mime) return "external";
+  if (mime === "image/gif") return "gif";
+  if (mime.startsWith("image/")) return "image";
+  if (mime.startsWith("video/")) return "video";
+  return "external";
 }
 
-function mediaTypeFromUrl(url) {
-  if (!url) return 'external';
-  const lower = url.split('?')[0].toLowerCase();
-  if (lower.endsWith('.gif')) return 'gif';
-  if (lower.match(/\.(mp4|webm|ogg)$/)) return 'video';
-  if (lower.match(/\.(jpg|jpeg|png|webp)$/)) return 'image';
-  return 'external';
+function mediaTypeFromUrl(url = "") {
+  const lower = url.split("?")[0].toLowerCase();
+  if (lower.endsWith(".gif")) return "gif";
+  if (lower.match(/\.(mp4|webm|ogg)$/)) return "video";
+  if (lower.match(/\.(jpg|jpeg|png|webp)$/)) return "image";
+  return "external";
 }
 
-function cloudinaryDirectUrl(maybeUrlOrPublicId) {
-  if (!maybeUrlOrPublicId) return null;
-  const s = String(maybeUrlOrPublicId);
-  if (s.startsWith('http://') || s.startsWith('https://')) return s;
+/* =========================
+   UPLOAD TO CLOUDINARY
+========================= */
+/* =========================
+   UPLOAD TO CLOUDINARY
+========================= */
+const uploadToCloudinary = async (file) => {
   try {
-    const cloudName = (cloudinary.config && cloudinary.config().cloud_name) || process.env.CLOUDINARY_CLOUD_NAME;
-    if (!cloudName) return s;
-    return `https://res.cloudinary.com/${cloudName}/raw/upload/${encodeURIComponent(s)}`;
-  } catch {
-    return s;
+    if (!file || !file.path) {
+      console.error('No file or file path provided:', file);
+      return null;
+    }
+    
+    console.log('Uploading to Cloudinary:', {
+      originalname: file.originalname,
+      mimetype: file.mimetype,
+      size: file.size,
+      path: file.path
+    });
+    
+    // Upload to Cloudinary - use cloudinary directly (already v2)
+    const result = await cloudinary.uploader.upload(file.path, {
+      folder: 'blogs',
+      resource_type: 'auto', // auto-detect image or video
+      timeout: 60000 // 60 second timeout
+    });
+    
+    console.log('Cloudinary upload successful:', {
+      url: result.secure_url,
+      public_id: result.public_id,
+      resource_type: result.resource_type
+    });
+    
+    return {
+      url: result.secure_url,
+      public_id: result.public_id,
+      resource_type: result.resource_type
+    };
+  } catch (error) {
+    console.error('Cloudinary upload error:', error.message);
+    console.error('Error details:', error);
+    return null;
   }
-}
-// -------------------- end helpers --------------------
+};
 
-// -------------------- BLOG CONTROLLERS --------------------
-
-// POST /api/blogs/add
+/* =========================
+   CREATE BLOG
+========================= */
 export const createBlog = async (req, res) => {
   try {
+    const user = req.user;
+    if (!user) return res.status(401).json({ message: "Unauthorized" });
+
+    let parsedData;
+    try {
+      parsedData = JSON.parse(req.body.data || "{}");
+    } catch {
+      return res.status(400).json({ message: "Invalid blog payload" });
+    }
+
+    const {
+      title,
+      authorLinkedin,
+      tags,
+      introduction,
+      description,
+      conclusion,
+      introImageUrl,
+      descriptionImageUrl,
+      published,
+    } = parsedData;
+
+    if (!title || !introduction || !description || !conclusion) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    const introFile = req.files?.introImage?.[0];
+    const descFile = req.files?.descriptionImage?.[0];
+
+    let introMedia = null;
+    let descMedia = null;
+    let introMediaType = "external";
+    let descMediaType = "external";
+
+    // INTRO MEDIA
+    if (introFile) {
+      const upload = await uploadToCloudinary(introFile);
+      introMedia = upload.url;
+      introMediaType = upload.resource_type === "video"
+        ? "video"
+        : introFile.mimetype === "image/gif"
+        ? "gif"
+        : "image";
+    } else if (introImageUrl) {
+      introMedia = introImageUrl.trim();
+      introMediaType = mediaTypeFromUrl(introMedia);
+    }
+
+    // DESCRIPTION MEDIA
+    if (descFile) {
+      const upload = await uploadToCloudinary(descFile);
+      descMedia = upload.url;
+      descMediaType = upload.resource_type === "video"
+        ? "video"
+        : descFile.mimetype === "image/gif"
+        ? "gif"
+        : "image";
+    } else if (descriptionImageUrl) {
+      descMedia = descriptionImageUrl.trim();
+      descMediaType = mediaTypeFromUrl(descMedia);
+    }
+
+    if (!introMedia || !descMedia) {
+      return res.status(400).json({
+        message: "Intro and Description media are required",
+      });
+    }
+
+    const dbUser = await User.findById(user.id).select("name");
+    if (!dbUser) return res.status(401).json({ message: "Invalid user" });
+
+    const blog = new Blog({
+      title: title.trim(),
+      authorName: dbUser.name,
+      authorLinkedin: authorLinkedin || "",
+      tags: tags?.split(",").map(t => t.trim()).filter(Boolean),
+      introduction,
+      description,
+      conclusion,
+      introImage: introMedia,
+      introMediaType,
+      descriptionImage: descMedia,
+      descriptionMediaType: descMediaType,
+      createdBy: user.id,
+      status: user.isAdmin ? "approved" : "pending",
+      published: user.isAdmin ? published : false,
+    });
+
+    await blog.save();
+    // after Blog.create(...)
+try {
+  const admins = await User.find({
+    isAdmin: true,
+    isDeleted: false
+  }).select("email name");
+
+  console.log("BLOG ADMINS FOUND:", admins.length);
+
+  if (admins.length === 0) {
+    console.warn("⚠️ No blog admins found — mail skipped");
+  }
+
+  await Promise.all(
+    admins.map(admin =>
+      sendEmail({
+        to: admin.email,
+        subject: "New Blog Pending Approval",
+        text: `A new blog has been submitted for review.
+
+Title: ${blog.title}
+Author: ${blog.authorName}
+`,
+        html: `
+          <h2>New Blog Pending Approval</h2>
+          <ul>
+            <li><strong>Title:</strong> ${blog.title}</li>
+            <li><strong>Author:</strong> ${blog.authorName}</li>
+          </ul>
+          <p>Please review it in the admin panel.</p>
+        `
+      })
+    )
+  );
+} catch (err) {
+  console.error("BLOG ADMIN MAIL ERROR:", err);
+}
+
+
+    res.status(201).json({
+      message: user.isAdmin
+        ? "Blog published successfully"
+        : "Blog submitted for admin review",
+      blogId: blog._id,
+    });
+
+  } catch (err) {
+    console.error("BLOG CREATE ERROR:", err);
+    res.status(500).json({ message: "Blog submission failed" });
+  }
+};
+
+
+export const updateBlog = async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) return res.status(404).json({ message: "Blog not found" });
+
     const {
       title,
       authorName,
@@ -81,209 +249,341 @@ export const createBlog = async (req, res) => {
       introduction,
       description,
       conclusion,
-      published,
       introImageUrl,
       descriptionImageUrl
     } = req.body;
 
-    if (!title || !authorName || !introduction || !description) {
-      return res.status(400).json({ message: 'Missing required fields' });
-    }
-
-    const folder = process.env.CLOUDINARY_FOLDER || 'inteqt-blogs';
-    let introUrl = introImageUrl || null;
-    let descUrl = descriptionImageUrl || null;
-    let introMediaType = 'image';
-    let descriptionMediaType = 'image';
-
-    // handle intro image (upload or external)
-    if (req.files?.introImage?.[0]?.buffer) {
-      const result = await uploadBufferToCloudinary(req.files.introImage[0].buffer, folder);
-      introUrl = result.secure_url;
-      introMediaType = mediaTypeFromMime(req.files.introImage[0].mimetype) || mediaTypeFromUrl(result.secure_url);
-    } else if (introUrl && typeof introUrl === 'string' && introUrl.trim()) {
-      introUrl = introUrl.trim();
-      introMediaType = mediaTypeFromUrl(introUrl);
-      if (introMediaType === 'external') introMediaType = 'image';
-    }
-
-    // handle description image (upload or external)
-    if (req.files?.descriptionImage?.[0]?.buffer) {
-      const result = await uploadBufferToCloudinary(req.files.descriptionImage[0].buffer, folder);
-      descUrl = result.secure_url;
-      descriptionMediaType = mediaTypeFromMime(req.files.descriptionImage[0].mimetype) || mediaTypeFromUrl(result.secure_url);
-    } else if (descUrl && typeof descUrl === 'string' && descUrl.trim()) {
-      descUrl = descUrl.trim();
-      descriptionMediaType = mediaTypeFromUrl(descUrl);
-      if (descriptionMediaType === 'external') descriptionMediaType = 'image';
-    }
-
-    const tagArray = Array.isArray(tags) ? tags : (typeof tags === 'string' ? tags.split(',').map(t => t.trim()).filter(Boolean) : []);
-
-    const blog = new Blog({
-      title: title.trim(),
-      authorName: authorName.trim(),
-      authorLinkedin: authorLinkedin?.trim() || undefined,
-      tags: tagArray,
-      introduction: introduction?.trim() || '',
-      description: description?.trim() || '',
-      conclusion: conclusion?.trim() || '',
-      introImage: introUrl,
-      introMediaType,
-      descriptionImage: descUrl,
-      descriptionMediaType,
-      published: published !== undefined ? (published === 'true' || published === true) : true,
-      createdBy: req.user?._id
-    });
-
-    const saved = await blog.save();
-    return res.status(201).json(saved);
-
-  } catch (err) {
-    console.error('Error creating blog:', err);
-    return res.status(500).json({ message: 'Server error creating blog', error: err.message });
-  }
-};
-
-// PUT /api/blogs/:id
-export const updateBlog = async (req, res, next) => {
-  try {
-    const blogId = req.params.id;
-    const blog = await Blog.findById(blogId);
-    if (!blog) return res.status(404).json({ message: 'Blog not found' });
-
-    const {
-      title,
-      authorName,
-      authorLinkedin,
-      tags = '',
-      introduction,
-      description,
-      conclusion,
-      published,
-      introImageUrl: newIntroUrl,
-      descriptionImageUrl: newDescUrl
-    } = req.body;
-
     if (title) blog.title = title.trim();
     if (authorName) blog.authorName = authorName.trim();
-    if (authorLinkedin !== undefined) blog.authorLinkedin = authorLinkedin?.trim() || undefined;
+    if (authorLinkedin !== undefined) blog.authorLinkedin = authorLinkedin.trim();
     if (tags) blog.tags = parseTags(tags);
+    if (introduction) blog.introduction = introduction;
+    if (description) blog.description = description;
+    if (conclusion) blog.conclusion = conclusion;
 
-    if (introduction !== undefined) {
-      if (countWords(introduction) > 330) return res.status(400).json({ message: 'Introduction exceeds 330-word limit' });
-      blog.introduction = introduction;
-    }
-    if (description !== undefined) {
-      if (countWords(description) > 1500) return res.status(400).json({ message: 'Description exceeds 1500-word limit' });
-      blog.description = description;
-    }
-    if (conclusion !== undefined) {
-      if (countWords(conclusion) > 650) return res.status(400).json({ message: 'Conclusion exceeds 650-word limit' });
-      blog.conclusion = conclusion;
-    }
-    if (published !== undefined) blog.published = (published === 'true' || published === true);
+    const introFile = req.files?.introImage?.[0];
+    const descFile = req.files?.descriptionImage?.[0];
 
-    const folder = process.env.CLOUDINARY_FOLDER || 'inteqt-blogs';
-
-    // update intro image
-    if (req.files?.introImage?.[0]?.buffer) {
-      const result = await uploadBufferToCloudinary(req.files.introImage[0].buffer, folder);
-      blog.introImage = result.secure_url;
-      blog.introMediaType = mediaTypeFromMime(req.files.introImage[0].mimetype) || mediaTypeFromUrl(result.secure_url);
-    } else if (newIntroUrl && typeof newIntroUrl === 'string' && newIntroUrl.trim()) {
-      blog.introImage = newIntroUrl.trim();
+    if (introFile) {
+      // Upload to Cloudinary
+      const cloudinaryResult = await uploadToCloudinary(introFile);
+      if (cloudinaryResult) {
+        blog.introImage = cloudinaryResult.url;
+        blog.introMediaType = cloudinaryResult.resource_type === 'video' ? 'video' : 
+                              cloudinaryResult.resource_type === 'image' ? 
+                              (introFile.mimetype === 'image/gif' ? 'gif' : 'image') : 'external';
+      }
+    } else if (introImageUrl) {
+      blog.introImage = introImageUrl.trim();
       blog.introMediaType = mediaTypeFromUrl(blog.introImage);
-      if (blog.introMediaType === 'external') blog.introMediaType = 'image';
     }
 
-    // update description image
-    if (req.files?.descriptionImage?.[0]?.buffer) {
-      const result = await uploadBufferToCloudinary(req.files.descriptionImage[0].buffer, folder);
-      blog.descriptionImage = result.secure_url;
-      blog.descriptionMediaType = mediaTypeFromMime(req.files.descriptionImage[0].mimetype) || mediaTypeFromUrl(result.secure_url);
-    } else if (newDescUrl && typeof newDescUrl === 'string' && newDescUrl.trim()) {
-      blog.descriptionImage = newDescUrl.trim();
+    if (descFile) {
+      // Upload to Cloudinary
+      const cloudinaryResult = await uploadToCloudinary(descFile);
+      if (cloudinaryResult) {
+        blog.descriptionImage = cloudinaryResult.url;
+        blog.descriptionMediaType = cloudinaryResult.resource_type === 'video' ? 'video' : 
+                                   cloudinaryResult.resource_type === 'image' ? 
+                                   (descFile.mimetype === 'image/gif' ? 'gif' : 'image') : 'external';
+      }
+    } else if (descriptionImageUrl) {
+      blog.descriptionImage = descriptionImageUrl.trim();
       blog.descriptionMediaType = mediaTypeFromUrl(blog.descriptionImage);
-      if (blog.descriptionMediaType === 'external') blog.descriptionMediaType = 'image';
     }
 
     await blog.save();
-    const out = blog.toObject();
-    out.publicationDate = formatDateYYYYMMDD(out.publicationDate);
-    res.json(out);
+    res.json(blog);
 
   } catch (err) {
-    console.error('Error updating blog:', err);
-    next(err);
+    console.error("UPDATE BLOG ERROR:", err);
+    res.status(500).json({ message: "Blog update failed" });
   }
 };
 
-// GET /api/blogs/all
-export const getBlogs = async (req, res, next) => {
+/* =========================
+   GET USER BLOGS (PUBLIC)
+========================= */
+export const getBlogs = async (req, res) => {
   try {
-    const { q, tag, page = 1, limit = 20 } = req.query || {};
-    const filter = { published: true };
-    if (q) filter.$or = [
-      { title: new RegExp(q, 'i') },
-      { introduction: new RegExp(q, 'i') },
-      { description: new RegExp(q, 'i') }
-    ];
-    if (tag) filter.tags = tag;
-    const skip = (Math.max(1, Number(page)) - 1) * Number(limit);
+    const blogs = await Blog.find({ published: true, status: "approved" })
+      .sort({ createdAt: -1 });
 
-    const blogs = await Blog.find(filter)
-      .select('-description')
-      .sort('-publicationDate')
-      .skip(skip)
-      .limit(Number(limit));
+    res.json(blogs);
+  } catch (err) {
+    console.error("GET BLOGS ERROR:", err);
+    res.status(500).json({ message: "Failed to fetch blogs" });
+  }
+};
 
-    const out = blogs.map(b => {
-      const o = b.toObject();
-      o.introImage = o.introImage ? cloudinaryDirectUrl(o.introImage) : null;
-      o.descriptionImage = o.descriptionImage ? cloudinaryDirectUrl(o.descriptionImage) : null;
-      o.introMediaType = o.introMediaType || (o.introImage ? mediaTypeFromUrl(o.introImage) : null);
-      o.descriptionMediaType = o.descriptionMediaType || (o.descriptionImage ? mediaTypeFromUrl(o.descriptionImage) : null);
-      o.publicationDate = formatDateYYYYMMDD(o.publicationDate);
-      return o;
+/* =========================
+   DELETE BLOG
+========================= */
+export const deleteBlog = async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+    
+    if (blog) {
+      // Delete media from Cloudinary if they're Cloudinary URLs
+      if (blog.introImage?.includes('cloudinary.com')) {
+        const publicId = blog.introImage.split('/').pop().split('.')[0];
+        await cloudinary.v2.uploader.destroy(`blogs/${publicId}`);
+      }
+      
+      if (blog.descriptionImage?.includes('cloudinary.com')) {
+        const publicId = blog.descriptionImage.split('/').pop().split('.')[0];
+        await cloudinary.v2.uploader.destroy(`blogs/${publicId}`);
+      }
+    }
+    
+    await Blog.findByIdAndDelete(req.params.id);
+    res.json({ message: "Blog deleted" });
+  } catch (err) {
+    console.error("DELETE BLOG ERROR:", err);
+    res.status(500).json({ message: "Failed to delete blog" });
+  }
+};
+
+export const getBlogBySlug = async (req, res) => {
+  try {
+    const blog = await Blog.findOne({
+      slug: req.params.slug,
+      published: true,
+      status: "approved",
     });
 
-    res.json(out);
+    if (!blog) return res.status(404).json({ message: "Blog not found" });
+    res.json(blog);
   } catch (err) {
-    next(err);
+    console.error("GET BLOG BY SLUG ERROR:", err);
+    res.status(500).json({ message: "Failed to fetch blog" });
   }
 };
 
-// GET /api/blogs/slug/:slug
-export const getBlogBySlug = async (req, res, next) => {
+/* =========================
+   ADMIN: GET ALL BLOGS (WITH FILTERS)
+========================= */
+export const getAllBlogsAdmin = async (req, res) => {
   try {
-    const blog = await Blog.findOne({ slug: req.params.slug, published: true });
-    if (!blog) return res.status(404).json({ message: 'Blog not found' });
-
-    const o = blog.toObject();
-    o.introImage = o.introImage ? cloudinaryDirectUrl(o.introImage) : null;
-    o.descriptionImage = o.descriptionImage ? cloudinaryDirectUrl(o.descriptionImage) : null;
-    o.introMediaType = o.introMediaType || (o.introImage ? mediaTypeFromUrl(o.introImage) : null);
-    o.descriptionMediaType = o.descriptionMediaType || (o.descriptionImage ? mediaTypeFromUrl(o.descriptionImage) : null);
-    o.publicationDate = formatDateYYYYMMDD(o.publicationDate);
-
-    res.json(o);
+    const { status, page = 1, limit = 10, search = '' } = req.query;
+    const filter = {};
+    
+    // Filter by status
+    if (status && status !== 'all') {
+      filter.status = status;
+    }
+    
+    // Search filter
+    if (search) {
+      filter.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { authorName: { $regex: search, $options: 'i' } },
+        { introduction: { $regex: search, $options: 'i' } }
+      ];
+    }
+    
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const skip = (pageNum - 1) * limitNum;
+    
+    // Get blogs with pagination
+    const blogs = await Blog.find(filter)
+      .populate('createdBy', 'name email')
+      .populate('reviewedBy', 'name')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limitNum);
+    
+    const total = await Blog.countDocuments(filter);
+    
+    res.json({
+      blogs,
+      total,
+      page: pageNum,
+      limit: limitNum,
+      totalPages: Math.ceil(total / limitNum)
+    });
   } catch (err) {
-    next(err);
+    console.error("GET ALL BLOGS ADMIN ERROR:", err);
+    res.status(500).json({ message: "Failed to fetch blogs" });
   }
 };
 
-// DELETE /api/blogs/:id
-export const deleteBlog = async (req, res, next) => {
+/* =========================
+   GET PENDING BLOGS
+========================= */
+export const getPendingBlogs = async (req, res) => {
   try {
-    const { id } = req.params;
-    const blog = await Blog.findById(id);
-    if (!blog) return res.status(404).json({ message: 'Blog not found' });
-
-    await Blog.deleteOne({ _id: id });
-    res.json({ message: 'Blog deleted successfully' });
+    const blogs = await Blog.find({ status: "pending" })
+      .populate('createdBy', 'name email')
+      .sort({ createdAt: -1 });
+    res.json(blogs);
   } catch (err) {
-    console.error('Error deleting blog:', err);
-    return res.status(500).json({ message: 'Server error deleting blog', error: err.message });
+    console.error("GET PENDING BLOGS ERROR:", err);
+    res.status(500).json({ message: "Failed to fetch pending blogs" });
+  }
+};
+
+/* =========================
+   GET APPROVED BLOGS
+========================= */
+export const getApprovedBlogs = async (req, res) => {
+  try {
+    const blogs = await Blog.find({ status: "approved" })
+      .populate('createdBy', 'name email')
+      .populate('reviewedBy', 'name')
+      .sort({ createdAt: -1 });
+    res.json(blogs);
+  } catch (err) {
+    console.error("GET APPROVED BLOGS ERROR:", err);
+    res.status(500).json({ message: "Failed to fetch approved blogs" });
+  }
+};
+
+/* =========================
+   GET REJECTED BLOGS
+========================= */
+export const getRejectedBlogs = async (req, res) => {
+  try {
+    const blogs = await Blog.find({ status: "rejected" })
+      .populate('createdBy', 'name email')
+      .populate('reviewedBy', 'name')
+      .sort({ createdAt: -1 });
+    res.json(blogs);
+  } catch (err) {
+    console.error("GET REJECTED BLOGS ERROR:", err);
+    res.status(500).json({ message: "Failed to fetch rejected blogs" });
+  }
+};
+
+/* =========================
+   APPROVE BLOG
+========================= */
+export const approveBlog = async (req, res) => {
+  try {
+    const user = req.user;
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) return res.status(404).json({ message: "Blog not found" });
+
+    blog.status = "approved";
+    blog.published = true;
+    blog.adminNote = req.body.note || "";
+    blog.reviewedBy = user.id;
+    blog.updatedAt = Date.now();
+    await blog.save();
+    const author = await User.findById(blog.createdBy)
+  .select("email name isDeleted");
+
+if (!author || author.isDeleted) {
+  console.warn("Author not found or deleted — mail skipped");
+} else {
+  await sendMail({
+    to: author.email,
+    subject:
+      blog.status === "approved"
+        ? "Your Blog Has Been Approved 🎉"
+        : "Your Blog Was Rejected",
+    text:
+      blog.status === "approved"
+        ? `Your blog "${blog.title}" is now live.`
+        : `Your blog "${blog.title}" was rejected.\n\nNote: ${blog.adminNote || "—"}`,
+    html: `
+      <h2>Blog ${blog.status === "approved" ? "Approved" : "Rejected"}</h2>
+      <p><strong>${blog.title}</strong></p>
+      ${
+        blog.status === "rejected"
+          ? `<p><strong>Reason:</strong> ${blog.adminNote || "—"}</p>`
+          : `<p>Your blog is now live 🎉</p>`
+      }
+    `
+  });
+}
+
+
+    res.json({ 
+      message: "Blog approved successfully",
+      blog 
+    });
+  } catch (err) {
+    console.error("APPROVE BLOG ERROR:", err);
+    res.status(500).json({ message: "Failed to approve blog" });
+  }
+};
+
+/* =========================
+   REJECT BLOG
+========================= */
+export const rejectBlog = async (req, res) => {
+  try {
+    const user = req.user;
+    const { note } = req.body;
+    const blog = await Blog.findById(req.params.id);
+    
+    if (!blog) return res.status(404).json({ message: "Blog not found" });
+
+    if (!note || note.trim() === "") {
+      return res.status(400).json({ message: "Rejection note is required" });
+    }
+
+    blog.status = "rejected";
+    blog.published = false;
+    blog.adminNote = note.trim();
+    blog.reviewedBy = user.id;
+    blog.updatedAt = Date.now();
+    await blog.save();
+    const author = await User.findById(blog.createdBy)
+  .select("email name isDeleted");
+
+if (!author || author.isDeleted) {
+  console.warn("Author not found or deleted — mail skipped");
+} else {
+  await sendMail({
+    to: author.email,
+    subject:
+      blog.status === "approved"
+        ? "Your Blog Has Been Approved 🎉"
+        : "Your Blog Was Rejected",
+    text:
+      blog.status === "approved"
+        ? `Your blog "${blog.title}" is now live.`
+        : `Your blog "${blog.title}" was rejected.\n\nNote: ${blog.adminNote || "—"}`,
+    html: `
+      <h2>Blog ${blog.status === "approved" ? "Approved" : "Rejected"}</h2>
+      <p><strong>${blog.title}</strong></p>
+      ${
+        blog.status === "rejected"
+          ? `<p><strong>Reason:</strong> ${blog.adminNote || "—"}</p>`
+          : `<p>Your blog is now live 🎉</p>`
+      }
+    `
+  });
+}
+
+
+    res.json({ 
+      message: "Blog rejected successfully",
+      blog 
+    });
+  } catch (err) {
+    console.error("REJECT BLOG ERROR:", err);
+    res.status(500).json({ message: "Failed to reject blog" });
+  }
+};
+
+/* =========================
+   ADMIN: GET BLOG BY ID
+========================= */
+export const getBlogById = async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id)
+      .populate('createdBy', 'name email')
+      .populate('reviewedBy', 'name');
+    
+    if (!blog) return res.status(404).json({ message: "Blog not found" });
+    
+    res.json(blog);
+  } catch (err) {
+    console.error("GET BLOG BY ID ERROR:", err);
+    res.status(500).json({ message: "Failed to fetch blog" });
   }
 };
