@@ -12,7 +12,7 @@ import { fileURLToPath } from "url";
 
 
 
-import eventRoutes from "./routes/eventRoutes.js";
+import eventRoutes from "./routes/EventRoutes.js";
 import eventAdminRoutes from "./routes/eventAdminRoutes.js";
 import eventAuthRoutes from "./routes/eventAuthRoutes.js";
 import eventUserRoutes from "./routes/eventUserRoutes.js"
@@ -59,9 +59,7 @@ const allowedOrigins = [
   "http://localhost:8080",
   "https://inte-qt.vercel.app",
   "https://inte-qt.com",
-  "https://www.inte-qt.com",
-  "https://hoppscotch.io/",
-  "chrome-extension://amknoiejhlmhancpahfcfcfhllgkpbld"
+  "https://www.inte-qt.com"
 ];
 
 app.use(
