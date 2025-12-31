@@ -6,7 +6,7 @@ import {
   changePassword,
   createAdminByAdmin
 } from "../controllers/countryAuthController.js";
-import { protectCountry } from "../middleware/countryAuthMiddleware.js";
+import { protectCountry } from "../Middleware/countryAuthMiddleware.js";
 
 const router = express.Router();
 
