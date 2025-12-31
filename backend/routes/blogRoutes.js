@@ -4,6 +4,7 @@ import path from "path";
 import fs from "fs";
 import { protect, adminOnly } from "../Middleware/authMiddleware.js";
 import * as blogController from "../controllers/blogController.js";
+import {upload} from "../Middleware/upload.js"
 
 const router = express.Router();
 
@@ -25,15 +26,6 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({
-  storage,
-  limits: { fileSize: 30 * 1024 * 1024 }, // 30MB
-  fileFilter(req, file, cb) {
-    if (file.mimetype.startsWith("image/")) return cb(null, true);
-    if (file.mimetype.startsWith("video/")) return cb(null, true);
-    cb(new Error("Only image or video files allowed"), false);
-  },
-});
 
 /* ============================
    CLEANUP TEMP FILES MIDDLEWARE
@@ -57,6 +49,7 @@ const cleanupTempFiles = (req, res, next) => {
 ============================ */
 router.get("/all", blogController.getBlogs);
 router.get("/slug/:slug", blogController.getBlogBySlug);
+router.get("/user/stats", blogController.getUserBlogStats);
 
 /* ============================
    CREATE BLOG – USER + ADMIN
@@ -88,5 +81,11 @@ router.put(
 );
 
 router.delete("/:id", protect, adminOnly, blogController.deleteBlog);
+
+
+router.get("/user/all", protect, blogController.getUserBlogs);
+router.get("/user/published", protect, blogController.getUserPublishedBlogs);
+router.get("/user/pending", protect, blogController.getUserPendingBlogs);
+router.get("/user/rejected", protect, blogController.getUserRejectedBlogs);
 
 export default router;

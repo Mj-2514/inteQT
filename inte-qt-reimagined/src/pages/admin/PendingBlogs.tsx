@@ -316,7 +316,7 @@ const PendingBlogs = () => {
                         }))
                       }
                       placeholder="Provide constructive feedback for the author..."
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors text-black"
                       rows={3}
                     />
                   </div>

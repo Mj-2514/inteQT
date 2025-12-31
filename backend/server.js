@@ -16,6 +16,8 @@ import eventRoutes from "./routes/eventRoutes.js";
 import eventAdminRoutes from "./routes/eventAdminRoutes.js";
 import eventAuthRoutes from "./routes/eventAuthRoutes.js";
 import eventUserRoutes from "./routes/eventUserRoutes.js"
+import blogUserRoutes from './routes/blogUserRoutes.js';
+import countryAuthRoutes from "./routes/countryAuthRoutes.js";
 
 
 // utils
@@ -58,6 +60,8 @@ const allowedOrigins = [
   "https://inte-qt.vercel.app",
   "https://inte-qt.com",
   "https://www.inte-qt.com",
+  "https://hoppscotch.io/",
+  "chrome-extension://amknoiejhlmhancpahfcfcfhllgkpbld"
 ];
 
 app.use(
@@ -93,7 +97,8 @@ app.use("/api/events/auth", eventAdminRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/event-auth", eventAuthRoutes)
 app.use("/api/events/user", eventUserRoutes)
-
+app.use('/api/blogs/user', blogUserRoutes);
+app.use("/api/country", countryAuthRoutes);
 
 
 // ---------- Health ----------

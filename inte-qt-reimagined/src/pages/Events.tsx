@@ -98,35 +98,46 @@ export default function Events() {
   /* =========================
      FETCH PUBLISHED EVENTS
   ========================= */
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const res = await fetch(`${API_BASE}/api/events/all-events`);
+/* =========================
+   FETCH PUBLISHED EVENTS
+========================= */
+useEffect(() => {
+  const fetchEvents = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/events/all-events`);
 
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-        const data = await res.json();
+      const data = await res.json();
+      console.log("Events API Response:", data); // Add this for debugging
 
-        // 🔒 GUARANTEE ARRAY
-        const safeEvents: EventItem[] = Array.isArray(data)
-          ? data
-          : Array.isArray(data?.events)
-          ? data.events
-          : [];
-
-        setEvents(safeEvents);
-        setError(null);
-      } catch (err) {
-        console.error("Fetch error:", err);
-        setError("Failed to load events.");
-        setEvents([]);
-      } finally {
-        setLoading(false);
+      // 🔒 GUARANTEE ARRAY
+      let safeEvents: EventItem[] = [];
+      
+      if (data.success && Array.isArray(data.events)) {
+        safeEvents = data.events;
+      } else if (Array.isArray(data)) {
+        safeEvents = data;
+      } else if (data?.events && Array.isArray(data.events)) {
+        safeEvents = data.events;
+      } else {
+        console.warn("Unexpected response format:", data);
       }
-    };
 
-    fetchEvents();
-  }, []);
+      console.log("Parsed events:", safeEvents.length, safeEvents); // Debug
+      setEvents(safeEvents);
+      setError(null);
+    } catch (err) {
+      console.error("Fetch error:", err);
+      setError("Failed to load events.");
+      setEvents([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchEvents();
+}, []);
 
   /* =========================
      DELETE (ADMIN ONLY)

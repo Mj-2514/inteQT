@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { gsap } from "gsap";
 import MonkeySVG, { MonkeySVGRef } from "../components/MonkeySVG";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 
 const EventAuth = () => {
   const API_BASE = import.meta.env.DEV
@@ -174,76 +174,125 @@ const EventAuth = () => {
   =========================== */
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Monkey */}
         <div className="relative w-48 h-48 mx-auto -mb-12 z-10">
-          <div className="w-full h-full rounded-full bg-card flex items-center justify-center shadow-lg">
-            <div className="w-36 h-36">
+          <div className="w-full h-full rounded-full bg-gradient-to-br from-white to-gray-50 flex items-center justify-center shadow-xl border-4 border-white">
+            <div className="w-36 h-36 relative">
               <MonkeySVG ref={monkeyRef} />
+              {/* Subtle glow effect */}
+              <div className="absolute inset-0 bg-gradient-to-br from-transparent via-blue-50/20 to-transparent rounded-full blur-sm"></div>
             </div>
           </div>
+          {/* Decorative ring around monkey */}
+          <div className="absolute inset-0 rounded-full border-2 border-dashed border-gray-200/50 animate-spin-slow"></div>
         </div>
 
         {/* Form */}
-        <div className="bg-card rounded-3xl p-8 pt-16 shadow-2xl">
+        <div className="bg-white rounded-2xl p-8 pt-16 shadow-2xl border border-gray-100">
+          <h1 className="text-2xl font-bold text-center mb-8 text-gray-900">
+            Event Login
+          </h1>
+
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-semibold mb-2">Email</label>
-              <input
-                ref={emailInputRef}
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                onFocus={() => setIsPasswordFocused(false)}
-                onBlur={resetEyes}
-                onSelect={(e) =>
-                  moveEyes(
-                    (e.target as HTMLInputElement).selectionStart || 0,
-                    email.length
-                  )
-                }
-                className="login-input text-black"
-                disabled={loading}
-              />
+            {/* Email Input */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Email Address
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Mail className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  ref={emailInputRef}
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  onFocus={() => setIsPasswordFocused(false)}
+                  onBlur={resetEyes}
+                  onSelect={(e) =>
+                    moveEyes(
+                      (e.target as HTMLInputElement).selectionStart || 0,
+                      email.length
+                    )
+                  }
+                  className="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 disabled:opacity-50"
+                  placeholder="name@inte-qt.com"
+                  disabled={loading}
+                  style={{ color: "#000" }}
+                />
+              </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-semibold mb-2">Password</label>
+            {/* Password Input */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Password
+              </label>
               <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="h-5 w-5 text-gray-400" />
+                </div>
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   onFocus={() => setIsPasswordFocused(true)}
                   onBlur={() => setIsPasswordFocused(false)}
-                  className="login-input pr-12 text-black"
+                  className="w-full pl-10 pr-12 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 disabled:opacity-50"
+                  placeholder="Enter your password"
                   disabled={loading}
+                  style={{ color: "#000" }}
                 />
                 <button
                   type="button"
                   onClick={toggleShowPassword}
-                  className="absolute right-3 top-1/2 -translate-y-1/2"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
                 >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5 text-gray-600" />
+                  ) : (
+                    <Eye className="h-5 w-5 text-gray-600" />
+                  )}
                 </button>
               </div>
             </div>
 
+            {/* Error Message */}
             {error && (
-              <p className="text-sm text-red-600 text-center">{error}</p>
+              <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+                <p className="text-sm text-red-600 flex items-center">
+                  <svg className="w-4 h-4 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                  {error}
+                </p>
+              </div>
             )}
 
-            <button className="login-button" disabled={loading}>
-              {loading ? "Logging in..." : "Log In"}
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3.5 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? (
+                <span className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Logging in...
+                </span>
+              ) : (
+                "Log In"
+              )}
             </button>
           </form>
 
-          <div className="mt-6 text-center">
-            <a className="text-sm text-muted-foreground hover:text-card-foreground">
-              Forgot password?
-            </a>
-          </div>
+          
         </div>
       </div>
     </div>

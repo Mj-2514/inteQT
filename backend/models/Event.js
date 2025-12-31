@@ -1,3 +1,4 @@
+// models/Event.js
 import mongoose from "mongoose";
 
 const eventSchema = new mongoose.Schema(
@@ -57,23 +58,22 @@ const eventSchema = new mongoose.Schema(
 
     tags: [String],
 
-    introMedia: String,
+    // FIXED: Only one introMedia field
+    introMedia: {
+      type: String,
+      default: null
+    },
 
     mediaType: {
-      type: String,
-      enum: ["image", "video", "gif", "none"],
-      default: "none"
-    },
-    introMedia: {
-    type: String,
-    default: null
-  },
-
-    linkedPostUrl: {
   type: String,
-  trim: true
+  enum: ["image", "video", "gif", "external", "none"],
+  default: "none"
 },
 
+    linkedPostUrl: {
+      type: String,
+      trim: true
+    },
 
     status: {
       type: String,
@@ -122,13 +122,11 @@ eventSchema.pre("save", async function () {
 
   const Event = mongoose.model("Event");
 
-  while (await Event.exists({ slug })) {
+  while (await Event.exists({ slug, _id: { $ne: this._id } })) {
     slug = `${baseSlug}-${count++}`;
   }
 
   this.slug = slug;
 });
-
-
 
 export default mongoose.model("Event", eventSchema);

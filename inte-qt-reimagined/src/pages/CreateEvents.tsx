@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Calendar, MapPin, Users, Tag, AlertTriangle, CheckCircle2, Link as LinkIcon, LogOut } from "lucide-react";
 import Navbar from "../components/Navbar";
+import { useAuth } from "../context/AuthContext";
 
 const API_BASE = import.meta.env.DEV
   ? "http://localhost:5000"
@@ -37,6 +38,7 @@ function revokeIfBlobUrl(url?: string | null) {
 
 const CreateEvent: React.FC = () => {
   const navigate = useNavigate();
+  const { token } = useAuth();
 
   // Basic event info
   const [title, setTitle] = useState("");
@@ -272,163 +274,47 @@ const CreateEvent: React.FC = () => {
     navigate("/login");
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
+  const handleSubmit = async () => {
+  const formData = new FormData();
 
-    const validationError = validate();
-    if (validationError) {
-      setError(validationError);
-      return;
+  formData.append("title", title);
+  formData.append("description", description);
+    formData.append("startDate", startDate);
+  formData.append("endDate", endDate);
+  formData.append("location", location || "");
+  formData.append("mediaType", mediaType);
+
+  // ✅ FILE UPLOAD
+  if (mediaFile && mediaType !== "none") {
+    formData.append("file", mediaFile); // 🔥 MATCHES BACKEND
+  }
+
+  // ✅ URL MEDIA
+  if (!mediaFile && mediaUrl && mediaType !== "none") {
+    formData.append("introMedia", mediaUrl.trim());
+  }
+
+  try {
+    const res = await fetch("/api/events/create", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      body: formData
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || "Failed to create event");
     }
 
-    setLoading(true);
+    console.log("Event created:", data.event);
+  } catch (err: any) {
+    console.error("Submit failed:", err.message);
+  }
+};
 
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("Authentication required. Please login again.");
-      }
-
-      // First, test if token works with backend
-      console.log("Testing token before submission...");
-      const testResult = await testTokenWithBackend();
-      
-      if (!testResult.success) {
-        console.log("Token test failed, trying alternative approach...");
-        // Try with different token format or test endpoint
-      }
-
-      const formData = new FormData();
-
-      // Try BOTH approaches: individual fields AND JSON data
-      
-      // Approach 1: Individual fields (for your current backend)
-      formData.append("title", title.trim());
-      formData.append("description", description.trim());
-      formData.append("startDate", new Date(startDate).toISOString());
-      formData.append("endDate", new Date(endDate).toISOString());
-      formData.append("location", location.trim());
-      formData.append("city", city.trim());
-      formData.append("type", eventType);
-      
-      // Add tags if they exist
-      const tagArray = tags.split(",").map(tag => tag.trim()).filter(tag => tag !== "");
-      if (tagArray.length > 0) {
-        tagArray.forEach(tag => {
-          formData.append("tags", tag);
-        });
-      }
-      
-      formData.append("mediaType", mediaType);
-      
-      if (linkedPostUrl.trim()) {
-        formData.append("linkedPostUrl", linkedPostUrl.trim());
-      }
-
-      // Add file if exists
-      if (mediaFile && mediaType !== "none") {
-        formData.append("media", mediaFile);
-      } else if (mediaUrl && mediaType !== "none") {
-        // If using URL instead of file
-        formData.append("introMedia", mediaUrl.trim());
-      }
-
-      // Approach 2: Also add JSON data (in case backend expects it)
-      const payload = {
-        title: title.trim(),
-        description: description.trim(),
-        startDate: new Date(startDate).toISOString(),
-        endDate: new Date(endDate).toISOString(),
-        location: location.trim(),
-        city: city.trim(),
-        type: eventType,
-        tags: tagArray,
-        mediaType: mediaType,
-        linkedPostUrl: linkedPostUrl.trim() || undefined,
-        // Try adding user ID directly
-        userId: user?._id || user?.id
-      };
-      
-      // Add JSON data as a field
-      formData.append("data", JSON.stringify(payload));
-
-      // Debug log
-      console.log("FORM DATA being sent:");
-      for (const [k, v] of formData.entries()) {
-        console.log(k, v instanceof File ? `File: ${v.name}` : v);
-      }
-
-      // Try the endpoint
-      const res = await fetch(`${API_BASE}/api/events/create`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          // Also try with blog token name if different
-          // 'x-auth-token': token // Alternative header
-        },
-        body: formData,
-      });
-
-      console.log("Response status:", res.status);
-      
-      let result;
-      try {
-        result = await res.json();
-      } catch (jsonError) {
-        const text = await res.text();
-        console.log("Raw response text:", text);
-        result = { message: `Server error: ${res.status} - ${text}` };
-      }
-      
-      console.log("Response data:", result);
-
-      if (!res.ok) {
-        // Check if it's a JWT secret issue
-        if (result?.message?.includes("invalid") || result?.message?.includes("expired")) {
-          throw new Error(`Authentication failed: ${result.message}. This might be because blog and event systems use different JWT secrets.`);
-        }
-        
-        const errorMsg = result?.message || result?.error || `Event creation failed (${res.status})`;
-        throw new Error(errorMsg);
-      }
-
-      setSubmitted(true);
-      revokeIfBlobUrl(mediaPreview);
-
-      setTimeout(() => navigate("/admin/all-events"), 1000);
-
-    } catch (err: any) {
-      console.error("Submit error:", err);
-      setError(err.message || "Something went wrong");
-      
-      // If authentication error, suggest solutions
-      if (err.message.includes("Authentication failed")) {
-        setError(`
-          ${err.message}
-          
-          Possible solutions:
-          1. Check if your EventUser model has the user with ID: ${user?._id || user?.id}
-          2. Make sure JWT_SECRET is the same for both blog and event systems
-          3. Try logging in through the event system separately
-        `);
-      }
-      
-      // If authentication error, redirect to login
-      if (err.message.includes("authentication") || 
-          err.message.includes("Unauthorized") || 
-          err.message.includes("401") ||
-          err.message.includes("User not found") ||
-          err.message.includes("No token provided") ||
-          err.message.includes("Token invalid")) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        setTimeout(() => navigate("/login"), 2000);
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Show loading while checking auth
   if (!authChecked) {
@@ -497,7 +383,7 @@ const CreateEvent: React.FC = () => {
               </div>
             )}
             <button
-              onClick={() => navigate("/admin/all-events")}
+              onClick={() => navigate("/event/admin-dashboard")}
               className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground hover:bg-accent hover:text-accent-foreground"
             >
               Back to Events

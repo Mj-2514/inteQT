@@ -486,14 +486,6 @@ const EventUserDashboard = () => {
     { value: "other", label: "Other" },
   ];
 
-  // Media type options
-  const mediaTypes = [
-    { value: "none", label: "None" },
-    { value: "image", label: "Image" },
-    { value: "video", label: "Video" },
-    { value: "gif", label: "GIF" },
-  ];
-
   // Check authentication on component mount
   useEffect(() => {
     if (!token || !eventUser) {
@@ -536,6 +528,13 @@ const EventUserDashboard = () => {
       }
     }
   }, [mediaFile, mediaUrl]);
+
+  // Cleanup blob URLs on unmount
+  useEffect(() => {
+    return () => {
+      revokeIfBlobUrl(mediaPreview);
+    };
+  }, [mediaPreview]);
 
   // API: Fetch user statistics
   const fetchStats = async () => {
@@ -606,45 +605,63 @@ const EventUserDashboard = () => {
   };
 
   const validate = () => {
-    if (!title.trim()) return "Title is required.";
-    if (!description.trim()) return "Description is required.";
-    if (!startDate) return "Start date is required.";
-    if (!endDate) return "End date is required.";
-    
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    if (end <= start) return "End date must be after start date.";
-    
-    if (!location.trim()) return "Location is required.";
-    if (!city.trim()) return "City is required.";
-    
-    // Validate media
-    if (mediaType !== "none" && !mediaFile && !mediaUrl) {
-      return "Media file or URL is required when media type is selected.";
+  if (!title.trim()) return "Title is required.";
+  if (!description.trim()) return "Description is required.";
+  if (!startDate) return "Start date is required.";
+  if (!endDate) return "End date is required.";
+  
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  if (end <= start) return "End date must be after start date.";
+  
+  if (!location.trim()) return "Location is required.";
+  if (!city.trim()) return "City is required.";
+  
+  // Validate media based on selected mediaType
+  if (mediaType !== "none") {
+    if (!mediaFile && !mediaUrl.trim()) {
+      return `Please provide a ${mediaType} file or URL.`;
     }
     
-    // Validate linked post URL if provided
-    if (linkedPostUrl && !looksLikeUrl(linkedPostUrl)) {
-      return "Linked post URL is not valid.";
+    // If URL is provided, validate it
+    if (mediaUrl.trim() && !looksLikeUrl(mediaUrl)) {
+      return "Media URL is not valid.";
     }
+    
+    // If file is provided, validate file type
+    if (mediaFile) {
+      if (mediaType === "video" && !isVideoFile(mediaFile)) {
+        return "Please select a valid video file.";
+      }
+      if (mediaType === "gif" && !isGifFile(mediaFile)) {
+        return "Please select a valid GIF file.";
+      }
+      if (mediaType === "image" && !mediaFile.type.startsWith("image/")) {
+        return "Please select a valid image file.";
+      }
+    }
+  }
+  
+  // Validate linked post URL if provided
+  if (linkedPostUrl.trim() && !looksLikeUrl(linkedPostUrl)) {
+    return "Linked post URL is not valid.";
+  }
 
-    return null;
-  };
+  return null;
+};
 
   // Handle file selection
   const handleFile = (f: File | null) => {
     // Clean up previous blob URL
-    if (mediaPreview && mediaPreview.startsWith("blob:")) {
-      revokeIfBlobUrl(mediaPreview);
-    }
-
+    revokeIfBlobUrl(mediaPreview);
+    
     setMediaFile(f);
-
+    
     if (!f) {
       setMediaPreview(null);
       return;
     }
-
+    
     const url = URL.createObjectURL(f);
     setMediaPreview(url);
     setMediaUrl(""); // Clear URL when file is selected
@@ -655,25 +672,16 @@ const EventUserDashboard = () => {
     setMediaUrl(url);
     
     // Clean up previous blob URL
-    if (mediaPreview && mediaPreview.startsWith("blob:")) {
-      revokeIfBlobUrl(mediaPreview);
-    }
+    revokeIfBlobUrl(mediaPreview);
     
     if (!url) {
       setMediaPreview(null);
       setMediaFile(null);
-      if (mediaType === "none") {
-        setMediaType("none");
-      }
       return;
     }
     
     setMediaPreview(url);
     setMediaFile(null);
-    // If media type is still none, set it to image
-    if (mediaType === "none") {
-      setMediaType("image");
-    }
   };
 
   const handleLogout = () => {
@@ -681,70 +689,98 @@ const EventUserDashboard = () => {
     navigate("/");
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setError(null);
 
-    const validationError = validate();
-    if (validationError) {
-      setError(validationError);
-      return;
+  const validationError = validate();
+  if (validationError) return setError(validationError);
+
+  setFormLoading(true);
+
+  try {
+    if (!token) throw new Error("Please login again.");
+
+    // Create event data object
+    const eventData = {
+      title: title.trim(),
+      description: description.trim(),
+      startDate: new Date(startDate).toISOString(),
+      endDate: new Date(endDate).toISOString(),
+      location: location.trim(),
+      city: city.trim(),
+      type: eventType,
+      tags: tags.trim() ? tags.split(',').map(t => t.trim()).filter(t => t) : [],
+      linkedPostUrl: linkedPostUrl.trim() || null,
+      // Always include mediaType
+      mediaType: mediaType
+      // DO NOT include introMedia here when uploading a file
+      // The file will be handled separately
+    };
+
+    const formData = new FormData();
+    
+    // Add the event data as JSON string
+    formData.append("data", JSON.stringify(eventData));
+    
+    // Add file if exists
+    if (mediaFile) {
+      formData.append("file", mediaFile);
+      console.log("Adding file to FormData:", mediaFile.name, mediaFile.type, mediaFile.size);
+    } else if (mediaUrl.trim()) {
+      // If URL is provided (no file), add it to the eventData
+      eventData.introMedia = mediaUrl.trim();
+      eventData.mediaType = mediaType; // Make sure mediaType is set
+      // Update the data in formData
+      formData.set("data", JSON.stringify(eventData));
     }
 
-    setFormLoading(true);
+    console.log("Submitting event data:", eventData);
+    console.log("Has file:", !!mediaFile);
+    console.log("Media URL:", mediaUrl);
+    console.log("Media type:", mediaType);
 
-    try {
-      if (!token) {
-        throw new Error("Authentication required. Please login again.");
-      }
+    const response = await fetch(`${API_BASE}/api/events/create`, {
+      method: "POST",
+      headers: { 
+        Authorization: `Bearer ${token}`
+        // Don't set Content-Type when using FormData - let browser set it
+      },
+      body: formData
+    });
 
-      // Create form data
-      const formData = new FormData();
-      formData.append('title', title.trim());
-      formData.append('description', description.trim());
-      formData.append('startDate', new Date(startDate).toISOString());
-      formData.append('endDate', new Date(endDate).toISOString());
-      formData.append('location', location.trim());
-      formData.append('city', city.trim());
-      formData.append('type', eventType);
-      formData.append('mediaType', mediaType);
+    // Check if response is ok
+    if (!response.ok) {
+      // Try to get error text
+      const errorText = await response.text();
+      console.error("Server error response:", errorText);
       
-      if (tags.trim()) {
-        formData.append('tags', tags);
+      // Check if it's HTML (404, 500, etc.)
+      if (errorText.includes('<!DOCTYPE') || errorText.includes('<html')) {
+        throw new Error(`Server error (${response.status}): Please check if the API endpoint is correct`);
       }
       
-      if (linkedPostUrl.trim()) {
-        formData.append('linkedPostUrl', linkedPostUrl.trim());
+      // Try to parse as JSON
+      try {
+        const errorData = JSON.parse(errorText);
+        throw new Error(errorData.message || errorData.error || `Request failed with status ${response.status}`);
+      } catch {
+        throw new Error(`Request failed with status ${response.status}: ${errorText.substring(0, 100)}`);
       }
-      
-      if (mediaUrl.trim() && mediaType !== 'none') {
-        formData.append('introMedia', mediaUrl.trim());
-      }
+    }
 
-      // If file is uploaded
-      if (mediaFile && mediaType !== 'none') {
-        formData.append('media', mediaFile);
-      }
+    const data = await response.json();
+    console.log("Response from server:", data);
+    
+    if (!data.success) {
+      throw new Error(data.message || "Failed to create event");
+    }
 
-      // Send request to the correct API endpoint
-      const response = await fetch(`${API_BASE}/api/events/create`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
-        body: formData
-      });
-
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to create event');
-      }
-
-      setSubmitted(true);
-      revokeIfBlobUrl(mediaPreview);
-
-      // Reset form
+    // Show success message
+    setSubmitted(true);
+    
+    // Clear form on success
+    if (data.success) {
       setTitle("");
       setDescription("");
       setStartDate("");
@@ -756,22 +792,27 @@ const EventUserDashboard = () => {
       setMediaFile(null);
       setMediaUrl("");
       setMediaType("none");
+      revokeIfBlobUrl(mediaPreview);
       setMediaPreview(null);
       setLinkedPostUrl("");
-
-      // Refresh stats and events
+      
+      // Refresh stats
       fetchStats();
-      setActiveTab("all");
-
-      setTimeout(() => setSubmitted(false), 3000);
-
-    } catch (err: any) {
-      console.error('Submit error:', err);
-      setError(err.message || 'Something went wrong');
-    } finally {
-      setFormLoading(false);
+      
+      // Redirect to events list after 2 seconds
+      setTimeout(() => {
+        setSubmitted(false);
+        setActiveTab("all");
+      }, 2000);
     }
-  };
+
+  } catch (err: any) {
+    console.error("Submit error:", err);
+    setError(err.message || "Failed to create event. Please try again.");
+  } finally {
+    setFormLoading(false);
+  }
+};
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
@@ -821,6 +862,14 @@ const EventUserDashboard = () => {
       fetchEvents(page);
     }
   };
+
+  // Media type options
+  const mediaTypes = [
+    { value: "none", label: "None" },
+    { value: "image", label: "Image" },
+    { value: "video", label: "Video" },
+    { value: "gif", label: "GIF" },
+  ];
 
   // Show loading while checking auth
   if (!eventUser) {
@@ -1266,9 +1315,7 @@ const EventUserDashboard = () => {
                               if (e.target.value === "none") {
                                 setMediaFile(null);
                                 setMediaUrl("");
-                                if (mediaPreview && mediaPreview.startsWith("blob:")) {
-                                  revokeIfBlobUrl(mediaPreview);
-                                }
+                                revokeIfBlobUrl(mediaPreview);
                                 setMediaPreview(null);
                               }
                             }}
@@ -1342,7 +1389,7 @@ const EventUserDashboard = () => {
                       {submitted && !error && (
                         <div className="flex items-center gap-2 rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-500">
                           <CheckCircle2 className="h-4 w-4" />
-                          <p>Event submitted for review! Redirecting to your events...</p>
+                          <p>Event submitted successfully! Redirecting to your events...</p>
                         </div>
                       )}
 
@@ -1353,7 +1400,42 @@ const EventUserDashboard = () => {
                           disabled={formLoading || submitted}
                           className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
                         >
-                          {formLoading ? "Submitting..." : submitted ? "Submitted" : "Submit for Review"}
+                          {formLoading ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              Submitting...
+                            </>
+                          ) : submitted ? (
+                            "Submitted"
+                          ) : (
+                            "Submit for Review"
+                          )}
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            // Clear form
+                            setTitle("");
+                            setDescription("");
+                            setStartDate("");
+                            setEndDate("");
+                            setLocation("");
+                            setCity("");
+                            setEventType("meeting");
+                            setTags("");
+                            setMediaFile(null);
+                            setMediaUrl("");
+                            setMediaType("none");
+                            revokeIfBlobUrl(mediaPreview);
+                            setMediaPreview(null);
+                            setLinkedPostUrl("");
+                            setError(null);
+                            setSubmitted(false);
+                          }}
+                          className="inline-flex items-center justify-center rounded-full border border-border bg-background px-5 py-2.5 text-sm text-foreground hover:bg-accent hover:text-accent-foreground"
+                        >
+                          Clear Form
                         </button>
 
                         <button

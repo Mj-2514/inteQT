@@ -18,22 +18,10 @@ cloudinary.config({
 /* =========================
    HELPERS
 ========================= */
-function countWords(text = "") {
-  return (text.trim().match(/\S+/g) || []).length;
-}
-
 function parseTags(tags) {
   if (!tags) return [];
   if (Array.isArray(tags)) return tags.map(t => t.trim()).filter(Boolean);
   return tags.split(",").map(t => t.trim()).filter(Boolean);
-}
-
-function mediaTypeFromMime(mime) {
-  if (!mime) return "external";
-  if (mime === "image/gif") return "gif";
-  if (mime.startsWith("image/")) return "image";
-  if (mime.startsWith("video/")) return "video";
-  return "external";
 }
 
 function mediaTypeFromUrl(url = "") {
@@ -45,33 +33,30 @@ function mediaTypeFromUrl(url = "") {
 }
 
 /* =========================
-   UPLOAD TO CLOUDINARY
+   UPLOAD TO CLOUDINARY (NO STREAMIFIER VERSION)
 ========================= */
-/* =========================
-   UPLOAD TO CLOUDINARY
-========================= */
-const uploadToCloudinary = async (file) => {
+const uploadToCloudinary = async (buffer, mimetype) => {
   try {
-    if (!file || !file.path) {
-      console.error('No file or file path provided:', file);
-      return null;
-    }
+    console.log('🔄 Starting Cloudinary upload...');
+    console.log('📏 Buffer size:', buffer.length, 'bytes');
+    console.log('📄 Mime type:', mimetype);
     
-    console.log('Uploading to Cloudinary:', {
-      originalname: file.originalname,
-      mimetype: file.mimetype,
-      size: file.size,
-      path: file.path
-    });
+    // Convert buffer to base64
+    const base64Data = buffer.toString('base64');
     
-    // Upload to Cloudinary - use cloudinary directly (already v2)
-    const result = await cloudinary.uploader.upload(file.path, {
+    // Determine resource type
+    const resourceType = mimetype.startsWith('video/') ? 'video' : 'image';
+    const dataURI = `data:${mimetype};base64,${base64Data}`;
+    
+    // Upload using Cloudinary's upload method
+    const result = await cloudinary.uploader.upload(dataURI, {
       folder: 'blogs',
-      resource_type: 'auto', // auto-detect image or video
-      timeout: 60000 // 60 second timeout
+      resource_type: resourceType,
+      timeout: 60000
     });
     
-    console.log('Cloudinary upload successful:', {
+    console.log('✅ Cloudinary upload successful!');
+    console.log('📊 Upload result:', {
       url: result.secure_url,
       public_id: result.public_id,
       resource_type: result.resource_type
@@ -82,26 +67,30 @@ const uploadToCloudinary = async (file) => {
       public_id: result.public_id,
       resource_type: result.resource_type
     };
+    
   } catch (error) {
-    console.error('Cloudinary upload error:', error.message);
-    console.error('Error details:', error);
-    return null;
+    console.error('❌ Cloudinary upload error:', error.message);
+    throw error;
   }
 };
 
 /* =========================
-   CREATE BLOG
+   CREATE BLOG (FIXED)
+========================= */
+/* =========================
+   CREATE BLOG (SIMPLIFIED)
 ========================= */
 export const createBlog = async (req, res) => {
   try {
     const user = req.user;
-    if (!user) return res.status(401).json({ message: "Unauthorized" });
+    if (!user) return res.status(401).json({ success: false, message: "Unauthorized" });
 
+    // Parse request data
     let parsedData;
     try {
       parsedData = JSON.parse(req.body.data || "{}");
     } catch {
-      return res.status(400).json({ message: "Invalid blog payload" });
+      return res.status(400).json({ success: false, message: "Invalid blog payload" });
     }
 
     const {
@@ -116,10 +105,12 @@ export const createBlog = async (req, res) => {
       published,
     } = parsedData;
 
+    // Validate required fields
     if (!title || !introduction || !description || !conclusion) {
-      return res.status(400).json({ message: "Missing required fields" });
+      return res.status(400).json({ success: false, message: "Missing required fields" });
     }
 
+    // Get files
     const introFile = req.files?.introImage?.[0];
     const descFile = req.files?.descriptionImage?.[0];
 
@@ -128,48 +119,98 @@ export const createBlog = async (req, res) => {
     let introMediaType = "external";
     let descMediaType = "external";
 
-    // INTRO MEDIA
-    if (introFile) {
-      const upload = await uploadToCloudinary(introFile);
-      introMedia = upload.url;
-      introMediaType = upload.resource_type === "video"
-        ? "video"
-        : introFile.mimetype === "image/gif"
-        ? "gif"
-        : "image";
+    // UPLOAD INTRO MEDIA
+    if (introFile && introFile.buffer) {
+      try {
+        // Convert buffer to base64 for Cloudinary
+        const base64Data = introFile.buffer.toString('base64');
+        const dataURI = `data:${introFile.mimetype};base64,${base64Data}`;
+        
+        // Upload to Cloudinary
+        const result = await cloudinary.uploader.upload(dataURI, {
+          folder: 'blogs',
+          resource_type: introFile.mimetype.startsWith('video/') ? 'video' : 'image',
+          timeout: 60000
+        });
+        
+        if (result && result.secure_url) {
+          introMedia = result.secure_url;
+          introMediaType = introFile.mimetype === "image/gif" 
+            ? "gif" 
+            : introFile.mimetype.startsWith("video/") 
+            ? "video" 
+            : "image";
+        }
+      } catch (uploadError) {
+        console.error("Intro media upload failed:", uploadError.message);
+        // Continue with URL if available
+        if (introImageUrl) {
+          introMedia = introImageUrl.trim();
+          introMediaType = introMedia.endsWith('.gif') ? 'gif' : 
+                          introMedia.match(/\.(mp4|webm|ogg)$/) ? 'video' : 'image';
+        }
+      }
     } else if (introImageUrl) {
       introMedia = introImageUrl.trim();
-      introMediaType = mediaTypeFromUrl(introMedia);
+      introMediaType = introMedia.endsWith('.gif') ? 'gif' : 
+                      introMedia.match(/\.(mp4|webm|ogg)$/) ? 'video' : 'image';
     }
 
-    // DESCRIPTION MEDIA
-    if (descFile) {
-      const upload = await uploadToCloudinary(descFile);
-      descMedia = upload.url;
-      descMediaType = upload.resource_type === "video"
-        ? "video"
-        : descFile.mimetype === "image/gif"
-        ? "gif"
-        : "image";
+    // UPLOAD DESCRIPTION MEDIA
+    if (descFile && descFile.buffer) {
+      try {
+        // Convert buffer to base64 for Cloudinary
+        const base64Data = descFile.buffer.toString('base64');
+        const dataURI = `data:${descFile.mimetype};base64,${base64Data}`;
+        
+        // Upload to Cloudinary
+        const result = await cloudinary.uploader.upload(dataURI, {
+          folder: 'blogs',
+          resource_type: descFile.mimetype.startsWith('video/') ? 'video' : 'image',
+          timeout: 60000
+        });
+        
+        if (result && result.secure_url) {
+          descMedia = result.secure_url;
+          descMediaType = descFile.mimetype === "image/gif" 
+            ? "gif" 
+            : descFile.mimetype.startsWith("video/") 
+            ? "video" 
+            : "image";
+        }
+      } catch (uploadError) {
+        console.error("Description media upload failed:", uploadError.message);
+        // Continue with URL if available
+        if (descriptionImageUrl) {
+          descMedia = descriptionImageUrl.trim();
+          descMediaType = descMedia.endsWith('.gif') ? 'gif' : 
+                          descMedia.match(/\.(mp4|webm|ogg)$/) ? 'video' : 'image';
+        }
+      }
     } else if (descriptionImageUrl) {
       descMedia = descriptionImageUrl.trim();
-      descMediaType = mediaTypeFromUrl(descMedia);
+      descMediaType = descMedia.endsWith('.gif') ? 'gif' : 
+                      descMedia.match(/\.(mp4|webm|ogg)$/) ? 'video' : 'image';
     }
 
+    // Check if both media are provided
     if (!introMedia || !descMedia) {
       return res.status(400).json({
-        message: "Intro and Description media are required",
+        success: false,
+        message: "Intro and Description media are required"
       });
     }
 
+    // Get user info
     const dbUser = await User.findById(user.id).select("name");
-    if (!dbUser) return res.status(401).json({ message: "Invalid user" });
+    if (!dbUser) return res.status(401).json({ success: false, message: "Invalid user" });
 
+    // Create blog
     const blog = new Blog({
       title: title.trim(),
       authorName: dbUser.name,
       authorLinkedin: authorLinkedin || "",
-      tags: tags?.split(",").map(t => t.trim()).filter(Boolean),
+      tags: tags ? tags.split(",").map(t => t.trim()).filter(t => t) : [],
       introduction,
       description,
       conclusion,
@@ -179,59 +220,50 @@ export const createBlog = async (req, res) => {
       descriptionMediaType: descMediaType,
       createdBy: user.id,
       status: user.isAdmin ? "approved" : "pending",
-      published: user.isAdmin ? published : false,
+      published: user.isAdmin ? (published || false) : false,
     });
 
     await blog.save();
-    // after Blog.create(...)
-try {
-  const admins = await User.find({
-    isAdmin: true,
-    isDeleted: false
-  }).select("email name");
 
-  console.log("BLOG ADMINS FOUND:", admins.length);
-
-  if (admins.length === 0) {
-    console.warn("⚠️ No blog admins found — mail skipped");
-  }
-
-  await Promise.all(
-    admins.map(admin =>
-      sendEmail({
-        to: admin.email,
-        subject: "New Blog Pending Approval",
-        text: `A new blog has been submitted for review.
-
-Title: ${blog.title}
-Author: ${blog.authorName}
-`,
-        html: `
-          <h2>New Blog Pending Approval</h2>
-          <ul>
-            <li><strong>Title:</strong> ${blog.title}</li>
-            <li><strong>Author:</strong> ${blog.authorName}</li>
-          </ul>
-          <p>Please review it in the admin panel.</p>
-        `
-      })
-    )
-  );
-} catch (err) {
-  console.error("BLOG ADMIN MAIL ERROR:", err);
-}
-
+    // Send admin notifications (if any admins exist)
+    try {
+      const admins = await User.find({ isAdmin: true }).select("email name");
+      
+      if (admins.length > 0) {
+        for (const admin of admins) {
+          await sendEmail({
+            to: admin.email,
+            subject: "New Blog Pending Approval",
+            html: `
+              <h2>New Blog Pending Approval</h2>
+              <p><strong>Title:</strong> ${blog.title}</p>
+              <p><strong>Author:</strong> ${blog.authorName}</p>
+              <p><strong>Submitted by:</strong> ${user.email}</p>
+              <p>Please review it in the admin panel.</p>
+            `
+          });
+        }
+      }
+      // If no admins found, don't worry - blog is still created
+    } catch (emailError) {
+      console.error("Email error:", emailError.message);
+      // Don't fail the request if email fails
+    }
 
     res.status(201).json({
+      success: true,
       message: user.isAdmin
         ? "Blog published successfully"
         : "Blog submitted for admin review",
-      blogId: blog._id,
+      blogId: blog._id
     });
 
   } catch (err) {
     console.error("BLOG CREATE ERROR:", err);
-    res.status(500).json({ message: "Blog submission failed" });
+    res.status(500).json({ 
+      success: false,
+      message: "Blog submission failed"
+    });
   }
 };
 
@@ -477,7 +509,7 @@ export const approveBlog = async (req, res) => {
 if (!author || author.isDeleted) {
   console.warn("Author not found or deleted — mail skipped");
 } else {
-  await sendMail({
+  await sendEmail({
     to: author.email,
     subject:
       blog.status === "approved"
@@ -537,7 +569,7 @@ export const rejectBlog = async (req, res) => {
 if (!author || author.isDeleted) {
   console.warn("Author not found or deleted — mail skipped");
 } else {
-  await sendMail({
+  await sendEmail({
     to: author.email,
     subject:
       blog.status === "approved"
@@ -585,5 +617,308 @@ export const getBlogById = async (req, res) => {
   } catch (err) {
     console.error("GET BLOG BY ID ERROR:", err);
     res.status(500).json({ message: "Failed to fetch blog" });
+  }
+};
+// In your blogController.js
+
+/* =========================
+   GET USER BLOG STATS
+========================= */
+export const getUserBlogStats = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    
+    // Get counts by status
+    const counts = await Blog.aggregate([
+      {
+        $match: {
+          createdBy: userId,
+          // Exclude if you have soft delete
+          // isDeleted: { $ne: true }
+        }
+      },
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    // Calculate totals and individual counts
+    const stats = {
+      total: 0,
+      published: 0,
+      pending: 0,
+      rejected: 0,
+      views: 0,
+      approvalRate: 0
+    };
+
+    // Process the aggregation results
+    counts.forEach(item => {
+      stats.total += item.count;
+      if (item._id === 'published' || item._id === 'approved') {
+        stats.published += item.count;
+      } else if (item._id === 'pending') {
+        stats.pending += item.count;
+      } else if (item._id === 'rejected') {
+        stats.rejected += item.count;
+      }
+    });
+
+    // Get total views
+    const viewsResult = await Blog.aggregate([
+      {
+        $match: {
+          createdBy: userId,
+          // isDeleted: { $ne: true }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalViews: { $sum: "$views" }
+        }
+      }
+    ]);
+
+    stats.views = viewsResult.length > 0 ? viewsResult[0].totalViews : 0;
+
+    // Calculate approval rate
+    if (stats.total > 0) {
+      const approvedCount = stats.published;
+      stats.approvalRate = Math.round((approvedCount / stats.total) * 100);
+    }
+
+    res.json({
+      success: true,
+      data: stats
+    });
+
+  } catch (error) {
+    console.error("GET USER BLOG STATS ERROR:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch stats"
+    });
+  }
+};
+// In your blogController.js
+
+/* =========================
+   GET USER BLOGS (ALL)
+========================= */
+export const getUserBlogs = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { page = 1, limit = 10, search = '' } = req.query;
+    
+    const filter = { createdBy: userId };
+    
+    // Add search filter
+    if (search) {
+      filter.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { introduction: { $regex: search, $options: 'i' } }
+      ];
+    }
+    
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const skip = (pageNum - 1) * limitNum;
+    
+    // Get blogs with pagination
+    const blogs = await Blog.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limitNum)
+      .select('title introduction status views createdAt adminNote slug');
+    
+    const total = await Blog.countDocuments(filter);
+    
+    res.json({
+      success: true,
+      data: {
+        blogs,
+        pagination: {
+          total,
+          page: pageNum,
+          limit: limitNum,
+          totalPages: Math.ceil(total / limitNum)
+        }
+      }
+    });
+    
+  } catch (error) {
+    console.error("GET USER BLOGS ERROR:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch blogs"
+    });
+  }
+};
+
+/* =========================
+   GET USER PUBLISHED BLOGS
+========================= */
+export const getUserPublishedBlogs = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { page = 1, limit = 10, search = '' } = req.query;
+    
+    const filter = { 
+      createdBy: userId,
+      $or: [{ status: 'published' }, { status: 'approved' }],
+      published: true
+    };
+    
+    if (search) {
+      filter.$or.push(
+        { title: { $regex: search, $options: 'i' } },
+        { introduction: { $regex: search, $options: 'i' } }
+      );
+    }
+    
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const skip = (pageNum - 1) * limitNum;
+    
+    const blogs = await Blog.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limitNum)
+      .select('title introduction status views createdAt slug');
+    
+    const total = await Blog.countDocuments(filter);
+    
+    res.json({
+      success: true,
+      data: {
+        blogs,
+        pagination: {
+          total,
+          page: pageNum,
+          limit: limitNum,
+          totalPages: Math.ceil(total / limitNum)
+        }
+      }
+    });
+    
+  } catch (error) {
+    console.error("GET USER PUBLISHED BLOGS ERROR:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch published blogs"
+    });
+  }
+};
+
+/* =========================
+   GET USER PENDING BLOGS
+========================= */
+export const getUserPendingBlogs = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { page = 1, limit = 10, search = '' } = req.query;
+    
+    const filter = { 
+      createdBy: userId,
+      status: 'pending'
+    };
+    
+    if (search) {
+      filter.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { introduction: { $regex: search, $options: 'i' } }
+      ];
+    }
+    
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const skip = (pageNum - 1) * limitNum;
+    
+    const blogs = await Blog.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limitNum)
+      .select('title introduction status views createdAt adminNote');
+    
+    const total = await Blog.countDocuments(filter);
+    
+    res.json({
+      success: true,
+      data: {
+        blogs,
+        pagination: {
+          total,
+          page: pageNum,
+          limit: limitNum,
+          totalPages: Math.ceil(total / limitNum)
+        }
+      }
+    });
+    
+  } catch (error) {
+    console.error("GET USER PENDING BLOGS ERROR:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch pending blogs"
+    });
+  }
+};
+
+/* =========================
+   GET USER REJECTED BLOGS
+========================= */
+export const getUserRejectedBlogs = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { page = 1, limit = 10, search = '' } = req.query;
+    
+    const filter = { 
+      createdBy: userId,
+      status: 'rejected'
+    };
+    
+    if (search) {
+      filter.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { introduction: { $regex: search, $options: 'i' } }
+      ];
+    }
+    
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const skip = (pageNum - 1) * limitNum;
+    
+    const blogs = await Blog.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limitNum)
+      .select('title introduction status views createdAt adminNote');
+    
+    const total = await Blog.countDocuments(filter);
+    
+    res.json({
+      success: true,
+      message: total === 0 ? "No rejected blogs found" : "Rejected blogs fetched successfully",
+      data: {
+        blogs,
+        pagination: {
+          total,
+          page: pageNum,
+          limit: limitNum,
+          totalPages: Math.ceil(total / limitNum)
+        }
+      }
+    });
+    
+  } catch (error) {
+    console.error("GET USER REJECTED BLOGS ERROR:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch rejected blogs"
+    });
   }
 };

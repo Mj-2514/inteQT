@@ -233,7 +233,7 @@ const Blogs = () => {
   const handleCreateOrDashboard = () => {
     if (!isAuthenticated) return navigate("/auth");
     if (user?.isAdmin) return navigate("/admin-dashboard");
-    return navigate("/user/dashboard");
+    return navigate("/user-dashboard");
   };
 
   if (loading) {
