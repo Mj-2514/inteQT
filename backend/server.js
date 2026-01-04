@@ -13,6 +13,7 @@ import { fileURLToPath } from "url";
 
 
 import eventRoutes from "./routes/EventRoutes.js";
+import eventRoutes from "./routes/EventRoutes.js";
 import eventAdminRoutes from "./routes/eventAdminRoutes.js";
 import eventAuthRoutes from "./routes/eventAuthRoutes.js";
 import eventUserRoutes from "./routes/eventUserRoutes.js"
