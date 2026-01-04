@@ -8,26 +8,26 @@ import { Helmet } from "react-helmet-async";
 interface Country {
   name: string;
   code: string;
-  link: string;
+  slug: string; // Changed from 'link' to 'slug'
 }
 
 const oceaniaCountries: Country[] = [
-  { name: "Australia", code: "au", link: "/coverage/oceania/australia" },
-  { name: "Fiji", code: "fj", link: "/coverage/oceania/fiji" },
-  { name: "Kiribati", code: "ki", link: "/coverage/oceania/kiribati" },
-  { name: "Marshall Islands", code: "mh", link: "/coverage/oceania/marshall-islands" },
-  { name: "Micronesia", code: "fm", link: "/coverage/oceania/micronesia" },
-  { name: "Nauru", code: "nr", link: "/coverage/oceania/nauru" },
-  { name: "New Zealand", code: "nz", link: "/coverage/oceania/new-zealand" },
-  { name: "Palau", code: "pw", link: "/coverage/oceania/palau" },
-  { name: "Papua New Guinea", code: "pg", link: "/coverage/oceania/papua-new-guinea" },
-  { name: "Samoa", code: "ws", link: "/coverage/oceania/samoa" },
-  { name: "Solomon Islands", code: "sb", link: "/coverage/oceania/solomon-islands" },
-  { name: "Tonga", code: "to", link: "/coverage/oceania/tonga" },
-  { name: "Tuvalu", code: "tv", link: "/coverage/oceania/tuvalu" },
-  { name: "Vanuatu", code: "vu", link: "/coverage/oceania/vanuatu" },
-  { name: "Cook Islands", code: "ck", link: "/coverage/oceania/cook-islands" },
-  { name: "Niue", code: "nu", link: "/coverage/oceania/niue" },
+  { name: "Australia", code: "au", slug: "australia" },
+  { name: "Fiji", code: "fj", slug: "fiji" },
+  { name: "Kiribati", code: "ki", slug: "kiribati" },
+  { name: "Marshall Islands", code: "mh", slug: "marshall-islands" },
+  { name: "Micronesia", code: "fm", slug: "micronesia" },
+  { name: "Nauru", code: "nr", slug: "nauru" },
+  { name: "New Zealand", code: "nz", slug: "new-zealand" },
+  { name: "Palau", code: "pw", slug: "palau" },
+  { name: "Papua New Guinea", code: "pg", slug: "papua-new-guinea" },
+  { name: "Samoa", code: "ws", slug: "samoa" },
+  { name: "Solomon Islands", code: "sb", slug: "solomon-islands" },
+  { name: "Tonga", code: "to", slug: "tonga" },
+  { name: "Tuvalu", code: "tv", slug: "tuvalu" },
+  { name: "Vanuatu", code: "vu", slug: "vanuatu" },
+  { name: "Cook Islands", code: "ck", slug: "cook-islands" },
+  { name: "Niue", code: "nu", slug: "niue" },
 ];
 
 export default function OceaniaList() {
@@ -37,7 +37,7 @@ export default function OceaniaList() {
     c.name.toLowerCase().includes(query.trim().toLowerCase())
   );
 
-      const jsonLd = {
+  const jsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: "Oceania Internet Coverage",
@@ -48,7 +48,7 @@ export default function OceaniaList() {
       "@type": "ListItem",
       position: index + 1,
       name: c.name,
-      url: `https://www.inte-qt.com${c.link}`,
+      url: `https://www.inte-qt.com/country?slug=${c.slug}`, // Updated URL pattern
     })),
     isPartOf: {
       "@type": "WebSite",
@@ -59,21 +59,19 @@ export default function OceaniaList() {
       "@id": "https://www.inte-qt.com/#organization",
     },
   };
+
   return (
     <>
-       <Helmet>
+      <Helmet>
         <title>Oceania Coverage | inte-QT Global Internet Services</title>
-
         <meta
           name="description"
           content="Explore Oceania country coverage for Dedicated Internet Access, Broadband, LTE/5G Wireless, Managed Services, and Global Connectivity."
         />
-
         <link
           rel="canonical"
           href="https://www.inte-qt.com/coverage/oceania"
         />
-
         <script type="application/ld+json">
           {JSON.stringify(jsonLd)}
         </script>
@@ -117,7 +115,7 @@ export default function OceaniaList() {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-8">
               {filtered.map((c) => (
                 <Link
-                  to={c.link}
+                  to={`/country?slug=${c.slug}`} // Updated to match Europe pattern
                   key={c.name}
                   className="group block rounded-2xl border border-white/10 backdrop-blur-xl bg-white/5 hover:bg-white/10 transition-all shadow-md hover:shadow-xl hover:-translate-y-1"
                 >

@@ -38,6 +38,10 @@ const countryUserSchema = new mongoose.Schema(
       ref: "CountryUser", // admin who created this user
       default: null,
     },
+     deletedAt: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true }
 );

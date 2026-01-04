@@ -1,4 +1,3 @@
-// src/pages/AsiaList.tsx
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
@@ -9,57 +8,57 @@ import { Helmet } from "react-helmet-async";
 interface Country {
   name: string;
   code: string;
-  link: string;
+  slug: string; // Changed from link to slug
 }
 
 const asianCountries: Country[] = [
-  { name: "Afghanistan", code: "af", link: "/coverage/asia/afghanistan" },
-  { name: "Armenia", code: "am", link: "/coverage/asia/armenia" },
-  { name: "Azerbaijan", code: "az", link: "/coverage/asia/azerbaijan" },
-  { name: "Bahrain", code: "bh", link: "/coverage/asia/bahrain" },
-  { name: "Bangladesh", code: "bd", link: "/coverage/asia/bangladesh" },
-  { name: "Bhutan", code: "bt", link: "/coverage/asia/bhutan" },
-  { name: "Brunei", code: "bn", link: "/coverage/asia/brunei" },
-  { name: "Cambodia", code: "kh", link: "/coverage/asia/cambodia" },
-  { name: "China", code: "cn", link: "/coverage/asia/china" },
-  { name: "Cyprus", code: "cy", link: "/coverage/asia/cyprus" },
-  { name: "Georgia", code: "ge", link: "/coverage/asia/georgia" },
-  { name: "India", code: "in", link: "/coverage/asia/india" },
-  { name: "Indonesia", code: "id", link: "/coverage/asia/indonesia" },
-  { name: "Iran", code: "ir", link: "/coverage/asia/iran" },
-  { name: "Iraq", code: "iq", link: "/coverage/asia/iraq" },
-  { name: "Israel", code: "il", link: "/coverage/asia/israel" },
-  { name: "Japan", code: "jp", link: "/coverage/asia/japan" },
-  { name: "Jordan", code: "jo", link: "/coverage/asia/jordan" },
-  { name: "Kazakhstan", code: "kz", link: "/coverage/asia/kazakhstan" },
-  { name: "Kuwait", code: "kw", link: "/coverage/asia/kuwait" },
-  { name: "Kyrgyzstan", code: "kg", link: "/coverage/asia/kyrgyzstan" },
-  { name: "Laos", code: "la", link: "/coverage/asia/laos" },
-  { name: "Lebanon", code: "lb", link: "/coverage/asia/lebanon" },
-  { name: "Malaysia", code: "my", link: "/coverage/asia/malaysia" },
-  { name: "Maldives", code: "mv", link: "/coverage/asia/maldives" },
-  { name: "Mongolia", code: "mn", link: "/coverage/asia/mongolia" },
-  { name: "Myanmar (Burma)", code: "mm", link: "/coverage/asia/myanmar" },
-  { name: "Nepal", code: "np", link: "/coverage/asia/nepal" },
-  { name: "Oman", code: "om", link: "/coverage/asia/oman" },
-  { name: "Pakistan", code: "pk", link: "/coverage/asia/pakistan" },
-  { name: "Palestine, State of", code: "ps", link: "/coverage/asia/palestine" },
-  { name: "Philippines", code: "ph", link: "/coverage/asia/philippines" },
-  { name: "Qatar", code: "qa", link: "/coverage/asia/qatar" },
-  { name: "Saudi Arabia", code: "sa", link: "/coverage/asia/saudi-arabia" },
-  { name: "Singapore", code: "sg", link: "/coverage/asia/singapore" },
-  { name: "South Korea", code: "kr", link: "/coverage/asia/south-korea" },
-  { name: "Sri Lanka", code: "lk", link: "/coverage/asia/sri-lanka" },
-  { name: "Syria", code: "sy", link: "/coverage/asia/syria" },
-  { name: "Tajikistan", code: "tj", link: "/coverage/asia/tajikistan" },
-  { name: "Thailand", code: "th", link: "/coverage/asia/thailand" },
-  { name: "Timor-Leste (East Timor)", code: "tl", link: "/coverage/asia/timor-leste" },
-  { name: "Turkey", code: "tr", link: "/coverage/asia/turkey" },
-  { name: "Turkmenistan", code: "tm", link: "/coverage/asia/turkmenistan" },
-  { name: "United Arab Emirates", code: "ae", link: "/coverage/asia/uae" },
-  { name: "Uzbekistan", code: "uz", link: "/coverage/asia/uzbekistan" },
-  { name: "Vietnam", code: "vn", link: "/coverage/asia/vietnam" },
-  { name: "Yemen", code: "ye", link: "/coverage/asia/yemen" },
+  { name: "Afghanistan", code: "af", slug: "afghanistan" },
+  { name: "Armenia", code: "am", slug: "armenia" },
+  { name: "Azerbaijan", code: "az", slug: "azerbaijan" },
+  { name: "Bahrain", code: "bh", slug: "bahrain" },
+  { name: "Bangladesh", code: "bd", slug: "bangladesh" },
+  { name: "Bhutan", code: "bt", slug: "bhutan" },
+  { name: "Brunei", code: "bn", slug: "brunei" },
+  { name: "Cambodia", code: "kh", slug: "cambodia" },
+  { name: "China", code: "cn", slug: "china" },
+  { name: "Cyprus", code: "cy", slug: "cyprus" },
+  { name: "Georgia", code: "ge", slug: "georgia" },
+  { name: "India", code: "in", slug: "india" },
+  { name: "Indonesia", code: "id", slug: "indonesia" },
+  { name: "Iran", code: "ir", slug: "iran" },
+  { name: "Iraq", code: "iq", slug: "iraq" },
+  { name: "Israel", code: "il", slug: "israel" },
+  { name: "Japan", code: "jp", slug: "japan" },
+  { name: "Jordan", code: "jo", slug: "jordan" },
+  { name: "Kazakhstan", code: "kz", slug: "kazakhstan" },
+  { name: "Kuwait", code: "kw", slug: "kuwait" },
+  { name: "Kyrgyzstan", code: "kg", slug: "kyrgyzstan" },
+  { name: "Laos", code: "la", slug: "laos" },
+  { name: "Lebanon", code: "lb", slug: "lebanon" },
+  { name: "Malaysia", code: "my", slug: "malaysia" },
+  { name: "Maldives", code: "mv", slug: "maldives" },
+  { name: "Mongolia", code: "mn", slug: "mongolia" },
+  { name: "Myanmar (Burma)", code: "mm", slug: "myanmar" },
+  { name: "Nepal", code: "np", slug: "nepal" },
+  { name: "Oman", code: "om", slug: "oman" },
+  { name: "Pakistan", code: "pk", slug: "pakistan" },
+  { name: "Palestine, State of", code: "ps", slug: "palestine" },
+  { name: "Philippines", code: "ph", slug: "philippines" },
+  { name: "Qatar", code: "qa", slug: "qatar" },
+  { name: "Saudi Arabia", code: "sa", slug: "saudi-arabia" },
+  { name: "Singapore", code: "sg", slug: "singapore" },
+  { name: "South Korea", code: "kr", slug: "south-korea" },
+  { name: "Sri Lanka", code: "lk", slug: "sri-lanka" },
+  { name: "Syria", code: "sy", slug: "syria" },
+  { name: "Tajikistan", code: "tj", slug: "tajikistan" },
+  { name: "Thailand", code: "th", slug: "thailand" },
+  { name: "Timor-Leste (East Timor)", code: "tl", slug: "timor-leste" },
+  { name: "Turkey", code: "tr", slug: "turkey" },
+  { name: "Turkmenistan", code: "tm", slug: "turkmenistan" },
+  { name: "United Arab Emirates", code: "ae", slug: "united-arab-emirates" },
+  { name: "Uzbekistan", code: "uz", slug: "uzbekistan" },
+  { name: "Vietnam", code: "vn", slug: "vietnam" },
+  { name: "Yemen", code: "ye", slug: "yemen" },
 ];
 
 export default function AsiaList(): JSX.Element {
@@ -79,7 +78,7 @@ export default function AsiaList(): JSX.Element {
     itemListElement: asianCountries.map((c, i) => ({
       "@type": "ListItem",
       position: i + 1,
-      url: `https://www.inte-qt.com${c.link}`,
+      url: `https://www.inte-qt.com/country?slug=${c.slug}`,
       name: c.name,
     })),
   };
@@ -157,7 +156,7 @@ export default function AsiaList(): JSX.Element {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-8">
               {filtered.map((c) => (
                 <Link
-                  to={c.link}
+                  to={`/country?slug=${c.slug}`} // Updated: Link to single country page with query parameter
                   key={c.name}
                   className="group block rounded-2xl border border-white/10 backdrop-blur-xl bg-white/5 hover:bg-white/10 transition-all shadow-md hover:shadow-xl hover:-translate-y-1"
                 >

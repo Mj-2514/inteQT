@@ -8,33 +8,33 @@ import { Helmet } from "react-helmet-async";
 interface Country {
   name: string;
   code: string;
-  link: string;
+  slug: string; // Changed from 'link' to 'slug'
 }
 
 const northAmericanCountries: Country[] = [
-  { name: "Antigua and Barbuda", code: "ag", link: "/coverage/north-america/antigua-and-barbuda" },
-  { name: "Bahamas", code: "bs", link: "/coverage/north-america/bahamas" },
-  { name: "Barbados", code: "bb", link: "/coverage/north-america/barbados" },
-  { name: "Belize", code: "bz", link: "/coverage/north-america/belize" },
-  { name: "Canada", code: "ca", link: "/coverage/north-america/canada" },
-  { name: "Costa Rica", code: "cr", link: "/coverage/north-america/costa-rica" },
-  { name: "Cuba", code: "cu", link: "/coverage/north-america/cuba" },
-  { name: "Dominica", code: "dm", link: "/coverage/north-america/dominica" },
-  { name: "Dominican Republic", code: "do", link: "/coverage/north-america/dominican-republic" },
-  { name: "El Salvador", code: "sv", link: "/coverage/north-america/el-salvador" },
-  { name: "Grenada", code: "gd", link: "/coverage/north-america/grenada" },
-  { name: "Guatemala", code: "gt", link: "/coverage/north-america/guatemala" },
-  { name: "Haiti", code: "ht", link: "/coverage/north-america/haiti" },
-  { name: "Honduras", code: "hn", link: "/coverage/north-america/honduras" },
-  { name: "Jamaica", code: "jm", link: "/coverage/north-america/jamaica" },
-  { name: "Mexico", code: "mx", link: "/coverage/north-america/mexico" },
-  { name: "Nicaragua", code: "ni", link: "/coverage/north-america/nicaragua" },
-  { name: "Panama", code: "pa", link: "/coverage/north-america/panama" },
-  { name: "Saint Kitts and Nevis", code: "kn", link: "/coverage/north-america/saint-kitts-and-nevis" },
-  { name: "Saint Lucia", code: "lc", link: "/coverage/north-america/saint-lucia" },
-  { name: "Saint Vincent and the Grenadines", code: "vc", link: "/coverage/north-america/saint-vincent-and-the-grenadines" },
-  { name: "Trinidad and Tobago", code: "tt", link: "/coverage/north-america/trinidad-and-tobago" },
-  { name: "United States", code: "us", link: "/coverage/north-america/united-states" },
+  { name: "Antigua and Barbuda", code: "ag", slug: "antigua-and-barbuda" },
+  { name: "Bahamas", code: "bs", slug: "bahamas" },
+  { name: "Barbados", code: "bb", slug: "barbados" },
+  { name: "Belize", code: "bz", slug: "belize" },
+  { name: "Canada", code: "ca", slug: "canada" },
+  { name: "Costa Rica", code: "cr", slug: "costa-rica" },
+  { name: "Cuba", code: "cu", slug: "cuba" },
+  { name: "Dominica", code: "dm", slug: "dominica" },
+  { name: "Dominican Republic", code: "do", slug: "dominican-republic" },
+  { name: "El Salvador", code: "sv", slug: "el-salvador" },
+  { name: "Grenada", code: "gd", slug: "grenada" },
+  { name: "Guatemala", code: "gt", slug: "guatemala" },
+  { name: "Haiti", code: "ht", slug: "haiti" },
+  { name: "Honduras", code: "hn", slug: "honduras" },
+  { name: "Jamaica", code: "jm", slug: "jamaica" },
+  { name: "Mexico", code: "mx", slug: "mexico" },
+  { name: "Nicaragua", code: "ni", slug: "nicaragua" },
+  { name: "Panama", code: "pa", slug: "panama" },
+  { name: "Saint Kitts and Nevis", code: "kn", slug: "saint-kitts-and-nevis" },
+  { name: "Saint Lucia", code: "lc", slug: "saint-lucia" },
+  { name: "Saint Vincent and the Grenadines", code: "vc", slug: "saint-vincent-and-the-grenadines" },
+  { name: "Trinidad and Tobago", code: "tt", slug: "trinidad-and-tobago" },
+  { name: "United States", code: "us", slug: "united-states" },
 ];
 
 export default function NorthAmericaList() {
@@ -43,7 +43,8 @@ export default function NorthAmericaList() {
   const filtered = northAmericanCountries.filter((c) =>
     c.name.toLowerCase().includes(query.trim().toLowerCase())
   );
-const jsonLd = {
+
+  const jsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: "North America Internet Coverage",
@@ -54,7 +55,7 @@ const jsonLd = {
       "@type": "ListItem",
       position: index + 1,
       name: c.name,
-      url: `https://www.inte-qt.com${c.link}`,
+      url: `https://www.inte-qt.com/country?slug=${c.slug}`, // Updated URL pattern
     })),
     isPartOf: {
       "@type": "WebSite",
@@ -65,21 +66,19 @@ const jsonLd = {
       "@id": "https://www.inte-qt.com/#organization",
     },
   };
+
   return (
     <>
       <Helmet>
         <title>North America Coverage | inte-QT Global Internet Services</title>
-
         <meta
           name="description"
           content="Explore North American country coverage for Dedicated Internet Access, Broadband, LTE/5G Wireless, Managed Services, and Global Connectivity."
         />
-
         <link
           rel="canonical"
           href="https://www.inte-qt.com/coverage/north-america"
         />
-
         <script type="application/ld+json">
           {JSON.stringify(jsonLd)}
         </script>
@@ -100,7 +99,6 @@ const jsonLd = {
 
         <section className="py-12">
           <div className="container mx-auto px-4">
-
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-4 drop-shadow-lg">
               Explore North America
             </h1>
@@ -124,7 +122,7 @@ const jsonLd = {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-8">
               {filtered.map((c) => (
                 <Link
-                  to={c.link}
+                  to={`/country?slug=${c.slug}`} // Updated to match Europe pattern
                   key={c.name}
                   className="group block rounded-2xl border border-white/10 backdrop-blur-xl bg-white/5 hover:bg-white/10 transition-all shadow-md hover:shadow-xl hover:-translate-y-1"
                 >

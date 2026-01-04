@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Globe, MapPin, Network, CheckCircle } from "lucide-react";
+import { Globe, MapPin, Network, CheckCircle, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Canvas } from "@react-three/fiber";
 import WorldGlobe from "./WorldGlobe";
@@ -59,17 +59,31 @@ const Coverage = () => {
   return (
     <div className="min-h-screen pt-20">
       {/* Hero */}
-      
       <WorldGlobe />
 
       {/* Regions */}
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">Regional Coverage</h2>
-            <p className="text-xl text-muted-foreground">
-              Connecting continents, empowering businesses
-            </p>
+          {/* Header with Login Button - Responsive Layout */}
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 mb-12">
+            <div className="flex-1">
+              <h2 className="text-3xl md:text-4xl font-bold mb-3">Regional Coverage</h2>
+              <p className="text-lg md:text-xl text-muted-foreground">
+                Connecting continents, empowering businesses
+              </p>
+            </div>
+            
+            {/* Login Button */}
+            <Button 
+              asChild 
+              className="gap-2 gradient-primary shadow-glow whitespace-nowrap"
+              size="lg"
+            >
+              <Link to="/country/login">
+                <LogIn className="w-5 h-5" />
+                Country Portal Login
+              </Link>
+            </Button>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -153,9 +167,17 @@ const Coverage = () => {
           Let's discuss how our global network can support your business expansion
         </p>
 
-        <Button asChild size="lg" className="gradient-primary shadow-glow">
-          <Link to="/contact">Get Started Today</Link>
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Button asChild size="lg" className="gradient-primary shadow-glow">
+            <Link to="/contact">Get Started Today</Link>
+          </Button>
+          <Button asChild size="lg" variant="outline" className="gap-2">
+            <Link to="/country/login">
+              <LogIn className="w-4 h-4" />
+              Country Portal
+            </Link>
+          </Button>
+        </div>
       </section>
       <Footer />
     </div>

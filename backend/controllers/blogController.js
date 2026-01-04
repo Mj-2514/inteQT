@@ -338,13 +338,23 @@ export const updateBlog = async (req, res) => {
 ========================= */
 export const getBlogs = async (req, res) => {
   try {
-    const blogs = await Blog.find({ published: true, status: "approved" })
-      .sort({ createdAt: -1 });
+    const blogs = await Blog.find({
+      status: "approved",
+      published: true
+    })
+      .sort({ createdAt: -1 })
+      .lean();
 
-    res.json(blogs);
+    res.status(200).json({
+      success: true,
+      blogs
+    });
   } catch (err) {
     console.error("GET BLOGS ERROR:", err);
-    res.status(500).json({ message: "Failed to fetch blogs" });
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch blogs"
+    });
   }
 };
 

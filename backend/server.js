@@ -12,7 +12,7 @@ import { fileURLToPath } from "url";
 
 
 
-import eventRoutes from "./routes/eventRoutes.js";
+import eventRoutes from "./routes/EventRoutes.js";
 import eventAdminRoutes from "./routes/eventAdminRoutes.js";
 import eventAuthRoutes from "./routes/eventAuthRoutes.js";
 import eventUserRoutes from "./routes/eventUserRoutes.js"
@@ -22,7 +22,7 @@ import countryAuthRoutes from "./routes/countryAuthRoutes.js";
 
 // utils
 import connectDB from "./utils/db.js";
-
+import countryRoutes from "./routes/countryRoutes.js"
 // routes
 import authRoutes from "./routes/authRoutes.js";
 import blogRoutes from "./routes/blogRoutes.js";
@@ -60,8 +60,7 @@ const allowedOrigins = [
   "https://inte-qt.vercel.app",
   "https://inte-qt.com",
   "https://www.inte-qt.com",
-  "https://hoppscotch.io/",
-  "chrome-extension://amknoiejhlmhancpahfcfcfhllgkpbld"
+  
 ];
 
 app.use(
@@ -99,6 +98,7 @@ app.use("/api/event-auth", eventAuthRoutes)
 app.use("/api/events/user", eventUserRoutes)
 app.use('/api/blogs/user', blogUserRoutes);
 app.use("/api/country", countryAuthRoutes);
+app.use("/api/country/dashboard", countryRoutes);
 
 
 // ---------- Health ----------

@@ -8,64 +8,64 @@ import { Helmet } from "react-helmet-async";
 interface Country {
   name: string;
   code: string;
-  link: string;
+  slug: string; // Changed from 'link' to 'slug' to match Europe
 }
 
 const africanCountries: Country[] = [
-  { name: "Algeria", code: "dz", link: "/coverage/africa/algeria" },
-  { name: "Angola", code: "ao", link: "/coverage/africa/angola" },
-  { name: "Benin", code: "bj", link: "/coverage/africa/benin" },
-  { name: "Botswana", code: "bw", link: "/coverage/africa/botswana" },
-  { name: "Burkina Faso", code: "bf", link: "/coverage/africa/burkina-faso" },
-  { name: "Burundi", code: "bi", link: "/coverage/africa/burundi" },
-  { name: "Cabo Verde", code: "cv", link: "/coverage/africa/cabo-verde" },
-  { name: "Cameroon", code: "cm", link: "/coverage/africa/cameroon" },
-  { name: "Central African Republic", code: "cf", link: "/coverage/africa/central-african-republic" },
-  { name: "Chad", code: "td", link: "/coverage/africa/chad" },
-  { name: "Comoros", code: "km", link: "/coverage/africa/comoros" },
-  { name: "Democratic Republic of the Congo", code: "cd", link: "/coverage/africa/democratic-republic-of-the-congo" },
-  { name: "Republic of the Congo", code: "cg", link: "/coverage/africa/republic-of-the-congo" },
-  { name: "Djibouti", code: "dj", link: "/coverage/africa/djibouti" },
-  { name: "Egypt", code: "eg", link: "/coverage/africa/egypt" },
-  { name: "Equatorial Guinea", code: "gq", link: "/coverage/africa/equatorial-guinea" },
-  { name: "Eritrea", code: "er", link: "/coverage/africa/eritrea" },
-  { name: "Eswatini", code: "sz", link: "/coverage/africa/eswatini" },
-  { name: "Ethiopia", code: "et", link: "/coverage/africa/ethiopia" },
-  { name: "Gabon", code: "ga", link: "/coverage/africa/gabon" },
-  { name: "Gambia", code: "gm", link: "/coverage/africa/gambia" },
-  { name: "Ghana", code: "gh", link: "/coverage/africa/ghana" },
-  { name: "Guinea", code: "gn", link: "/coverage/africa/guinea" },
-  { name: "Guinea-Bissau", code: "gw", link: "/coverage/africa/guinea-bissau" },
-  { name: "Côte d'Ivoire", code: "ci", link: "/coverage/africa/cote-divoire" },
-  { name: "Kenya", code: "ke", link: "/coverage/africa/kenya" },
-  { name: "Lesotho", code: "ls", link: "/coverage/africa/lesotho" },
-  { name: "Liberia", code: "lr", link: "/coverage/africa/liberia" },
-  { name: "Libya", code: "ly", link: "/coverage/africa/libya" },
-  { name: "Madagascar", code: "mg", link: "/coverage/africa/madagascar" },
-  { name: "Malawi", code: "mw", link: "/coverage/africa/malawi" },
-  { name: "Mali", code: "ml", link: "/coverage/africa/mali" },
-  { name: "Mauritania", code: "mr", link: "/coverage/africa/mauritania" },
-  { name: "Mauritius", code: "mu", link: "/coverage/africa/mauritius" },
-  { name: "Morocco", code: "ma", link: "/coverage/africa/morocco" },
-  { name: "Mozambique", code: "mz", link: "/coverage/africa/mozambique" },
-  { name: "Namibia", code: "na", link: "/coverage/africa/namibia" },
-  { name: "Niger", code: "ne", link: "/coverage/africa/niger" },
-  { name: "Nigeria", code: "ng", link: "/coverage/africa/nigeria" },
-  { name: "Rwanda", code: "rw", link: "/coverage/africa/rwanda" },
-  { name: "Sao Tome and Principe", code: "st", link: "/coverage/africa/sao-tome-and-principe" },
-  { name: "Senegal", code: "sn", link: "/coverage/africa/senegal" },
-  { name: "Seychelles", code: "sc", link: "/coverage/africa/seychelles" },
-  { name: "Sierra Leone", code: "sl", link: "/coverage/africa/sierra-leone" },
-  { name: "Somalia", code: "so", link: "/coverage/africa/somalia" },
-  { name: "South Africa", code: "za", link: "/coverage/africa/south-africa" },
-  { name: "South Sudan", code: "ss", link: "/coverage/africa/south-sudan" },
-  { name: "Sudan", code: "sd", link: "/coverage/africa/sudan" },
-  { name: "Tanzania", code: "tz", link: "/coverage/africa/tanzania" },
-  { name: "Togo", code: "tg", link: "/coverage/africa/togo" },
-  { name: "Tunisia", code: "tn", link: "/coverage/africa/tunisia" },
-  { name: "Uganda", code: "ug", link: "/coverage/africa/uganda" },
-  { name: "Zambia", code: "zm", link: "/coverage/africa/zambia" },
-  { name: "Zimbabwe", code: "zw", link: "/coverage/africa/zimbabwe" },
+  { name: "Algeria", code: "dz", slug: "algeria" },
+  { name: "Angola", code: "ao", slug: "angola" },
+  { name: "Benin", code: "bj", slug: "benin" },
+  { name: "Botswana", code: "bw", slug: "botswana" },
+  { name: "Burkina Faso", code: "bf", slug: "burkina-faso" },
+  { name: "Burundi", code: "bi", slug: "burundi" },
+  { name: "Cabo Verde", code: "cv", slug: "cabo-verde" },
+  { name: "Cameroon", code: "cm", slug: "cameroon" },
+  { name: "Central African Republic", code: "cf", slug: "central-african-republic" },
+  { name: "Chad", code: "td", slug: "chad" },
+  { name: "Comoros", code: "km", slug: "comoros" },
+  { name: "Democratic Republic of the Congo", code: "cd", slug: "democratic-republic-of-the-congo" },
+  { name: "Republic of the Congo", code: "cg", slug: "republic-of-the-congo" },
+  { name: "Djibouti", code: "dj", slug: "djibouti" },
+  { name: "Egypt", code: "eg", slug: "egypt" },
+  { name: "Equatorial Guinea", code: "gq", slug: "equatorial-guinea" },
+  { name: "Eritrea", code: "er", slug: "eritrea" },
+  { name: "Eswatini", code: "sz", slug: "eswatini" },
+  { name: "Ethiopia", code: "et", slug: "ethiopia" },
+  { name: "Gabon", code: "ga", slug: "gabon" },
+  { name: "Gambia", code: "gm", slug: "gambia" },
+  { name: "Ghana", code: "gh", slug: "ghana" },
+  { name: "Guinea", code: "gn", slug: "guinea" },
+  { name: "Guinea-Bissau", code: "gw", slug: "guinea-bissau" },
+  { name: "Côte d'Ivoire", code: "ci", slug: "cote-divoire" },
+  { name: "Kenya", code: "ke", slug: "kenya" },
+  { name: "Lesotho", code: "ls", slug: "lesotho" },
+  { name: "Liberia", code: "lr", slug: "liberia" },
+  { name: "Libya", code: "ly", slug: "libya" },
+  { name: "Madagascar", code: "mg", slug: "madagascar" },
+  { name: "Malawi", code: "mw", slug: "malawi" },
+  { name: "Mali", code: "ml", slug: "mali" },
+  { name: "Mauritania", code: "mr", slug: "mauritania" },
+  { name: "Mauritius", code: "mu", slug: "mauritius" },
+  { name: "Morocco", code: "ma", slug: "morocco" },
+  { name: "Mozambique", code: "mz", slug: "mozambique" },
+  { name: "Namibia", code: "na", slug: "namibia" },
+  { name: "Niger", code: "ne", slug: "niger" },
+  { name: "Nigeria", code: "ng", slug: "nigeria" },
+  { name: "Rwanda", code: "rw", slug: "rwanda" },
+  { name: "Sao Tome and Principe", code: "st", slug: "sao-tome-and-principe" },
+  { name: "Senegal", code: "sn", slug: "senegal" },
+  { name: "Seychelles", code: "sc", slug: "seychelles" },
+  { name: "Sierra Leone", code: "sl", slug: "sierra-leone" },
+  { name: "Somalia", code: "so", slug: "somalia" },
+  { name: "South Africa", code: "za", slug: "south-africa" },
+  { name: "South Sudan", code: "ss", slug: "south-sudan" },
+  { name: "Sudan", code: "sd", slug: "sudan" },
+  { name: "Tanzania", code: "tz", slug: "tanzania" },
+  { name: "Togo", code: "tg", slug: "togo" },
+  { name: "Tunisia", code: "tn", slug: "tunisia" },
+  { name: "Uganda", code: "ug", slug: "uganda" },
+  { name: "Zambia", code: "zm", slug: "zambia" },
+  { name: "Zimbabwe", code: "zw", slug: "zimbabwe" },
 ];
 
 export default function AfricaList(): JSX.Element {
@@ -95,7 +95,7 @@ export default function AfricaList(): JSX.Element {
         "@type": "ListItem",
         position: i + 1,
         name: c.name,
-        url: `https://www.inte-qt.com${c.link}`,
+        url: `https://www.inte-qt.com/country?slug=${c.slug}`,
       })),
     },
   };
@@ -137,69 +137,55 @@ export default function AfricaList(): JSX.Element {
 
         <section className="py-12">
           <div className="container mx-auto px-4">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 drop-shadow-lg">
-              Explore Africa — Coverage by Country
+            <h1 className="text-5xl md:text-6xl font-bold text-white mb-4 drop-shadow-lg">
+              Explore Africa
             </h1>
-
-            {/* SEO-rich intro paragraph: keep it concise and keyword focused */}
-            <p className="text-slate-200 text-base md:text-lg max-w-3xl mb-6">
-              Discover our connectivity footprint across Africa. Find country pages with details on population, languages,
-              major cities, airports, available connectivity options (Dedicated Internet, Broadband, LTE/5G), and managed
-              services to support businesses and carriers.
+            <p className="text-slate-200 text-lg max-w-2xl mb-8">
+              Discover coverage across the African landscape. Pick any nation to dive into network insights.
             </p>
 
             <div className="max-w-xl mb-10">
-              <label htmlFor="country-search" className="sr-only">
-                Search countries in Africa
-              </label>
-
-              <div className="relative">
+              <div className="relative group">
                 <input
-                  id="country-search"
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search a country…"
-                  className="w-full pl-12 pr-4 py-3 rounded-xl bg-white/10 text-white border border-white/20 backdrop-blur-xl focus:outline-none focus:ring-2 focus:ring-primary/70 transition"
-                  aria-label="Search countries"
+                  className="w-full pl-12 pr-4 py-3 rounded-xl bg-white/10 text-white border border-white/20 backdrop-blur-xl focus:ring-2 focus:ring-primary/70 transition"
                 />
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 w-5 h-5" aria-hidden />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 w-5 h-5" />
               </div>
             </div>
 
-            <nav aria-label="African countries">
-              <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-8">
-                {filtered.map((c) => (
-                  <li key={c.name}>
-                    <Link
-                      to={c.link}
-                      className="group block rounded-2xl border border-white/10 backdrop-blur-xl bg-white/5 hover:bg-white/10 transition-all shadow-md hover:shadow-xl hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-primary/60"
-                      aria-label={`Open ${c.name} page`}
-                    >
-                      <div className="h-28 w-full flex items-center justify-center rounded-t-2xl bg-white/10 overflow-hidden">
-                        <img
-                          src={`https://flagcdn.com/w320/${c.code}.png`}
-                          alt={`${c.name} flag`}
-                          className="w-20 drop-shadow-sm group-hover:scale-110 transition-transform"
-                          loading="lazy"
-                          onError={handleFlagError}
-                          width={160}
-                          height={100}
-                        />
-                      </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-8">
+              {filtered.map((c) => (
+                <Link
+                  to={`/country?slug=${c.slug}`}  // Changed to match Europe pattern
+                  key={c.name}
+                  className="group block rounded-2xl border border-white/10 backdrop-blur-xl bg-white/5 hover:bg-white/10 transition-all shadow-md hover:shadow-xl hover:-translate-y-1"
+                >
+                  <div className="h-28 w-full flex items-center justify-center rounded-t-2xl bg-white/10 overflow-hidden">
+                    <img
+                      src={`https://flagcdn.com/w320/${c.code}.png`}
+                      alt={c.name}
+                      className="w-20 drop-shadow-sm group-hover:scale-110 transition"
+                      loading="lazy"
+                      onError={handleFlagError}
+                    />
+                  </div>
 
-                      <div className="p-4 text-center">
-                        <p className="text-slate-300 text-xs tracking-wide">COUNTRY</p>
-                        <h3 className="text-white font-semibold text-lg mt-1">{c.name}</h3>
-                      </div>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
+                  <div className="p-4 text-center">
+                    <p className="text-slate-300 text-xs tracking-wide">COUNTRY</p>
+                    <h3 className="text-white font-semibold text-lg mt-1">
+                      {c.name}
+                    </h3>
+                  </div>
+                </Link>
+              ))}
+            </div>
 
             {filtered.length === 0 && (
-              <p className="text-center mt-10 text-slate-300 text-lg" role="status" aria-live="polite">
+              <p className="text-center mt-10 text-slate-300 text-lg">
                 No country found. Try another search.
               </p>
             )}

@@ -8,23 +8,23 @@ import { Helmet } from "react-helmet-async";
 interface Country {
   name: string;
   code: string;
-  link: string;
+  slug: string; // Changed from 'link' to 'slug'
 }
 
 const southAmericanCountries: Country[] = [
-  { name: "Argentina", code: "ar", link: "/coverage/south-america/argentina" },
-  { name: "Bolivia", code: "bo", link: "/coverage/south-america/bolivia" },
-  { name: "Brazil", code: "br", link: "/coverage/south-america/brazil" },
-  { name: "Chile", code: "cl", link: "/coverage/south-america/chile" },
-  { name: "Colombia", code: "co", link: "/coverage/south-america/colombia" },
-  { name: "Ecuador", code: "ec", link: "/coverage/south-america/ecuador" },
-  { name: "Guyana", code: "gy", link: "/coverage/south-america/guyana" },
-  { name: "Paraguay", code: "py", link: "/coverage/south-america/paraguay" },
-  { name: "Peru", code: "pe", link: "/coverage/south-america/peru" },
-  { name: "Suriname", code: "sr", link: "/coverage/south-america/suriname" },
-  { name: "Uruguay", code: "uy", link: "/coverage/south-america/uruguay" },
-  { name: "Venezuela", code: "ve", link: "/coverage/south-america/venezuela" },
-  { name: "French Guiana", code: "gf", link: "/coverage/south-america/french-guiana" },
+  { name: "Argentina", code: "ar", slug: "argentina" },
+  { name: "Bolivia", code: "bo", slug: "bolivia" },
+  { name: "Brazil", code: "br", slug: "brazil" },
+  { name: "Chile", code: "cl", slug: "chile" },
+  { name: "Colombia", code: "co", slug: "colombia" },
+  { name: "Ecuador", code: "ec", slug: "ecuador" },
+  { name: "Guyana", code: "gy", slug: "guyana" },
+  { name: "Paraguay", code: "py", slug: "paraguay" },
+  { name: "Peru", code: "pe", slug: "peru" },
+  { name: "Suriname", code: "sr", slug: "suriname" },
+  { name: "Uruguay", code: "uy", slug: "uruguay" },
+  { name: "Venezuela", code: "ve", slug: "venezuela" },
+  { name: "French Guiana", code: "gf", slug: "french-guiana" },
 ];
 
 export default function SouthAmericaList() {
@@ -33,42 +33,46 @@ export default function SouthAmericaList() {
   const filtered = southAmericanCountries.filter((c) =>
     c.name.toLowerCase().includes(query.trim().toLowerCase())
   );
+
   const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "ItemList",
-  name: "South America Internet Coverage",
-  description:
-    "Explore South American country coverage for internet connectivity, broadband, wireless and managed network services.",
-  url: "https://www.inte-qt.com/coverage/south-america",
-  itemListElement: southAmericanCountries.map((c, index) => ({
-    "@type": "ListItem",
-    position: index + 1,
-    name: c.name,
-    url: `https://www.inte-qt.com${c.link}`
-  })),
-  isPartOf: {
-    "@type": "WebSite",
-    "@id": "https://www.inte-qt.com/#website"
-  },
-  publisher: {
-    "@type": "Organization",
-    "@id": "https://www.inte-qt.com/#organization"
-  }
-};
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "South America Internet Coverage",
+    description:
+      "Explore South American country coverage for internet connectivity, broadband, wireless and managed network services.",
+    url: "https://www.inte-qt.com/coverage/south-america",
+    itemListElement: southAmericanCountries.map((c, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: c.name,
+      url: `https://www.inte-qt.com/country?slug=${c.slug}`, // Updated URL pattern
+    })),
+    isPartOf: {
+      "@type": "WebSite",
+      "@id": "https://www.inte-qt.com/#website"
+    },
+    publisher: {
+      "@type": "Organization",
+      "@id": "https://www.inte-qt.com/#organization"
+    }
+  };
 
   return (
     <>
       <Helmet>
-      <title>South America Coverage | inte-QT Global Internet Services</title>
-      <meta
-        name="description"
-        content="Explore South American country coverage for Dedicated Internet Access, Broadband, LTE/5G Wireless, Managed Services, and Global Connectivity."
-      />
-      <link
-        rel="canonical"
-        href="https://www.inte-qt.com/coverage/south-america"
-      />
-    </Helmet>
+        <title>South America Coverage | inte-QT Global Internet Services</title>
+        <meta
+          name="description"
+          content="Explore South American country coverage for Dedicated Internet Access, Broadband, LTE/5G Wireless, Managed Services, and Global Connectivity."
+        />
+        <link
+          rel="canonical"
+          href="https://www.inte-qt.com/coverage/south-america"
+        />
+        <script type="application/ld+json">
+          {JSON.stringify(jsonLd)}
+        </script>
+      </Helmet>
 
       <Navbar />
 
@@ -108,7 +112,7 @@ export default function SouthAmericaList() {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-8">
               {filtered.map((c) => (
                 <Link
-                  to={c.link}
+                  to={`/country?slug=${c.slug}`} // Updated to match Europe pattern
                   key={c.name}
                   className="group block rounded-2xl border border-white/10 backdrop-blur-xl bg-white/5 hover:bg-white/10 transition-all shadow-md hover:shadow-xl hover:-translate-y-1"
                 >

@@ -96,30 +96,49 @@ export const createAdminByAdmin = async (req, res) => {
 /* =========================
    LOGIN
 ========================= */
+/* =========================
+   LOGIN
+========================= */
 export const loginCountryUser = async (req, res) => {
   try {
+    console.log('🔐 Backend login attempt:', req.body.email);
+    
     const { email, password } = req.body;
 
-    if (!validateCompanyEmail(email))
-      return res.status(401).json({ message: "Unauthorized domain" });
-
+    console.log('📧 Email validation:', validateCompanyEmail(email));
+    
     const user = await CountryUser.findOne({ email, isActive: true }).select("+password");
-    if (!user) return res.status(401).json({ message: "Invalid credentials" });
+    console.log('👤 User found:', user ? 'YES' : 'NO');
+    
+    if (!user) {
+      console.log('❌ No user found or inactive');
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
 
     const match = await bcrypt.compare(password, user.password);
-    if (!match) return res.status(401).json({ message: "Invalid credentials" });
+    console.log('🔑 Password match:', match);
+    
+    if (!match) {
+      console.log('❌ Password mismatch');
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
 
     const token = signToken(user._id);
+    console.log('✅ Token generated');
 
     res.json({
       token,
       user: {
         id: user._id,
         name: user.name,
+        email: user.email,
         role: user.role,
+        isAdmin: user.role === 'admin',
+        isActive: user.isActive,
       },
     });
   } catch (err) {
+    console.error('💥 Server error:', err);
     res.status(500).json({ message: err.message });
   }
 };
@@ -127,34 +146,56 @@ export const loginCountryUser = async (req, res) => {
 /* =========================
    ADMIN CREATES USER
 ========================= */
-export const createUserByAdmin = async (req, res) => {
+// Update the createNewUser function in CountryAdminDashboard.tsx:
+
+export const createNewUser = async (req, res) => {
   try {
-    if (req.user.role !== "admin")
+    // only admins
+    if (req.user.role !== "admin") {
       return res.status(403).json({ message: "Admin only" });
+    }
 
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role = "user" } = req.body;
 
-    if (!validateCompanyEmail(email))
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    if (!email.endsWith("@inte-qt.com")) {
       return res.status(400).json({ message: "Only @inte-qt.com emails allowed" });
+    }
 
-    const exists = await CountryUser.findOne({ email });
-    if (exists) return res.status(400).json({ message: "User already exists" });
+    const existing = await CountryUser.findOne({ email });
+    if (existing) {
+      return res.status(400).json({ message: "User already exists" });
+    }
 
-    const hashed = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await CountryUser.create({
       name,
       email,
-      password: hashed,
-      role: role || "user",
+      password: hashedPassword,
+      role,
       createdBy: req.user._id,
     });
 
-    res.status(201).json({ message: "User created", id: user._id });
+    res.status(201).json({
+      message: "User created successfully",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        isActive: user.isActive,
+      },
+    });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error("Create user error:", err);
+    res.status(500).json({ message: "Failed to create user" });
   }
 };
+
 
 /* =========================
    CHANGE PASSWORD (ADMIN + USER)
@@ -172,6 +213,128 @@ export const changePassword = async (req, res) => {
     await user.save();
 
     res.json({ message: "Password updated successfully" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
+/* =========================
+   ADMIN: GET ALL USERS
+========================= */
+export const getAllUsers = async (req, res) => {
+  try {
+    if (!req.user || req.user.role !== "admin") {
+      return res.status(403).json({ message: "Admin only" });
+    }
+
+    const { role, active, page = 1, limit = 10 } = req.query;
+
+    const filter = {
+      $or: [
+        { deletedAt: null },
+        { deletedAt: { $exists: false } },
+      ],
+    };
+
+    if (role && role !== "all") {
+      filter.role = role;
+    }
+
+    if (active !== undefined) {
+      filter.isActive = active === "true";
+    }
+
+    const skip = (Number(page) - 1) * Number(limit);
+
+    const [users, total] = await Promise.all([
+      CountryUser.find(filter)
+        .populate("createdBy", "name email")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(Number(limit))
+        .select("-password -__v"),
+      CountryUser.countDocuments(filter),
+    ]);
+
+    res.status(200).json({
+      users,
+      total,
+      pages: Math.ceil(total / Number(limit)),
+      currentPage: Number(page),
+    });
+  } catch (err) {
+    console.error("GET ALL USERS ERROR:", err);
+    res.status(500).json({ message: "Failed to fetch users" });
+  }
+};
+
+
+/* =========================
+   ADMIN: DELETE USER (SOFT DELETE)
+========================= */
+export const deleteUser = async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ message: "Admin only" });
+    }
+
+    const { id } = req.params;
+
+    // Extra safety check - prevent deleting yourself
+    if (id === req.user._id.toString()) {
+      return res.status(400).json({ message: "Cannot permanently delete your own account" });
+    }
+
+    const user = await CountryUser.findByIdAndDelete(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Also delete all submissions by this user
+    await Country.deleteMany({ createdBy: id });
+
+    res.json({ 
+      message: "User permanently deleted along with their submissions",
+      deletedUser: {
+        _id: user._id,
+        name: user.name,
+        email: user.email
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+/* =========================
+   ADMIN: TOGGLE USER ACTIVE STATUS
+========================= */
+export const toggleUserStatus = async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ message: "Admin only" });
+    }
+
+    const { id } = req.params;
+
+    const user = await CountryUser.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Prevent admin from deactivating themselves
+    if (id === req.user._id.toString()) {
+      return res.status(400).json({ message: "Cannot change your own status" });
+    }
+
+    user.isActive = !user.isActive;
+    await user.save();
+
+    res.json({ 
+      message: `User ${user.isActive ? 'activated' : 'deactivated'} successfully`,
+      isActive: user.isActive 
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

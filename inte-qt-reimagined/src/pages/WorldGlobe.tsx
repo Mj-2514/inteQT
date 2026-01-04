@@ -12,7 +12,7 @@ type Country = {
   lat: number;
   lon: number;
   details: string;
-  url: string;
+  slug: string; // Changed from 'url' to 'slug'
   continent: string;
 };
 
@@ -56,7 +56,7 @@ const countries: Country[] = (allCountries as any[])
       lat,
       lon,
       details: `${region} · Capital: ${capital}`,
-      url: `/coverage/${continent}/${slugify(name)}`,
+      slug: slugify(name), // Changed from 'url' to 'slug'
       continent,
     } as Country;
   })
@@ -407,7 +407,7 @@ const InteractiveMap2D: React.FC<{
 
   const handleMapClick = () => {
     if (pinpointCountry) {
-      navigate(pinpointCountry.url);
+      navigate(`/country?slug=${pinpointCountry.slug}`); // Updated URL pattern
     }
   };
 
@@ -511,7 +511,7 @@ export default function WorldGlobe(): JSX.Element {
   };
 
   const handleCountryLinkClick = (country: Country) => {
-    navigate(country.url);
+    navigate(`/country?slug=${country.slug}`); // Updated URL pattern
   };
 
   const clearPinpoint = () => {

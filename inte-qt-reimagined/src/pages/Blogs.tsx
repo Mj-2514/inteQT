@@ -21,10 +21,12 @@ type BlogFromApi = {
   tags?: string[] | string;
   introduction?: string;
   description?: string;
+
   introImage?: string | null;
+  introMediaType?: "gif" | "image" | "video" | "external";
+
   descriptionImage?: string | null;
-  introMediaType?: string | null;
-  descriptionMediaType?: string | null;
+  descriptionMediaType?: "gif" | "image" | "video" | "external";
 };
 
 type BlogCard = {
@@ -100,37 +102,33 @@ const decideIsVideo = (url?: string | null, mediaType?: string | null): boolean 
 };
 
 const mapBlogToCard = (blog: BlogFromApi): BlogCard => {
-  // Try description image first, then intro image, then fallback
-  const candidateUrl = blog.descriptionImage || blog.introImage || null;
-  const normalizedUrl = normalizeUrl(candidateUrl);
-  
+  const rawUrl = blog.descriptionImage || blog.introImage || null;
   const mediaType = blog.descriptionMediaType || blog.introMediaType || null;
-  const imgIsVideo = decideIsVideo(candidateUrl, mediaType);
+
+  const imgIsVideo =
+    mediaType === "video" ||
+    (rawUrl ? urlLooksLikeVideo(rawUrl) : false);
 
   let category = "Technology";
   if (blog.tags) {
-    if (Array.isArray(blog.tags)) {
-      category = blog.tags.slice(0, 2).join(" • ");
-    } else if (typeof blog.tags === "string") {
-      category = blog.tags;
-    }
+    if (Array.isArray(blog.tags)) category = blog.tags.slice(0, 2).join(" • ");
+    else category = blog.tags;
   }
 
   const baseText = blog.introduction || blog.description || "";
-  const maxLen = 160;
   const excerpt =
-    baseText.length > maxLen ? baseText.slice(0, maxLen).trim() + "..." : baseText;
+    baseText.length > 160 ? baseText.slice(0, 160).trim() + "..." : baseText;
 
   return {
     id: blog._id,
-    img: normalizedUrl,
+    img: normalizeUrl(rawUrl),
     imgIsVideo,
     mediaType,
     title: blog.title,
     excerpt: excerpt || "Explore insights on technology and innovation.",
     author: blog.authorName || "Anonymous",
     date: formatDate(blog.publicationDate),
-    category: category || "Technology",
+    category,
     slug: blog.slug,
   };
 };
@@ -196,13 +194,50 @@ const Blogs = () => {
         }
         
         const text = await res.text();
+        console.log("Raw response text (first 500 chars):", text.substring(0, 500));
+        
         let data: BlogFromApi[] = [];
 
         try {
-          data = text ? JSON.parse(text) : [];
+          const parsedData = text ? JSON.parse(text) : null;
+          console.log("Raw API response:", parsedData);
+          
+          // Check various possible response formats
+          if (Array.isArray(parsedData)) {
+            // Direct array response
+            data = parsedData;
+          } else if (parsedData && Array.isArray(parsedData.data)) {
+            // Response with { data: [...] } wrapper
+            data = parsedData.data;
+          } else if (parsedData && Array.isArray(parsedData.blogs)) {
+            // Response with { blogs: [...] } wrapper
+            data = parsedData.blogs;
+          } else if (parsedData && parsedData.success && Array.isArray(parsedData.blogs)) {
+            // Response with { success: true, blogs: [...] } wrapper
+            data = parsedData.blogs;
+          } else if (parsedData && parsedData.blogs && typeof parsedData.blogs === 'object') {
+            // If blogs is an object, try to convert it to array
+            console.warn("Blogs is an object, attempting conversion");
+            data = Object.values(parsedData.blogs);
+          } else if (parsedData && parsedData.message) {
+            // API returned a message instead of data
+            console.warn("API message:", parsedData.message);
+            data = [];
+          } else {
+            // Handle empty or unexpected response
+            console.warn("Unexpected or empty response format:", parsedData);
+            data = [];
+          }
+          
+          // Ensure data is definitely an array before mapping
+          if (!Array.isArray(data)) {
+            console.error("Data is not an array after processing:", data);
+            data = [];
+          }
+          
           console.log(`Successfully loaded ${data.length} blogs`);
           
-          // Debug first blog data
+          // Debug log for media info
           if (data.length > 0) {
             console.log("First blog media info:", {
               title: data[0].title,
@@ -213,15 +248,20 @@ const Blogs = () => {
             });
           }
         } catch (parseErr) {
-          console.error("Failed to parse JSON:", parseErr, "Text:", text);
+          console.error("Failed to parse JSON:", parseErr, "Text received:", text);
           throw new Error("Invalid response format from server");
         }
 
-        const mapped = data.map((b) => mapBlogToCard(b));
+        // Safely map the data
+        const mapped = Array.isArray(data) 
+          ? data.map((b) => mapBlogToCard(b))
+          : [];
+        
         setBlogs(mapped);
       } catch (err: any) {
         console.error("Error fetching blogs:", err);
         setError(err?.message || "Unable to fetch blogs. Please try again later.");
+        setBlogs([]); // Ensure blogs is set to empty array on error
       } finally {
         setLoading(false);
       }
@@ -260,42 +300,41 @@ const Blogs = () => {
 
       {/* HERO */}
       <section
-  className="relative gradient-hero py-24 bg-content bg-center bg-no-repeat"
-  style={{
-    backgroundImage:
-      'url("https://gifdb.com/images/high/office-desk-background-myhb5mf4xpj1ews9.gif")',
-    backgroundSize: "500px",
-    backgroundPosition: "10% center",
-  }}
->
-  {/* Dark overlay for contrast */}
-  <div className="absolute inset-0 bg-black/50" />
-
-  {/* Content */}
-  <div className="container mx-auto px-4 text-center relative z-10">
-    <div className="max-w-3xl mx-auto text-center">
-      <h1 className="text-white text-5xl md:text-6xl font-bold mb-6 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)] animate-fade-in">
-        Blogs & Insights
-      </h1>
-
-      <p className="text-white text-xl md:text-2xl max-w-3xl mx-auto font-bold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] animate-fade-in-up">
-        Stay informed with the latest industry news, technology insights, and expert analysis
-      </p>
-
-      <button
-        onClick={handleCreateOrDashboard}
-        className="inline-flex items-center px-6 py-3 bg-white text-indigo-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors shadow-lg hover:shadow-xl mt-3"
+        className="relative gradient-hero py-24 bg-content bg-center bg-no-repeat"
+        style={{
+          backgroundImage:
+            'url("https://gifdb.com/images/high/office-desk-background-myhb5mf4xpj1ews9.gif")',
+          backgroundSize: "500px",
+          backgroundPosition: "10% center",
+        }}
       >
-        {isAuthenticated
-          ? user?.isAdmin
-            ? "Go to Admin Dashboard"
-            : "Go to Dashboard"
-          : "Login to Contribute"}
-      </button>
-    </div>
-  </div>
-</section>
+        {/* Dark overlay for contrast */}
+        <div className="absolute inset-0 bg-black/50" />
 
+        {/* Content */}
+        <div className="container mx-auto px-4 text-center relative z-10">
+          <div className="max-w-3xl mx-auto text-center">
+            <h1 className="text-white text-5xl md:text-6xl font-bold mb-6 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)] animate-fade-in">
+              Blogs & Insights
+            </h1>
+
+            <p className="text-white text-xl md:text-2xl max-w-3xl mx-auto font-bold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] animate-fade-in-up">
+              Stay informed with the latest industry news, technology insights, and expert analysis
+            </p>
+
+            <button
+              onClick={handleCreateOrDashboard}
+              className="inline-flex items-center px-6 py-3 bg-white text-indigo-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors shadow-lg hover:shadow-xl mt-3"
+            >
+              {isAuthenticated
+                ? user?.isAdmin
+                  ? "Go to Admin Dashboard"
+                  : "Go to Dashboard"
+                : "Login to Contribute"}
+            </button>
+          </div>
+        </div>
+      </section>
 
       {/* BLOGS SECTION */}
       <section className="py-16">
@@ -331,7 +370,7 @@ const Blogs = () => {
             </div>
           )}
 
-          {!error && blogs.length > 0 && (
+          {!error && Array.isArray(blogs) && blogs.length > 0 && (
             <>
               <div className="mb-12 text-center">
                 <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
