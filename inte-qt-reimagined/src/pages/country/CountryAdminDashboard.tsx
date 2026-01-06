@@ -211,7 +211,7 @@ const CountryAdminDashboard = () => {
       }
       
       const response = await fetch(`${API_BASE}/api/country/change-password`, {
-        method: "POST",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${effectiveToken}`
