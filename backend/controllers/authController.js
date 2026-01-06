@@ -158,26 +158,26 @@ export const getAllUsers = async (req, res) => {
 ========================= */
 export const deleteUser = async (req, res) => {
   try {
-    console.log('Delete user called for ID:', req.params.id);
-    console.log('Current user ID:', req.user.id);
+    ('Delete user called for ID:', req.params.id);
+    ('Current user ID:', req.user.id);
     
     const { id } = req.params;
     
     // Don't allow deleting yourself
     if (id === req.user.id) {
-      console.log('User tried to delete themselves');
+      ('User tried to delete themselves');
       return res.status(400).json({ message: "You cannot delete your own account" });
     }
     
-    console.log('Finding user:', id);
+    ('Finding user:', id);
     const user = await User.findById(id);
     
     if (!user) {
-      console.log('User not found:', id);
+      ('User not found:', id);
       return res.status(404).json({ message: "User not found" });
     }
     
-    console.log('User found:', user.email, 'Is deleted?', user.isDeleted);
+    ('User found:', user.email, 'Is deleted?', user.isDeleted);
     
     // Check if already deleted
     if (user.isDeleted) {
@@ -188,7 +188,7 @@ export const deleteUser = async (req, res) => {
     user.isDeleted = true;
     user.deletedAt = new Date();
     
-    console.log('Attempting to save user...');
+    ('Attempting to save user...');
     
     // Try direct update as alternative
     try {
@@ -205,7 +205,7 @@ export const deleteUser = async (req, res) => {
       
       // Option 2: Try save with error handling
       await user.save();
-      console.log('User saved successfully');
+      ('User saved successfully');
       
     } catch (saveError) {
       console.error("SAVE USER ERROR DETAILS:", {
@@ -216,7 +216,7 @@ export const deleteUser = async (req, res) => {
       
       // Try alternative approach
       try {
-        console.log('Trying alternative update method...');
+        ('Trying alternative update method...');
         const result = await User.updateOne(
           { _id: id },
           { 
@@ -227,7 +227,7 @@ export const deleteUser = async (req, res) => {
             }
           }
         );
-        console.log('Update result:', result);
+        ('Update result:', result);
         
         if (result.modifiedCount === 0) {
           throw new Error('No document was updated');
@@ -242,7 +242,7 @@ export const deleteUser = async (req, res) => {
       }
     }
     
-    console.log('User deletion completed for:', id);
+    ('User deletion completed for:', id);
     
     res.json({ 
       success: true,

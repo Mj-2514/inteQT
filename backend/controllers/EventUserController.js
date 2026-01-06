@@ -621,7 +621,7 @@ export const changePassword = async (req, res) => {
     user.updatedAt = Date.now();
     await user.save();
 
-    console.log(`Password changed for user: ${user.email} at ${new Date().toISOString()}`);
+    (`Password changed for user: ${user.email} at ${new Date().toISOString()}`);
 
     res.status(200).json({
       success: true,

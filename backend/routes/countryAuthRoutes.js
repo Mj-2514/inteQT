@@ -24,7 +24,7 @@ router.get('/:slug', async (req, res) => {
   try {
     const { slug } = req.params;
     
-    console.log(`[PUBLIC API] Fetching country with slug: ${slug}`);
+    (`[PUBLIC API] Fetching country with slug: ${slug}`);
     
     // Find approved country by slug
     const country = await Country.findOne({ 

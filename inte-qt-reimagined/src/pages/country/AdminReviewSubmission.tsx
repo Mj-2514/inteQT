@@ -36,7 +36,7 @@ import {
 } from "lucide-react";
 import { useCountryAuth } from "../../context/AuthContext";
 
-const API_BASE = import.meta.env.DEV ? "http://localhost:5000" : "https://inteqt.onrender.com";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
 
 const AdminReviewSubmission = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -58,20 +58,20 @@ const AdminReviewSubmission = () => {
 
   // Check authentication and admin status
   useEffect(() => {
-    console.log('=== REVIEW PAGE AUTH CHECK ===');
-    console.log('slug:', slug);
-    console.log('token:', token ? 'Exists' : 'Missing');
-    console.log('user:', user);
-    console.log('isAdmin:', isAdmin);
+    ('=== REVIEW PAGE AUTH CHECK ===');
+    ('slug:', slug);
+    ('token:', token ? 'Exists' : 'Missing');
+    ('user:', user);
+    ('isAdmin:', isAdmin);
     
     if (!token || !user) {
-      console.log('No auth, redirecting to login');
+      ('No auth, redirecting to login');
       navigate("/country/login");
       return;
     }
     
     if (!isAdmin) {
-      console.log('Not admin, redirecting to dashboard');
+      ('Not admin, redirecting to dashboard');
       navigate("/country/dashboard");
       return;
     }
@@ -90,11 +90,11 @@ const AdminReviewSubmission = () => {
       setError(null);
       
       const effectiveToken = token || localStorage.getItem("countryToken");
-      console.log('Fetching submission with token:', effectiveToken ? 'Exists' : 'Missing');
+      ('Fetching submission with token:', effectiveToken ? 'Exists' : 'Missing');
       
       // Fetch submission details
       const url = `${API_BASE}/api/country/dashboard/submission/${slug}`;
-      console.log('Fetching from URL:', url);
+      ('Fetching from URL:', url);
       
       const submissionRes = await fetch(url, {
         headers: { 
@@ -103,12 +103,12 @@ const AdminReviewSubmission = () => {
         }
       });
 
-      console.log('Response status:', submissionRes.status);
-      console.log('Response headers:', Object.fromEntries(submissionRes.headers.entries()));
+      ('Response status:', submissionRes.status);
+      ('Response headers:', Object.fromEntries(submissionRes.headers.entries()));
 
       if (!submissionRes.ok) {
         if (submissionRes.status === 401) {
-          console.log('Unauthorized, logging out');
+          ('Unauthorized, logging out');
           logout();
           navigate("/country/login");
           return;
@@ -137,7 +137,7 @@ const AdminReviewSubmission = () => {
       }
 
       const submissionData = await submissionRes.json();
-      console.log('Submission data received:', submissionData);
+      ('Submission data received:', submissionData);
       setSubmission(submissionData);
       
       // If we have user info in the submission, fetch additional user details
@@ -157,20 +157,20 @@ const AdminReviewSubmission = () => {
     try {
       const effectiveToken = token || localStorage.getItem("countryToken");
       const url = `${API_BASE}/api/country/dashboard/user/${userId}`;
-      console.log('Fetching user details from:', url);
+      ('Fetching user details from:', url);
       
       const res = await fetch(url, {
         headers: { "Authorization": `Bearer ${effectiveToken}` }
       });
       
-      console.log('User details response:', res.status);
+      ('User details response:', res.status);
       
       if (res.ok) {
         const data = await res.json();
-        console.log('User details data:', data);
+        ('User details data:', data);
         setUserDetails(data.user);
       } else {
-        console.log('Failed to fetch user details:', res.status);
+        ('Failed to fetch user details:', res.status);
       }
     } catch (err) {
       console.error("Error fetching user details:", err);
@@ -202,8 +202,8 @@ const AdminReviewSubmission = () => {
       
       const effectiveToken = token || localStorage.getItem("countryToken");
       const url = `${API_BASE}/api/country/dashboard/review/${submission._id}`;
-      console.log('Submitting review to:', url);
-      console.log('With status:', status);
+      ('Submitting review to:', url);
+      ('With status:', status);
       
       const res = await fetch(url, {
         method: "PUT",
@@ -217,7 +217,7 @@ const AdminReviewSubmission = () => {
         })
       });
 
-      console.log('Review response:', res.status);
+      ('Review response:', res.status);
 
       if (!res.ok) {
         const errorText = await res.text();
@@ -233,7 +233,7 @@ const AdminReviewSubmission = () => {
       }
 
       const data = await res.json();
-      console.log('Review success:', data);
+      ('Review success:', data);
       
       alert(`Submission ${status} successfully!`);
       
@@ -257,7 +257,7 @@ const AdminReviewSubmission = () => {
       setSubmitting(true);
       const effectiveToken = token || localStorage.getItem("countryToken");
       const url = `${API_BASE}/api/country/dashboard/submission/${submission._id}`;
-      console.log('Deleting submission:', url);
+      ('Deleting submission:', url);
       
       const res = await fetch(url, {
         method: "DELETE",
@@ -266,7 +266,7 @@ const AdminReviewSubmission = () => {
         }
       });
 
-      console.log('Delete response:', res.status);
+      ('Delete response:', res.status);
 
       if (!res.ok) {
         const errorText = await res.text();

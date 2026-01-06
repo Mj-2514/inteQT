@@ -8,10 +8,30 @@ import {
   Users,
   ArrowRight,
   Activity,
+  AlertTriangle,
+  BarChart3,
+  Settings,
+  FileText,
+  MessageSquare,
+  Search,
+  Gauge,
+  Network,
+  ChevronRight,
+  Target,
+  Clock,
+  CheckCircle,
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet-async";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export default function GlobalNsoc(): JSX.Element {
   const pageUrl = "https://www.inte-qt.com/global-nsoc";
@@ -41,7 +61,7 @@ export default function GlobalNsoc(): JSX.Element {
 
         <meta
           name="description"
-          content="inte-QT’s Global NSOC delivers 24×7 monitoring, threat detection, incident response, and optimized enterprise network performance worldwide."
+          content="inte-QT's Global NSOC delivers 24×7 monitoring, threat detection, incident response, and optimized enterprise network performance worldwide."
         />
         <link rel="canonical" href={pageUrl} />
 
@@ -102,7 +122,7 @@ export default function GlobalNsoc(): JSX.Element {
                   Human Expertise. Intelligent Automation.
                 </h2>
                 <p className="text-muted-foreground mb-5">
-                  inte-QT’s Global NSOC blends certified network engineers with
+                  inte-QT's Global NSOC blends certified network engineers with
                   AI-powered analytics to proactively detect, analyze, and
                   resolve incidents before they impact your business.
                 </p>
@@ -128,75 +148,220 @@ export default function GlobalNsoc(): JSX.Element {
                   alt="3D visualization of global NSOC operations"
                   className="w-full h-[320px] sm:h-[420px] md:h-[500px] object-contain"
                 />
-                <div className="absolute bottom-0 left-0 right-0  bg-gradient-to-t from-black/50 to-transparent" />
-
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent" />
               </div>
             </div>
           </section>
 
           {/* NSOC PROCESS */}
-          {/* NSOC PROCESS */}
-<section className="py-14 md:py-20 bg-muted/30">
-  <div className="container mx-auto px-4 max-w-6xl text-center">
-    <h2 className="text-2xl md:text-4xl font-bold mb-4">
-      End-to-End NSOC Operations
-    </h2>
+          <section className="py-14 md:py-20 bg-muted/30">
+            <div className="container mx-auto px-4 max-w-6xl text-center">
+              <h2 className="text-2xl md:text-4xl font-bold mb-4">
+                End-to-End NSOC Operations
+              </h2>
 
-    <p className="text-muted-foreground max-w-3xl mx-auto mb-12">
-      Every incident is handled through a structured lifecycle to ensure speed,
-      accuracy, accountability, and continuous optimization.
-    </p>
+              <p className="text-muted-foreground max-w-3xl mx-auto mb-12">
+                Every incident is handled through a structured lifecycle to
+                ensure speed, accuracy, accountability, and continuous
+                optimization.
+              </p>
 
-    {/* PROCESS CARDS */}
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-14">
-      {[
-        {
-          step: "01",
-          title: "Detect",
-          desc: "24×7 telemetry, traffic behavior, and anomaly monitoring.",
-        },
-        {
-          step: "02",
-          title: "Analyze",
-          desc: "Human-verified alerts with root-cause identification.",
-        },
-        {
-          step: "03",
-          title: "Respond",
-          desc: "Immediate remediation, rerouting, or isolation.",
-        },
-        {
-          step: "04",
-          title: "Report",
-          desc: "Post-incident RCA and performance optimization insights.",
-        },
-      ].map((s, i) => (
-        <Card key={i} className="hover:shadow-glow transition-all">
-          <CardContent className="p-6 text-left">
-            <span className="text-primary font-bold text-lg">{s.step}</span>
-            <h3 className="font-semibold mt-2">{s.title}</h3>
-            <p className="text-sm text-muted-foreground mt-1">{s.desc}</p>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
+              {/* PROCESS CARDS */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-14">
+                {[
+                  {
+                    step: "01",
+                    title: "Detect",
+                    desc: "24×7 telemetry, traffic behavior, and anomaly monitoring.",
+                  },
+                  {
+                    step: "02",
+                    title: "Analyze",
+                    desc: "Human-verified alerts with root-cause identification.",
+                  },
+                  {
+                    step: "03",
+                    title: "Respond",
+                    desc: "Immediate remediation, rerouting, or isolation.",
+                  },
+                  {
+                    step: "04",
+                    title: "Report",
+                    desc: "Post-incident RCA and performance optimization insights.",
+                  },
+                ].map((s, i) => (
+                  <Card key={i} className="hover:shadow-glow transition-all">
+                    <CardContent className="p-6 text-left">
+                      <span className="text-primary font-bold text-lg">
+                        {s.step}
+                      </span>
+                      <h3 className="font-semibold mt-2">{s.title}</h3>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {s.desc}
+                      </p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
 
-    {/* SUPPORTING VISUAL */}
-    <div className="relative inline-block rounded-2xl overflow-hidden shadow-2xl border bg-black">
-  <img
-    src="https://i.imgur.com/FVpCGEE.png"
-    alt="NSOC end-to-end operational workflow visualization"
-    className="w-full h-auto block"
-    loading="lazy"
-  />
+              {/* SUPPORTING VISUAL */}
+              <div className="relative inline-block rounded-2xl overflow-hidden shadow-2xl border bg-black">
+                <img
+                  src="https://i.imgur.com/FVpCGEE.png"
+                  alt="NSOC end-to-end operational workflow visualization"
+                  className="w-full h-auto block"
+                  loading="lazy"
+                />
+                <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/40 to-transparent" />
+              </div>
+            </div>
+          </section>
 
+          {/* NSOC MANAGEMENT TOOLS */}
+          <section className="py-14 md:py-20 bg-background">
+            <div className="container mx-auto px-4 max-w-6xl">
+              <div className="text-center mb-12">
+                <h2 className="text-2xl md:text-4xl font-bold mb-4">
+                  NSOC Network & Security Management Tool
+                </h2>
+                <p className="text-muted-foreground max-w-3xl mx-auto">
+                  Comprehensive suite of tools for complete network visibility,
+                  control, and optimization
+                </p>
+              </div>
 
-      {/* subtle bottom gradient */}
-      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/40 to-transparent" />
-    </div>
-  </div>
-</section>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[
+                  {
+                    icon: Search,
+                    title: "Network Troubleshooting",
+                    desc: "Rapid identification and resolution of network issues",
+                  },
+                  {
+                    icon: Gauge,
+                    title: "Bandwidth Monitoring",
+                    desc: "Real-time bandwidth utilization tracking and analysis",
+                  },
+                  {
+                    icon: Network,
+                    title: "Traffic Monitoring",
+                    desc: "Deep packet inspection and traffic flow analysis",
+                  },
+                  {
+                    icon: Activity,
+                    title: "Performance Monitoring",
+                    desc: "End-to-end network performance metrics and SLAs",
+                  },
+                  {
+                    icon: BarChart3,
+                    title: "Change Analytics",
+                    desc: "Configuration change tracking and impact analysis",
+                  },
+                  {
+                    icon: AlertTriangle,
+                    title: "Alert Management",
+                    desc: "Centralized alert dashboard with severity classification",
+                  },
+                  {
+                    icon: ArrowRight,
+                    title: "Auto Ticket Escalation",
+                    desc: "Automated escalation workflows based on SLA thresholds",
+                  },
+                  {
+                    icon: FileText,
+                    title: "Report Management",
+                    desc: "Customizable reports, dashboards, and compliance docs",
+                  },
+                  {
+                    icon: MessageSquare,
+                    title: "Virtual Assistance",
+                    desc: "AI-powered virtual assistant for quick queries and guidance",
+                  },
+                ].map((tool, i) => {
+                  const Icon = tool.icon;
+                  return (
+                    <Card key={i} className="hover:shadow-glow transition-all">
+                      <CardContent className="p-6">
+                        <Icon className="w-10 h-10 text-primary mb-3" />
+                        <h3 className="font-semibold text-lg mb-2">
+                          {tool.title}
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                          {tool.desc}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
 
+          {/* INTE-QT ESCALATION SYSTEM */}
+          <section className="py-14 md:py-20 bg-muted/30">
+            <div className="container mx-auto px-4 max-w-6xl">
+              <div className="text-center mb-12">
+                <h2 className="text-2xl md:text-4xl font-bold mb-4">
+                  inte-QT Escalation System
+                </h2>
+                <p className="text-muted-foreground max-w-3xl mx-auto">
+                  Structured incident management framework ensuring timely resolution
+                  and continuous service improvement
+                </p>
+              </div>
+
+              {/* ESCALATION SYSTEM FLOW */}
+              <div className="mb-16">
+                <div className="flex flex-col md:flex-row items-center justify-between mb-10">
+                  <div className="flex items-center gap-3 mb-6 md:mb-0">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                      <ChevronRight className="w-6 h-6 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold">ESCALATION</h3>
+                      <p className="text-muted-foreground">Multi-tier support structure</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-3 mb-6 md:mb-0">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Target className="w-6 h-6 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold">PRIORITIZATION</h3>
+                      <p className="text-muted-foreground">Impact-based severity classification</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-3 mb-6 md:mb-0">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Clock className="w-6 h-6 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold">INCIDENT HANDLING</h3>
+                      <p className="text-muted-foreground">Timely resolution workflows</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                      <CheckCircle className="w-6 h-6 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold">CONCLUSION</h3>
+                      <p className="text-muted-foreground">Post-incident analysis & reporting</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* DETAILED TABLE */}
+                
+              </div>
+
+              
+              </div>
+            
+          </section>
 
           {/* CAPABILITIES */}
           <section className="py-14 md:py-20 bg-background">
@@ -236,10 +401,7 @@ export default function GlobalNsoc(): JSX.Element {
                 ].map((f, i) => {
                   const Icon = f.icon;
                   return (
-                    <Card
-                      key={i}
-                      className="hover:shadow-glow transition-all"
-                    >
+                    <Card key={i} className="hover:shadow-glow transition-all">
                       <CardContent className="p-6 text-center">
                         <Icon className="w-10 h-10 text-primary mx-auto mb-3" />
                         <h3 className="font-semibold">{f.title}</h3>

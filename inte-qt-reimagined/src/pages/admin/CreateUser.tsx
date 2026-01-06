@@ -27,7 +27,7 @@ export default function CreateUser() {
   const data = await res.json();
 
   if (!res.ok) {
-    console.log(data);
+    (data);
     throw new Error(data.message || "Create user failed");
   }
 

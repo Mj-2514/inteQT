@@ -97,7 +97,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         if (storedCountryToken && storedCountryUser) {
           const countryUserData = JSON.parse(storedCountryUser);
-          console.log('Initializing country auth from localStorage:', countryUserData);
+          ('Initializing country auth from localStorage:', countryUserData);
           setCountryUser(countryUserData);
           setCountryToken(storedCountryToken);
         }
@@ -178,7 +178,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const loginCountry = async (email: string, password: string, onSuccess?: (user: CountryUser) => void): Promise<CountryUser> => {
   setCountryLoading(true);
   try {
-    console.log('🔐 LOGIN START for:', email);
+    ('🔐 LOGIN START for:', email);
     
     const response = await fetch(`${API_BASE}/api/country/login`, {
       method: 'POST',
@@ -186,17 +186,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       body: JSON.stringify({ email, password }),
     });
 
-    console.log('📊 HTTP Status:', response.status, response.statusText);
-    console.log('✅ response.ok:', response.ok);
-    console.log('🔗 response.url:', response.url);
+    ('📊 HTTP Status:', response.status, response.statusText);
+    ('✅ response.ok:', response.ok);
+    ('🔗 response.url:', response.url);
     
     const responseText = await response.text();
-    console.log('📄 Response text:', responseText);
+    ('📄 Response text:', responseText);
     
     let data;
     try {
       data = JSON.parse(responseText);
-      console.log('🔄 Parsed JSON:', data);
+      ('🔄 Parsed JSON:', data);
     } catch (e) {
       console.error('❌ JSON parse error:', e);
       throw new Error(`Server error: ${responseText.substring(0, 100)}`);
@@ -204,7 +204,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // CRITICAL: Check status code directly
     if (response.status >= 400) {
-      console.log('🚨 HTTP Error status:', response.status);
+      ('🚨 HTTP Error status:', response.status);
       throw new Error(data?.message || `Login failed (${response.status})`);
     }
 
@@ -214,7 +214,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       throw new Error('Server did not provide authentication token');
     }
 
-    console.log('✅ Token received, creating user object...');
+    ('✅ Token received, creating user object...');
     
     const transformedUserData: CountryUser = {
       id: data.user.id || data.user._id,
@@ -225,7 +225,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       isActive: data.user.isActive !== false,
     };
     
-    console.log('👤 Final user object:', transformedUserData);
+    ('👤 Final user object:', transformedUserData);
 
     localStorage.setItem("countryUser", JSON.stringify(transformedUserData));
     localStorage.setItem("countryToken", data.token);
@@ -249,7 +249,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 };
 
   const logoutCountry = (onLogout?: () => void) => {
-    console.log('Logging out country user');
+    ('Logging out country user');
     localStorage.removeItem("countryUser");
     localStorage.removeItem("countryToken");
     
@@ -262,7 +262,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const updateCountryUser = (userData: CountryUser) => {
-    console.log('Updating country user:', userData);
+    ('Updating country user:', userData);
     setCountryUser(userData);
     localStorage.setItem("countryUser", JSON.stringify(userData));
   };
@@ -335,25 +335,25 @@ export const useCountryAuth = () => {
   if (!ctx) throw new Error("useCountryAuth must be used within AuthProvider");
   
   // Debug: Check what's in context
-  console.log('=== useCountryAuth DEBUG ===');
-  console.log('Context countryUser:', ctx.countryUser);
-  console.log('Context countryUser?.role:', ctx.countryUser?.role);
-  console.log('Context countryUser?.isAdmin:', ctx.countryUser?.isAdmin);
+  ('=== useCountryAuth DEBUG ===');
+  ('Context countryUser:', ctx.countryUser);
+  ('Context countryUser?.role:', ctx.countryUser?.role);
+  ('Context countryUser?.isAdmin:', ctx.countryUser?.isAdmin);
   
   // Also check localStorage as fallback
   const storedUserStr = localStorage.getItem("countryUser");
   const storedUser = storedUserStr ? JSON.parse(storedUserStr) : null;
-  console.log('LocalStorage countryUser:', storedUser);
-  console.log('LocalStorage countryUser role:', storedUser?.role);
-  console.log('LocalStorage countryUser isAdmin:', storedUser?.isAdmin);
+  ('LocalStorage countryUser:', storedUser);
+  ('LocalStorage countryUser role:', storedUser?.role);
+  ('LocalStorage countryUser isAdmin:', storedUser?.isAdmin);
   
   // Use storedUser as fallback if context doesn't have it yet
   const effectiveUser = ctx.countryUser || storedUser;
-  console.log('Effective user:', effectiveUser);
+  ('Effective user:', effectiveUser);
   
   const isAdmin = effectiveUser?.role === 'admin' || effectiveUser?.isAdmin === true;
-  console.log('Final isAdmin calculation:', isAdmin);
-  console.log('=== END DEBUG ===');
+  ('Final isAdmin calculation:', isAdmin);
+  ('=== END DEBUG ===');
   
   return {
     user: effectiveUser,

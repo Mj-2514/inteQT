@@ -198,9 +198,9 @@ const handleSubmit = async (e: React.FormEvent) => {
     }
 
     // DEBUG — this WILL now show "data"
-    console.log("FORM DATA");
+    ("FORM DATA");
     for (const [k, v] of formData.entries()) {
-      console.log(k, v);
+      (k, v);
     }
 
     const res = await fetch(`${API_BASE}/api/blogs/add`, {

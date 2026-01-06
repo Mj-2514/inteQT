@@ -60,26 +60,33 @@ const getEventUser = () => {
    DATE FORMATTER
 ========================= */
 const formatEventDateRange = (start: string, end: string) => {
-  const s = new Date(start);
-  const e = new Date(end);
+  try {
+    const s = new Date(start);
+    const e = new Date(end);
 
-  if (s.toDateString() === e.toDateString()) {
-    return s.toLocaleDateString("en-IN", {
-      day: "2-digit",
+    if (isNaN(s.getTime()) || isNaN(e.getTime())) {
+      return "Date TBA";
+    }
+
+    if (s.toDateString() === e.toDateString()) {
+      return s.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+    }
+
+    return `${s.toLocaleDateString("en-US", {
       month: "short",
+      day: "numeric",
+    })} - ${e.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
       year: "numeric",
-    });
+    })}`;
+  } catch {
+    return "Date TBA";
   }
-
-  return `${s.toLocaleDateString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  })} – ${e.toLocaleDateString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  })}`;
 };
 
 /* =========================
@@ -98,46 +105,43 @@ export default function Events() {
   /* =========================
      FETCH PUBLISHED EVENTS
   ========================= */
-/* =========================
-   FETCH PUBLISHED EVENTS
-========================= */
-useEffect(() => {
-  const fetchEvents = async () => {
-    try {
-      const res = await fetch(`${API_BASE}/api/events/all-events`);
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/events/all-events`);
 
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-      const data = await res.json();
-      console.log("Events API Response:", data); // Add this for debugging
+        const data = await res.json();
+        ("Events API Response:", data);
 
-      // 🔒 GUARANTEE ARRAY
-      let safeEvents: EventItem[] = [];
-      
-      if (data.success && Array.isArray(data.events)) {
-        safeEvents = data.events;
-      } else if (Array.isArray(data)) {
-        safeEvents = data;
-      } else if (data?.events && Array.isArray(data.events)) {
-        safeEvents = data.events;
-      } else {
-        console.warn("Unexpected response format:", data);
+        // 🔒 GUARANTEE ARRAY
+        let safeEvents: EventItem[] = [];
+        
+        if (data.success && Array.isArray(data.events)) {
+          safeEvents = data.events;
+        } else if (Array.isArray(data)) {
+          safeEvents = data;
+        } else if (data?.events && Array.isArray(data.events)) {
+          safeEvents = data.events;
+        } else {
+          console.warn("Unexpected response format:", data);
+        }
+
+        ("Parsed events:", safeEvents.length, safeEvents);
+        setEvents(safeEvents);
+        setError(null);
+      } catch (err) {
+        console.error("Fetch error:", err);
+        setError("Failed to load events.");
+        setEvents([]);
+      } finally {
+        setLoading(false);
       }
+    };
 
-      console.log("Parsed events:", safeEvents.length, safeEvents); // Debug
-      setEvents(safeEvents);
-      setError(null);
-    } catch (err) {
-      console.error("Fetch error:", err);
-      setError("Failed to load events.");
-      setEvents([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  fetchEvents();
-}, []);
+    fetchEvents();
+  }, []);
 
   /* =========================
      DELETE (ADMIN ONLY)
@@ -232,36 +236,32 @@ useEffect(() => {
 
       {/* HERO */}
       <section
-  className="relative gradient-hero py-24 bg-content bg-center bg-no-repeat"
-  style={{
-    backgroundImage:
-      'url("https://dipoletechi.co.uk/wp-content/uploads/2023/07/ezgif.com-optimize-6.gif")',
-    backgroundSize: "600px",
-    backgroundPosition: "96% center",
-  }}
->
-  {/* Same overlay strength as original */}
-  <div className="absolute inset-0 bg-black/50" />
+        className="relative gradient-hero py-24 bg-content bg-center bg-no-repeat"
+        style={{
+          backgroundImage:
+            'url("https://dipoletechi.co.uk/wp-content/uploads/2023/07/ezgif.com-optimize-6.gif")',
+          backgroundSize: "600px",
+          backgroundPosition: "96% center",
+        }}
+      >
+        {/* Same overlay strength as original */}
+        <div className="absolute inset-0 bg-black/50" />
 
-  {/* Content */}
-  <div className="container mx-auto px-4 text-center relative z-10">
-    <h1 className="text-white text-5xl md:text-6xl font-bold mb-6">
-      Events & Exhibitions
-    </h1>
+        {/* Content */}
+        <div className="container mx-auto px-4 text-center relative z-10">
+          <h1 className="text-white text-5xl md:text-6xl font-bold mb-6">
+            Events & Exhibitions
+          </h1>
 
-    <p className="text-white text-xl md:text-2xl max-w-3xl mx-auto font-bold">
-      Meet us at global industry events
-    </p>
+          <p className="text-white text-xl md:text-2xl max-w-3xl mx-auto font-bold">
+            Meet us at global industry events
+          </p>
 
-    <div className="flex justify-center gap-4 mt-3">
-      {renderAuthButtons()}
-    </div>
-  </div>
-</section>
-
-
-
-
+          <div className="flex justify-center gap-4 mt-3">
+            {renderAuthButtons()}
+          </div>
+        </div>
+      </section>
 
       {/* EVENTS */}
       <section className="py-20">
@@ -275,78 +275,97 @@ useEffect(() => {
             </p>
           )}
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {sortedEvents.map((event) => (
-              <Card key={event._id} className="flex flex-col">
+              <Card 
+                key={event._id} 
+                className="flex flex-col h-full hover:shadow-lg transition-shadow duration-300 border-border/50"
+              >
+                {/* Image container with proper aspect ratio */}
                 {event.introMedia && (
-                  <img
-                    src={event.introMedia}
-                    alt={event.title}
-                    className="aspect-video object-cover"
-                  />
+                  <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
+                    <img
+                      src={event.introMedia}
+                      alt={event.title}
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      onError={(e) => {
+                        // Fallback if image fails to load
+                        e.currentTarget.src = "https://via.placeholder.com/400x200/1e293b/64748b?text=Event+Image";
+                      }}
+                    />
+                  </div>
                 )}
 
-                <CardContent className="p-6 flex flex-col flex-1">
-                  <h3 className="text-2xl font-bold mb-2">
+                <CardContent className="p-5 flex flex-col flex-1">
+                  {/* Event Title with proper truncation */}
+                  <h3 className="text-xl font-bold mb-3 line-clamp-2 min-h-[3.5rem]">
                     {event.title}
                   </h3>
 
-                  <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
-                    {event.description}
-                  </p>
+                  {/* Event Description */}
+                  <div className="mb-4 flex-1">
+                    <p className="text-sm text-muted-foreground line-clamp-3">
+                      {event.description || "No description available."}
+                    </p>
+                  </div>
 
-                  <div className="text-sm space-y-2 mb-6">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4" />
-                      {formatEventDateRange(
-                        event.startDate,
-                        event.endDate
-                      )}
+                  {/* Event Details */}
+                  <div className="text-sm space-y-2 mb-5">
+                    <div className="flex items-start gap-2">
+                      <Calendar className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                      <span className="font-medium">
+                        {formatEventDateRange(event.startDate, event.endDate)}
+                      </span>
                     </div>
                     {(event.location || event.city) && (
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4" />
-                        {event.location}
-                        {event.city ? `, ${event.city}` : ""}
+                      <div className="flex items-start gap-2">
+                        <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                        <span className="truncate">
+                          {event.location}
+                          {event.city ? `, ${event.city}` : ""}
+                        </span>
                       </div>
                     )}
                   </div>
 
-                  {/* ✅ READ MORE */}
-                  {event.linkedPostUrl && (
-                    <Button
-                      variant="outline"
-                      className="mb-4 flex items-center gap-2"
-                      onClick={() =>
-                        window.open(event.linkedPostUrl, "_blank")
-                      }
-                    >
-                      <ExternalLink className="w-4 h-4" />
-                      Read more
-                    </Button>
-                  )}
+                  {/* Bottom section: Read More + Admin buttons */}
+                  <div className="mt-auto space-y-3">
+                    {/* Read More button */}
+                    {event.linkedPostUrl && (
+                      <Button
+                        variant="outline"
+                        className="w-full flex items-center justify-center gap-2 border-primary/20 hover:border-primary hover:bg-primary/5"
+                        onClick={() => window.open(event.linkedPostUrl, "_blank")}
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        Read more
+                      </Button>
+                    )}
 
-                  {isAdmin && (
-                    <div className="mt-auto flex gap-2">
-                      <Button
-                        size="sm"
-                        onClick={() =>
-                          navigate(`/events/edit/${event._id}`)
-                        }
-                      >
-                        <Pencil className="w-3 h-3 mr-1" />
-                        Edit
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => handleDelete(event._id)}
-                      >
-                        <Trash2 className="w-3 h-3 mr-1" />
-                        Delete
-                      </Button>
-                    </div>
-                  )}
+                    {/* Admin buttons */}
+                    {isAdmin && (
+                      <div className="flex gap-2 pt-2 border-t border-border/50">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="flex-1"
+                          onClick={() => navigate(`/events/edit/${event._id}`)}
+                        >
+                          <Pencil className="w-3 h-3 mr-1" />
+                          Edit
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          className="flex-1"
+                          onClick={() => handleDelete(event._id)}
+                        >
+                          <Trash2 className="w-3 h-3 mr-1" />
+                          Delete
+                        </Button>
+                      </div>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             ))}

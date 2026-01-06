@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { CheckCircle, Trash2, Eye, Calendar, User, Tag, Loader2, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 
-const API_BASE = import.meta.env.DEV ? "http://localhost:5000" : "https://inteqt.onrender.com";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
 
 interface Blog {
   _id: string;
@@ -51,7 +51,7 @@ export default function ApprovedBlogs() {
       });
 
       // Log response for debugging
-      console.log("Response status:", response.status);
+      ("Response status:", response.status);
       
       if (!response.ok) {
         // Try to get error message from response
@@ -70,7 +70,7 @@ export default function ApprovedBlogs() {
       }
 
       const data = await response.json();
-      console.log("Approved blogs data:", data);
+      ("Approved blogs data:", data);
       
       // Ensure data is an array
       if (!Array.isArray(data)) {

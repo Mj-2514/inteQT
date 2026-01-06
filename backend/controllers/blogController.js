@@ -37,9 +37,9 @@ function mediaTypeFromUrl(url = "") {
 ========================= */
 const uploadToCloudinary = async (buffer, mimetype) => {
   try {
-    console.log('🔄 Starting Cloudinary upload...');
-    console.log('📏 Buffer size:', buffer.length, 'bytes');
-    console.log('📄 Mime type:', mimetype);
+    ('🔄 Starting Cloudinary upload...');
+    ('📏 Buffer size:', buffer.length, 'bytes');
+    ('📄 Mime type:', mimetype);
     
     // Convert buffer to base64
     const base64Data = buffer.toString('base64');
@@ -55,8 +55,8 @@ const uploadToCloudinary = async (buffer, mimetype) => {
       timeout: 60000
     });
     
-    console.log('✅ Cloudinary upload successful!');
-    console.log('📊 Upload result:', {
+    ('✅ Cloudinary upload successful!');
+    ('📊 Upload result:', {
       url: result.secure_url,
       public_id: result.public_id,
       resource_type: result.resource_type

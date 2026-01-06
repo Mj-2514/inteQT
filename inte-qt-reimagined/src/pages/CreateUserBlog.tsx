@@ -274,8 +274,8 @@ const UserCreateBlog: React.FC = () => {
         published: false
       };
 
-      console.log("Submitting blog data:", blogData);
-      console.log("Tags being sent:", blogData.tags, "Type:", typeof blogData.tags);
+      ("Submitting blog data:", blogData);
+      ("Tags being sent:", blogData.tags, "Type:", typeof blogData.tags);
 
       // Add data as JSON string (backend expects 'data' field)
       fd.append("data", JSON.stringify(blogData));
@@ -283,15 +283,15 @@ const UserCreateBlog: React.FC = () => {
       // Add files with exact field names backend expects
       if (introImageFile) {
         fd.append("introImage", introImageFile);
-        console.log("Intro file added:", introImageFile.name);
+        ("Intro file added:", introImageFile.name);
       }
       if (descImageFile) {
         fd.append("descriptionImage", descImageFile);
-        console.log("Desc file added:", descImageFile.name);
+        ("Desc file added:", descImageFile.name);
       }
 
-      console.log("Making request to:", `${API_BASE}/api/blogs/add`);
-      console.log("Authorization token present:", !!token);
+      ("Making request to:", `${API_BASE}/api/blogs/add`);
+      ("Authorization token present:", !!token);
 
       const res = await fetch(`${API_BASE}/api/blogs/add`, {
         method: "POST",
@@ -301,16 +301,16 @@ const UserCreateBlog: React.FC = () => {
         body: fd,
       });
 
-      console.log("Response status:", res.status);
-      console.log("Response headers:", Object.fromEntries(res.headers.entries()));
+      ("Response status:", res.status);
+      ("Response headers:", Object.fromEntries(res.headers.entries()));
       
       const responseText = await res.text();
-      console.log("Raw response:", responseText);
+      ("Raw response:", responseText);
       
       let data: any;
       try {
         data = responseText ? JSON.parse(responseText) : {};
-        console.log("Parsed response data:", data);
+        ("Parsed response data:", data);
       } catch (parseError) {
         console.error("Response parse error:", parseError, "Raw text:", responseText);
         throw new Error(`Server returned invalid response. Status: ${res.status}`);

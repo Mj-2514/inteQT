@@ -1,7 +1,7 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Calendar, MapPin, Users, Tag, AlertTriangle, CheckCircle2, Link as LinkIcon, LogOut } from "lucide-react";
+import { Calendar, MapPin, AlertTriangle, CheckCircle2, Link as LinkIcon, LogOut } from "lucide-react";
 import Navbar from "../components/Navbar";
 import { useAuth } from "../context/AuthContext";
 
@@ -42,13 +42,10 @@ const CreateEvent: React.FC = () => {
 
   // Basic event info
   const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [location, setLocation] = useState("");
   const [city, setCity] = useState("");
-  const [eventType, setEventType] = useState("meeting");
-  const [tags, setTags] = useState("");
 
   // Media handling
   const [mediaFile, setMediaFile] = useState<File | null>(null);
@@ -70,24 +67,13 @@ const CreateEvent: React.FC = () => {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Event type options
-  const eventTypes = [
-    { value: "conference", label: "Conference" },
-    { value: "workshop", label: "Workshop" },
-    { value: "meeting", label: "Meeting" },
-    { value: "seminar", label: "Seminar" },
-    { value: "networking", label: "Networking" },
-    { value: "webinar", label: "Webinar" },
-    { value: "hackathon", label: "Hackathon" },
-    { value: "other", label: "Other" },
-  ];
-
-  // Media type options
+  // Media type options - matching backend enum
   const mediaTypes = [
     { value: "none", label: "None" },
     { value: "image", label: "Image" },
     { value: "video", label: "Video" },
     { value: "gif", label: "GIF" },
+    { value: "external", label: "External URL" },
   ];
 
   // Check authentication on component mount
@@ -96,11 +82,11 @@ const CreateEvent: React.FC = () => {
       const token = localStorage.getItem("token");
       const storedUser = localStorage.getItem("user");
       
-      console.log("Token exists:", !!token);
-      console.log("User exists:", !!storedUser);
+      ("Token exists:", !!token);
+      ("User exists:", !!storedUser);
       
       if (!token) {
-        console.log("No token found, redirecting to login");
+        ("No token found, redirecting to login");
         navigate("/login");
         return;
       }
@@ -133,12 +119,12 @@ const CreateEvent: React.FC = () => {
   const testTokenWithBackend = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
-      console.log("No token to test");
+      ("No token to test");
       return;
     }
 
     try {
-      console.log("Testing token with backend...");
+      ("Testing token with backend...");
       
       // Try different endpoints
       const endpoints = [
@@ -153,15 +139,15 @@ const CreateEvent: React.FC = () => {
             headers: { Authorization: `Bearer ${token}` }
           });
           
-          console.log(`Endpoint ${endpoint}: ${res.status}`);
+          (`Endpoint ${endpoint}: ${res.status}`);
           
           if (res.ok) {
             const data = await res.json();
-            console.log("Success at endpoint:", endpoint, data);
+            ("Success at endpoint:", endpoint, data);
             return { success: true, data };
           }
         } catch (err) {
-          console.log(`Endpoint ${endpoint} failed:`, err.message);
+          (`Endpoint ${endpoint} failed:`, err.message);
         }
       }
       
@@ -190,16 +176,15 @@ const CreateEvent: React.FC = () => {
         setIsGif(false);
       }
     } else if (mediaUrl) {
-      // If URL is provided, default to image type for preview
-      if (!mediaType || mediaType === "none") {
-        setMediaType("image");
+      // If URL is provided, set type to external
+      if (mediaType === "none" || mediaType === "image" || mediaType === "video" || mediaType === "gif") {
+        setMediaType("external");
       }
     }
   }, [mediaFile, mediaUrl]);
 
   const validate = () => {
     if (!title.trim()) return "Title is required.";
-    if (!description.trim()) return "Description is required.";
     if (!startDate) return "Start date is required.";
     if (!endDate) return "End date is required.";
     
@@ -262,9 +247,9 @@ const CreateEvent: React.FC = () => {
     
     setMediaPreview(url);
     setMediaFile(null);
-    // If media type is still none, set it to image
-    if (mediaType === "none") {
-      setMediaType("image");
+    // If media type is still none or is a file type, set it to external
+    if (mediaType === "none" || mediaType === "image" || mediaType === "video" || mediaType === "gif") {
+      setMediaType("external");
     }
   };
 
@@ -274,47 +259,79 @@ const CreateEvent: React.FC = () => {
     navigate("/login");
   };
 
-  const handleSubmit = async () => {
-  const formData = new FormData();
-
-  formData.append("title", title);
-  formData.append("description", description);
-    formData.append("startDate", startDate);
-  formData.append("endDate", endDate);
-  formData.append("location", location || "");
-  formData.append("mediaType", mediaType);
-
-  // ✅ FILE UPLOAD
-  if (mediaFile && mediaType !== "none") {
-    formData.append("file", mediaFile); // 🔥 MATCHES BACKEND
-  }
-
-  // ✅ URL MEDIA
-  if (!mediaFile && mediaUrl && mediaType !== "none") {
-    formData.append("introMedia", mediaUrl.trim());
-  }
-
-  try {
-    const res = await fetch("/api/events/create", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
-      body: formData
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      throw new Error(data.message || "Failed to create event");
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const validationError = validate();
+    if (validationError) {
+      setError(validationError);
+      return;
     }
 
-    console.log("Event created:", data.event);
-  } catch (err: any) {
-    console.error("Submit failed:", err.message);
-  }
-};
+    setLoading(true);
+    setError(null);
 
+    try {
+      const formData = new FormData();
+      
+      // Prepare event data object
+      const eventData = {
+        title: title.trim(),
+        startDate: new Date(startDate).toISOString(),
+        endDate: new Date(endDate).toISOString(),
+        location: location.trim(),
+        city: city.trim(),
+        linkedPostUrl: linkedPostUrl.trim() || null,
+        introMedia: mediaUrl.trim() || null,
+        mediaType: mediaType
+      };
+
+      ("Event data:", eventData);
+      
+      // Add the event data as JSON
+      formData.append("data", JSON.stringify(eventData));
+      
+      // Add file if exists
+      if (mediaFile && mediaType !== "none" && mediaType !== "external") {
+        formData.append("file", mediaFile);
+        ("File added to formData:", mediaFile.name);
+      }
+
+      // Log what we're sending
+      ("FormData contents:");
+      for (const [key, value] of formData.entries()) {
+        (key, value);
+      }
+
+      const res = await fetch(`${API_BASE}/api/events/create`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || `Failed to create event: ${res.statusText}`);
+      }
+
+      ("Event created successfully:", data);
+      setSubmitted(true);
+      
+      // Redirect to events page after 2 seconds
+      setTimeout(() => {
+        navigate("/event/admin-dashboard");
+      }, 2000);
+
+    } catch (err: any) {
+      console.error("Submit failed:", err);
+      setError(err.message || "An unexpected error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Show loading while checking auth
   if (!authChecked) {
@@ -428,36 +445,6 @@ const CreateEvent: React.FC = () => {
                 <p className="mt-1 text-[11px] text-muted-foreground">Max 200 characters</p>
               </div>
 
-              {/* Event Type and Dates */}
-              <div className="grid gap-4 md:grid-cols-2">
-                <div>
-                  <label className="mb-1 block text-sm font-medium">
-                    Event Type <span className="text-destructive">*</span>
-                  </label>
-                  <select
-                    value={eventType}
-                    onChange={(e) => setEventType(e.target.value)}
-                    className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none ring-0 focus:border-primary focus:ring-1 focus:ring-primary/40"
-                  >
-                    {eventTypes.map((type) => (
-                      <option key={type.value} value={type.value}>
-                        {type.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="mb-1 block text-sm font-medium">Tags (comma separated)</label>
-                  <input
-                    value={tags}
-                    onChange={(e) => setTags(e.target.value)}
-                    className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none ring-0 placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/40"
-                    placeholder="tech, networking, innovation"
-                  />
-                </div>
-              </div>
-
               {/* Date and Time */}
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
@@ -534,23 +521,6 @@ const CreateEvent: React.FC = () => {
                 </p>
               </div>
 
-              {/* Description */}
-              <div>
-                <div className="flex items-center justify-between">
-                  <label className="mb-1 block text-sm font-medium">
-                    Event Description <span className="text-destructive">*</span>
-                  </label>
-                </div>
-                <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  rows={6}
-                  className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none ring-0 placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/40"
-                  placeholder="Describe the event details, agenda, speakers, and what attendees can expect..."
-                  required
-                />
-              </div>
-
               {/* Media Section */}
               <div>
                 <label className="mb-1 block text-sm font-medium">
@@ -581,7 +551,9 @@ const CreateEvent: React.FC = () => {
 
                   {mediaType !== "none" && (
                     <div className="text-[11px] text-muted-foreground">
-                      Select {mediaType === "video" ? "a video" : mediaType === "gif" ? "a GIF" : "an image"} file or provide URL
+                      {mediaType === "external" 
+                        ? "Provide an external URL" 
+                        : `Select ${mediaType === "video" ? "a video" : mediaType === "gif" ? "a GIF" : "an image"} file or provide URL`}
                     </div>
                   )}
                 </div>
@@ -592,16 +564,21 @@ const CreateEvent: React.FC = () => {
                 <div className="grid gap-4 md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] md:items-center">
                   <div>
                     <label className="mb-1 block text-sm font-medium">
-                      {mediaType.charAt(0).toUpperCase() + mediaType.slice(1)} {mediaType === "video" ? "" : "File"}
+                      {mediaType.charAt(0).toUpperCase() + mediaType.slice(1)} {mediaType === "video" || mediaType === "external" ? "" : "File"}
                       {mediaType !== "none" && <span className="text-destructive">*</span>}
                     </label>
-                    <input
-                      type="file"
-                      accept={mediaType === "video" ? "video/*" : mediaType === "gif" ? "image/gif" : "image/*"}
-                      onChange={(e) => handleFile(e.target.files?.[0] || null)}
-                      className="block w-full text-xs text-muted-foreground file:mr-3 file:rounded-full file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-primary-foreground hover:file:bg-primary/90"
-                    />
-                    <p className="mt-1 text-[11px] text-muted-foreground">Or use URL below</p>
+                    
+                    {mediaType !== "external" && (
+                      <>
+                        <input
+                          type="file"
+                          accept={mediaType === "video" ? "video/*" : mediaType === "gif" ? "image/gif" : "image/*"}
+                          onChange={(e) => handleFile(e.target.files?.[0] || null)}
+                          className="block w-full text-xs text-muted-foreground file:mr-3 file:rounded-full file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-primary-foreground hover:file:bg-primary/90"
+                        />
+                        <p className="mt-1 text-[11px] text-muted-foreground">Or use URL below</p>
+                      </>
+                    )}
 
                     <div className="mt-2">
                       <label className="mb-1 block text-[12px] font-medium">
@@ -610,7 +587,7 @@ const CreateEvent: React.FC = () => {
                       <input
                         value={mediaUrl}
                         onChange={(e) => handleUrlChange(e.target.value)}
-                        placeholder={`https://example.com/${mediaType}.${mediaType === "video" ? "mp4" : mediaType === "gif" ? "gif" : "jpg"}`}
+                        placeholder={`https://example.com/${mediaType === "video" ? "video.mp4" : mediaType === "gif" ? "image.gif" : "image.jpg"}`}
                         className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none ring-0 placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/40"
                       />
                     </div>
@@ -735,10 +712,6 @@ const CreateEvent: React.FC = () => {
                     <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] text-gray-800">
                       <MapPin className="h-2.5 w-2.5" />
                       {city}
-                    </span>
-                    <span className="inline-flex items-center gap-1 rounded-full bg-purple-100 px-2 py-0.5 text-[10px] text-purple-800">
-                      <Users className="h-2.5 w-2.5" />
-                      {eventType}
                     </span>
                   </div>
                 </div>

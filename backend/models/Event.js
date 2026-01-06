@@ -17,10 +17,6 @@ const eventSchema = new mongoose.Schema(
       index: true
     },
 
-    description: {
-      type: String,
-      required: true,
-    },
 
     startDate: {
       type: Date,
@@ -41,22 +37,7 @@ const eventSchema = new mongoose.Schema(
     location: String,
     city: String,
 
-    type: {
-      type: String,
-      enum: [
-        "conference",
-        "workshop",
-        "meeting",
-        "seminar",
-        "networking",
-        "webinar",
-        "hackathon",
-        "other"
-      ],
-      default: "meeting"
-    },
 
-    tags: [String],
 
     // FIXED: Only one introMedia field
     introMedia: {

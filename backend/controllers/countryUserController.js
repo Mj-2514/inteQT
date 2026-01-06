@@ -35,7 +35,7 @@ export const createOrUpdateCountry = async (req, res) => {
       submarineCableLink,
     } = req.body;
 
-    console.log('Form Data Received:', {
+    ('Form Data Received:', {
       name,
       Countryname,
       slug,
@@ -96,7 +96,7 @@ export const createOrUpdateCountry = async (req, res) => {
       submarineCableLink: submarineCableLink || "",
     };
 
-    console.log('Prepared country data:', countryData);
+    ('Prepared country data:', countryData);
 
     // If updating existing submission
     if (existing && isEditingOwnSubmission) {
@@ -107,7 +107,7 @@ export const createOrUpdateCountry = async (req, res) => {
           if (oldUrl.includes('cloudinary.com')) {
             const publicId = oldUrl.split('/').pop().split('.')[0];
             await cloudinary.uploader.destroy(publicId);
-            console.log('Deleted old Cloudinary image:', publicId);
+            ('Deleted old Cloudinary image:', publicId);
           }
         } catch (cloudinaryErr) {
           console.error('Error deleting old image:', cloudinaryErr);

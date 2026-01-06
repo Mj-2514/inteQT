@@ -7,7 +7,7 @@ export const getUserBlogs = async (req, res) => {
     const { status, page = 1, limit = 10, search } = req.query;
     const userId = req.user.id; // From protect middleware
     
-    console.log(`Fetching blogs for user: ${userId}, status: ${status}`);
+    (`Fetching blogs for user: ${userId}, status: ${status}`);
     
     // Build query
     const query = { createdBy: userId };

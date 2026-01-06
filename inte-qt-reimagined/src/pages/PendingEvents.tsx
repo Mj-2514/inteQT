@@ -17,7 +17,7 @@ import {
   Calendar
 } from "lucide-react";
 
-const API_BASE = import.meta.env.DEV ? "http://localhost:5000" : "https://inteqt.onrender.com";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
 
 interface PendingEvent {
   _id: string;

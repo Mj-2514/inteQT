@@ -100,10 +100,10 @@ const CountryLogin = () => {
   // Effect to check if user is already logged in when component mounts
   useEffect(() => {
     if (user && !authLoading && !hasJustLoggedIn) {
-      console.log('User already logged in from previous session, redirecting...');
+      ('User already logged in from previous session, redirecting...');
       const isAdminUser = user.role === 'admin' || user.isAdmin === true;
       if (isAdminUser) {
-        console.log('User already logged in from previous session, redirected');
+        ('User already logged in from previous session, redirected');
         navigate('/country/admin-dashboard');
 
       } else {
@@ -132,7 +132,7 @@ const CountryLogin = () => {
   const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
   setError("");
-  console.log('=== LOGIN SUBMIT START ===');
+  ('=== LOGIN SUBMIT START ===');
 
   if (!email || !password) {
     setError("Enter both email and password.");
@@ -153,27 +153,27 @@ const CountryLogin = () => {
   setHasJustLoggedIn(true);
 
   try {
-    console.log('Calling login function with:', { email, password });
+    ('Calling login function with:', { email, password });
     
     const loggedInUser = await login(email, password);
-    console.log('Login successful, returned user:', loggedInUser);
-    console.log('User role:', loggedInUser.role);
-    console.log('User isAdmin:', loggedInUser.isAdmin);
+    ('Login successful, returned user:', loggedInUser);
+    ('User role:', loggedInUser.role);
+    ('User isAdmin:', loggedInUser.isAdmin);
     
     // Check if token was stored
     const storedToken = localStorage.getItem("countryToken");
     const storedUser = localStorage.getItem("countryUser");
-    console.log('Stored token after login:', storedToken);
-    console.log('Stored user after login:', storedUser);
+    ('Stored token after login:', storedToken);
+    ('Stored user after login:', storedUser);
     
     const isAdminUser = loggedInUser.role === 'admin' || loggedInUser.isAdmin === true;
-    console.log('Is admin after login?', isAdminUser);
+    ('Is admin after login?', isAdminUser);
     
     if (isAdminUser) {
-      console.log('Redirecting to ADMIN dashboard');
+      ('Redirecting to ADMIN dashboard');
       navigate('/country/admin-dashboard');
     } else {
-      console.log('Redirecting to USER dashboard');
+      ('Redirecting to USER dashboard');
       navigate('/country/dashboard');
     }
     

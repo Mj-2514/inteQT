@@ -30,7 +30,7 @@ import {
 // Change this import to use the EventAuthContext instead
 import { useAuth } from "../context/AuthContext"; // Updated import path
 
-const API_BASE = import.meta.env.DEV ? "http://localhost:5000" : "https://inteqt.onrender.com";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
 
 const EventAdminDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);

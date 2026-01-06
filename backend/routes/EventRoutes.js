@@ -45,10 +45,10 @@ const cleanupTempFiles = (req, res, next) => {
   // Clean up temp files after response is sent (only for errors)
   res.on('finish', () => {
     if (req.file && req.file.path && fs.existsSync(req.file.path)) {
-      console.log(`⚠️ Found leftover temp file, cleaning up: ${req.file.path}`);
+      (`⚠️ Found leftover temp file, cleaning up: ${req.file.path}`);
       try {
         fs.unlinkSync(req.file.path);
-        console.log(`🧹 Cleaned up leftover temp file: ${req.file.path}`);
+        (`🧹 Cleaned up leftover temp file: ${req.file.path}`);
       } catch (err) {
         console.error(`Failed to delete temp file ${req.file.path}:`, err.message);
       }

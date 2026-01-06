@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { useCountryAuth } from "../../context/AuthContext";
 
-const API_BASE = import.meta.env.DEV ? "http://localhost:5000" : "https://inteqt.onrender.com";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
 
 interface CountryFormData {
   name: string;
@@ -195,7 +195,7 @@ const CreateCountryForm = () => {
     try {
       const url = `${API_BASE}/api/country/dashboard/submit`;
       
-      console.log("Submitting form data:", formData);
+      ("Submitting form data:", formData);
 
       const payload = {
         name: formData.name.trim(),
@@ -221,7 +221,7 @@ const CreateCountryForm = () => {
         submarineCableLink: formData.submarineCableLink.trim(),
       };
 
-      console.log("Payload being sent:", payload);
+      ("Payload being sent:", payload);
 
       const res = await fetch(url, {
         method: "POST",
@@ -233,7 +233,7 @@ const CreateCountryForm = () => {
       });
 
       const data = await res.json();
-      console.log("Response from server:", data);
+      ("Response from server:", data);
 
       if (!res.ok) {
         throw new Error(data.message || "Failed to submit country form");

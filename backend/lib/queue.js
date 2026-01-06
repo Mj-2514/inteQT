@@ -4,13 +4,13 @@ const pending = [];
 
 async function enqueueNotification(jobName, payload) {
   // jobName: 'external-notify' etc.
-  console.log(`[queue] enqueue ${jobName}`, payload);
+  (`[queue] enqueue ${jobName}`, payload);
   // For now, run a microtask (non-blocking) — in production swap with Redis-backed queue
   setTimeout(() => {
     try {
       // require worker dynamically (or call handler)
       // e.g., require('../workers/externalNotifications').process(jobName, payload);
-      console.log(`[queue] (stub) processing ${jobName}`, payload);
+      (`[queue] (stub) processing ${jobName}`, payload);
     } catch (err) {
       console.error('[queue] worker error', err);
     }

@@ -27,7 +27,7 @@ import {
 } from "lucide-react";
 import { useCountryAuth } from "../../context/AuthContext";
 
-const API_BASE = import.meta.env.DEV ? "http://localhost:5000" : "https://inteqt.onrender.com";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
 
 const CountryAdminDashboard = () => {
   const { user, token, logout, isAdmin, loading: authLoading } = useCountryAuth();
@@ -73,13 +73,13 @@ const CountryAdminDashboard = () => {
 
   // Check authentication
   useEffect(() => {
-    console.log('=== DASHBOARD AUTH CHECK ===');
-    console.log('authLoading:', authLoading);
-    console.log('user:', user);
-    console.log('isAdmin:', isAdmin);
+    ('=== DASHBOARD AUTH CHECK ===');
+    ('authLoading:', authLoading);
+    ('user:', user);
+    ('isAdmin:', isAdmin);
 
     if (authLoading) {
-      console.log('Auth still loading... waiting');
+      ('Auth still loading... waiting');
       return;
     }
 
@@ -93,22 +93,22 @@ const CountryAdminDashboard = () => {
     const effectiveUser = user || localStorageUser;
     
     if (!effectiveToken || !effectiveUser) {
-      console.log('No authentication found, redirecting to login');
+      ('No authentication found, redirecting to login');
       navigate("/country/login");
       return;
     }
 
     // Check admin status more reliably
     const userIsAdmin = effectiveUser?.role === 'admin' || effectiveUser?.isAdmin === true;
-    console.log('Final admin check - userIsAdmin:', userIsAdmin);
+    ('Final admin check - userIsAdmin:', userIsAdmin);
     
     if (!userIsAdmin) {
-      console.log('User is NOT admin, redirecting to user dashboard');
+      ('User is NOT admin, redirecting to user dashboard');
       navigate("/country/dashboard");
       return;
     }
 
-    console.log('✅ User is admin, proceeding to fetch dashboard data');
+    ('✅ User is admin, proceeding to fetch dashboard data');
     fetchDashboardData();
   }, [token, user, isAdmin, navigate, authLoading]);
 
@@ -118,10 +118,10 @@ const CountryAdminDashboard = () => {
       
       // Get token from localStorage as fallback
       const effectiveToken = token || localStorage.getItem("countryToken");
-      console.log('Fetching data with token:', effectiveToken);
+      ('Fetching data with token:', effectiveToken);
       
       if (!effectiveToken) {
-        console.log('No token for API calls');
+        ('No token for API calls');
         navigate("/country/login");
         return;
       }
@@ -138,13 +138,13 @@ const CountryAdminDashboard = () => {
         })
       ]);
 
-      console.log('Stats response:', statsRes.status);
-      console.log('Users response:', usersRes.status);
-      console.log('Submissions response:', submissionsRes.status);
+      ('Stats response:', statsRes.status);
+      ('Users response:', usersRes.status);
+      ('Submissions response:', submissionsRes.status);
 
       if (!statsRes.ok || !usersRes.ok || !submissionsRes.ok) {
         if (statsRes.status === 401) {
-          console.log('Unauthorized, logging out');
+          ('Unauthorized, logging out');
           logout();
           navigate("/country/login");
           return;
@@ -158,9 +158,9 @@ const CountryAdminDashboard = () => {
         submissionsRes.json()
       ]);
 
-      console.log('Stats data:', statsData);
-      console.log('Users data count:', usersData.users?.length);
-      console.log('Submissions data count:', submissionsData.submissions?.length);
+      ('Stats data:', statsData);
+      ('Users data count:', usersData.users?.length);
+      ('Submissions data count:', submissionsData.submissions?.length);
 
       setStats({
         ...statsData,
@@ -335,7 +335,7 @@ const CountryAdminDashboard = () => {
   // FIXED: viewSubmissionDetails function
   const viewSubmissionDetails = (submissionSlug: string) => {
     // Navigate to detailed view
-    console.log('Navigating to review page with slug:', submissionSlug);
+    ('Navigating to review page with slug:', submissionSlug);
     navigate(`/country/admin/submission/${submissionSlug}`);
   };
 

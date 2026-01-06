@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import NotFound from "../NotFound";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -39,7 +40,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 
-const API_BASE = import.meta.env.DEV ? "http://localhost:5000" : "https://inteqt.onrender.com";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
 
 interface CountryData {
   id?: string;
@@ -103,9 +104,10 @@ const Country: React.FC = () => {
     const slugFromQuery = queryParams.get("slug");
     
     if (!slugFromQuery) {
-      navigate("/coverage/europe");
-      return;
-    }
+  navigate("/*", { replace: true });
+  return;
+}
+
     
     setCountrySlug(slugFromQuery);
     fetchCountryData(slugFromQuery);
@@ -119,20 +121,22 @@ const Country: React.FC = () => {
       const res = await fetch(`${API_BASE}/api/country/${slug}`);
       
       if (!res.ok) {
-        if (res.status === 404) {
-          setError(`Country "${slug}" not found or not approved yet.`);
-        } else {
-          throw new Error(`Failed to load country data: ${res.status}`);
-        }
-        return;
-      }
+  if (res.status === 404) {
+    navigate("/*", { replace: true });
+    return;
+  } else {
+    throw new Error(`Failed to load country data: ${res.status}`);
+  }
+}
+
       
       const data = await res.json();
       
-      if (data.success === false) {
-        setError(data.message || "Failed to load country");
-        return;
-      }
+      if (data.success === false || !data.data) {
+  navigate("/*", { replace: true });
+  return;
+}
+
       
       setCountryData(data.data);
       

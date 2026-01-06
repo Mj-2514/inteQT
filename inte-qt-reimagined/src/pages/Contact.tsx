@@ -8,6 +8,7 @@ import { Send } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import Footer from "@/components/Footer";
 
 /**
  * Note:
@@ -160,7 +161,7 @@ export default function Contact() {
         </script>
       </Helmet>
 
-      <div className="min-h-screen pt-20">
+      <div className="min-h-screen pt-20 bg-[#f9f9f9]">
         {/* Hero */}
         <section className="gradient-hero text-primary-foreground py-24">
           <div className="container mx-auto px-4 text-center">

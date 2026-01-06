@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import { useCountryAuth } from "../../context/AuthContext";
 
-const API_BASE = import.meta.env.DEV ? "http://localhost:5000" : "https://inteqt.onrender.com";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
 
 const CountryUserDashboard = () => {
   const { user, token, logout } = useCountryAuth();
@@ -96,7 +96,7 @@ const CountryUserDashboard = () => {
         summaryRes.json()
       ]);
 
-      console.log("Summary data:", summaryData);
+      ("Summary data:", summaryData);
       
       setStats(statsData);
       

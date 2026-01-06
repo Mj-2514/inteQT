@@ -39,8 +39,8 @@ const detectMediaType = (mime, resourceType, format) => {
 // FIXED: Cloudinary upload function for disk storage
 const uploadToCloudinary = (buffer, folder = "events") => {
   return new Promise((resolve, reject) => {
-    console.log(`📤 Uploading to Cloudinary folder: ${folder}`);
-    console.log(`📏 Buffer size: ${buffer.length} bytes`);
+    (`📤 Uploading to Cloudinary folder: ${folder}`);
+    (`📏 Buffer size: ${buffer.length} bytes`);
     
     const uploadStream = cloudinary.uploader.upload_stream(
       {
@@ -58,8 +58,8 @@ const uploadToCloudinary = (buffer, folder = "events") => {
           });
           reject(new Error(`Cloudinary upload failed: ${error.message}`));
         } else {
-          console.log("✅ Cloudinary upload successful!");
-          console.log("Upload result:", {
+          ("✅ Cloudinary upload successful!");
+          ("Upload result:", {
             url: result.secure_url,
             resource_type: result.resource_type,
             format: result.format,
@@ -94,12 +94,12 @@ const uploadToCloudinary = (buffer, folder = "events") => {
    CREATE EVENT CONTROLLER
 ========================= */
 export const createEvent = async (req, res) => {
-  console.log("🚀 CREATE EVENT REQUEST RECEIVED =================");
+  ("🚀 CREATE EVENT REQUEST RECEIVED =================");
   
   try {
     // 1. Authentication check
     if (!req.user) {
-      console.log("❌ Unauthorized request");
+      ("❌ Unauthorized request");
       return res.status(401).json({
         success: false,
         message: "Unauthorized. Please log in."
@@ -108,11 +108,11 @@ export const createEvent = async (req, res) => {
 
     const user = req.user;
     const isAdmin = user.isAdmin;
-    console.log(`👤 User: ${user.email}, isAdmin: ${isAdmin}`);
+    (`👤 User: ${user.email}, isAdmin: ${isAdmin}`);
 
     // 2. Log request details
-    console.log("📦 Request body:", req.body);
-    console.log("📁 File info:", req.file ? {
+    ("📦 Request body:", req.body);
+    ("📁 File info:", req.file ? {
       originalname: req.file.originalname,
       mimetype: req.file.mimetype,
       size: req.file.size,
@@ -125,7 +125,7 @@ export const createEvent = async (req, res) => {
     let eventData;
     try {
       eventData = req.body.data ? JSON.parse(req.body.data) : req.body;
-      console.log("📝 Parsed event data:", eventData);
+      ("📝 Parsed event data:", eventData);
     } catch (parseError) {
       console.error("❌ JSON parse error:", parseError);
       return res.status(400).json({
@@ -141,7 +141,7 @@ export const createEvent = async (req, res) => {
     
     // CASE 1: File upload (via multer disk storage)
     if (req.file) {
-      console.log("📁 File received (disk storage):", {
+      ("📁 File received (disk storage):", {
         originalname: req.file.originalname,
         mimetype: req.file.mimetype,
         size: req.file.size,
@@ -151,16 +151,16 @@ export const createEvent = async (req, res) => {
 
       try {
         // Read the file from disk
-        console.log("📖 Reading file from disk:", req.file.path);
+        ("📖 Reading file from disk:", req.file.path);
         const fileBuffer = await fs.readFile(req.file.path);
-        console.log("✅ File read from disk, buffer size:", fileBuffer.length);
+        ("✅ File read from disk, buffer size:", fileBuffer.length);
 
         // Upload to Cloudinary
-        console.log("🔄 Starting Cloudinary upload...");
+        ("🔄 Starting Cloudinary upload...");
         const result = await uploadToCloudinary(fileBuffer, "events");
         
-        console.log("✅ Cloudinary upload successful!");
-        console.log("Cloudinary result:", {
+        ("✅ Cloudinary upload successful!");
+        ("Cloudinary result:", {
           url: result.secure_url,
           resource_type: result.resource_type,
           format: result.format
@@ -173,12 +173,12 @@ export const createEvent = async (req, res) => {
           result.format
         );
         
-        console.log(`📊 Detected media type: ${mediaType}`);
-        console.log(`🔗 Media URL: ${uploadedMediaUrl}`);
+        (`📊 Detected media type: ${mediaType}`);
+        (`🔗 Media URL: ${uploadedMediaUrl}`);
 
         // Delete temp file after successful upload
         await fs.unlink(req.file.path);
-        console.log("🗑️ Temp file deleted:", req.file.path);
+        ("🗑️ Temp file deleted:", req.file.path);
 
       } catch (uploadError) {
         console.error("❌ Cloudinary upload failed:", uploadError.message);
@@ -188,7 +188,7 @@ export const createEvent = async (req, res) => {
         try {
           if (req.file.path) {
             await fs.unlink(req.file.path);
-            console.log("🗑️ Cleaned up temp file after error");
+            ("🗑️ Cleaned up temp file after error");
           }
         } catch (cleanupError) {
           console.error("Failed to cleanup temp file:", cleanupError);
@@ -205,24 +205,24 @@ export const createEvent = async (req, res) => {
     // CASE 2: External media URL
     else if (eventData.introMedia && typeof eventData.introMedia === "string") {
       const url = eventData.introMedia.trim();
-      console.log("🔗 External media URL provided:", url);
+      ("🔗 External media URL provided:", url);
       
       // Basic URL validation
       if (url.startsWith('http://') || url.startsWith('https://')) {
         uploadedMediaUrl = url;
         mediaType = eventData.mediaType || "external";
-        console.log(`📊 Using external media: ${mediaType}`);
+        (`📊 Using external media: ${mediaType}`);
       } else {
         console.warn("⚠️ Invalid external URL provided:", url);
       }
     } else {
-      console.log("📭 No media provided for this event");
+      ("📭 No media provided for this event");
     }
 
     /* ================= DATA VALIDATION ================= */
-    console.log("✅ Media handling complete:");
-    console.log("   - Media URL:", uploadedMediaUrl);
-    console.log("   - Media Type:", mediaType);
+    ("✅ Media handling complete:");
+    ("   - Media URL:", uploadedMediaUrl);
+    ("   - Media Type:", mediaType);
 
     const errors = [];
     
@@ -239,7 +239,7 @@ export const createEvent = async (req, res) => {
     }
 
     if (errors.length > 0) {
-      console.log("❌ Validation errors:", errors);
+      ("❌ Validation errors:", errors);
       return res.status(400).json({
         success: false,
         message: "Validation failed",
@@ -252,7 +252,7 @@ export const createEvent = async (req, res) => {
     const endDate = eventData.endDate ? new Date(eventData.endDate) : null;
     
     if (endDate && endDate <= startDate) {
-      console.log("❌ Date validation failed: End date must be after start date");
+      ("❌ Date validation failed: End date must be after start date");
       return res.status(400).json({
         success: false,
         message: "End date must be after start date"
@@ -260,17 +260,14 @@ export const createEvent = async (req, res) => {
     }
 
     /* ================= CREATE EVENT ================= */
-    console.log("📝 Creating event in database...");
+    ("📝 Creating event in database...");
     
     const event = await Event.create({
       title: eventData.title.trim(),
-      description: eventData.description?.trim() || "",
       startDate: startDate,
       endDate: endDate || new Date(startDate.getTime() + 60 * 60 * 1000), // Default: 1 hour later
       location: eventData.location.trim(),
       city: eventData.city?.trim() || "",
-      type: eventData.type || "meeting",
-      tags: parseTags(eventData.tags),
       introMedia: uploadedMediaUrl,
       mediaType: uploadedMediaUrl ? mediaType : "none",
       linkedPostUrl: eventData.linkedPostUrl?.trim() || null,
@@ -278,8 +275,8 @@ export const createEvent = async (req, res) => {
       status: isAdmin ? "published" : "pending"
     });
 
-    console.log("✅ Event created successfully!");
-    console.log("Event details:", {
+    ("✅ Event created successfully!");
+    ("Event details:", {
       id: event._id,
       title: event.title,
       slug: event.slug,
@@ -291,9 +288,9 @@ export const createEvent = async (req, res) => {
     /* ================= ADMIN NOTIFICATION ================= */
     if (!isAdmin) {
       try {
-        console.log("📧 Sending admin notifications...");
+        ("📧 Sending admin notifications...");
         const admins = await EventUser.find({ isAdmin: true }).select("email name");
-        console.log(`📨 Notifying ${admins.length} admin(s)`);
+        (`📨 Notifying ${admins.length} admin(s)`);
         
         for (const admin of admins) {
           await sendEmail({
@@ -310,7 +307,7 @@ export const createEvent = async (req, res) => {
           });
         }
         
-        console.log("✅ Admin notifications sent successfully");
+        ("✅ Admin notifications sent successfully");
       } catch (emailError) {
         console.error("❌ Failed to send admin notification:", emailError);
         // Don't fail the request if email fails
@@ -341,7 +338,7 @@ export const createEvent = async (req, res) => {
     // Handle Mongoose validation errors
     if (err.name === 'ValidationError') {
       const errors = Object.values(err.errors).map(e => e.message);
-      console.log("❌ Mongoose validation errors:", errors);
+      ("❌ Mongoose validation errors:", errors);
       return res.status(400).json({
         success: false,
         message: "Validation error",
@@ -351,7 +348,7 @@ export const createEvent = async (req, res) => {
     
     // Handle duplicate key errors (e.g., duplicate slug)
     if (err.code === 11000) {
-      console.log("❌ Duplicate key error:", err);
+      ("❌ Duplicate key error:", err);
       return res.status(400).json({
         success: false,
         message: "An event with similar details already exists"

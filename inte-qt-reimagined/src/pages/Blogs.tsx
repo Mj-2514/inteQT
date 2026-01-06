@@ -186,7 +186,7 @@ const Blogs = () => {
         setLoading(true);
         setError(null);
 
-        console.log("Fetching blogs from:", `${API_BASE}/api/blogs/all`);
+        ("Fetching blogs from:", `${API_BASE}/api/blogs/all`);
         const res = await fetch(`${API_BASE}/api/blogs/all`);
         
         if (!res.ok) {
@@ -194,13 +194,13 @@ const Blogs = () => {
         }
         
         const text = await res.text();
-        console.log("Raw response text (first 500 chars):", text.substring(0, 500));
+        ("Raw response text (first 500 chars):", text.substring(0, 500));
         
         let data: BlogFromApi[] = [];
 
         try {
           const parsedData = text ? JSON.parse(text) : null;
-          console.log("Raw API response:", parsedData);
+          ("Raw API response:", parsedData);
           
           // Check various possible response formats
           if (Array.isArray(parsedData)) {
@@ -235,11 +235,11 @@ const Blogs = () => {
             data = [];
           }
           
-          console.log(`Successfully loaded ${data.length} blogs`);
+          (`Successfully loaded ${data.length} blogs`);
           
           // Debug log for media info
           if (data.length > 0) {
-            console.log("First blog media info:", {
+            ("First blog media info:", {
               title: data[0].title,
               introImage: data[0].introImage,
               descriptionImage: data[0].descriptionImage,

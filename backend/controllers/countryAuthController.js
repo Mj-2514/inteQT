@@ -101,30 +101,30 @@ export const createAdminByAdmin = async (req, res) => {
 ========================= */
 export const loginCountryUser = async (req, res) => {
   try {
-    console.log('🔐 Backend login attempt:', req.body.email);
+    ('🔐 Backend login attempt:', req.body.email);
     
     const { email, password } = req.body;
 
-    console.log('📧 Email validation:', validateCompanyEmail(email));
+    ('📧 Email validation:', validateCompanyEmail(email));
     
     const user = await CountryUser.findOne({ email, isActive: true }).select("+password");
-    console.log('👤 User found:', user ? 'YES' : 'NO');
+    ('👤 User found:', user ? 'YES' : 'NO');
     
     if (!user) {
-      console.log('❌ No user found or inactive');
+      ('❌ No user found or inactive');
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
     const match = await bcrypt.compare(password, user.password);
-    console.log('🔑 Password match:', match);
+    ('🔑 Password match:', match);
     
     if (!match) {
-      console.log('❌ Password mismatch');
+      ('❌ Password mismatch');
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
     const token = signToken(user._id);
-    console.log('✅ Token generated');
+    ('✅ Token generated');
 
     res.json({
       token,

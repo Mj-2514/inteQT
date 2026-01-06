@@ -556,7 +556,7 @@ export default function UserDashboard() {
         return;
       }
       
-      const response = await fetch(`${API}/api/blogs/users/stats`, {
+      const response = await fetch(`${API}/api/blogs/user/stats`, {
         headers: { 
           Authorization: `Bearer ${token}` 
         },

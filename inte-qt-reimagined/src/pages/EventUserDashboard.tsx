@@ -726,7 +726,7 @@ const EventUserDashboard = () => {
     // Add file if exists
     if (mediaFile) {
       formData.append("file", mediaFile);
-      console.log("Adding file to FormData:", mediaFile.name, mediaFile.type, mediaFile.size);
+      ("Adding file to FormData:", mediaFile.name, mediaFile.type, mediaFile.size);
     } else if (mediaUrl.trim()) {
       // If URL is provided (no file), add it to the eventData
       eventData.introMedia = mediaUrl.trim();
@@ -735,10 +735,10 @@ const EventUserDashboard = () => {
       formData.set("data", JSON.stringify(eventData));
     }
 
-    console.log("Submitting event data:", eventData);
-    console.log("Has file:", !!mediaFile);
-    console.log("Media URL:", mediaUrl);
-    console.log("Media type:", mediaType);
+    ("Submitting event data:", eventData);
+    ("Has file:", !!mediaFile);
+    ("Media URL:", mediaUrl);
+    ("Media type:", mediaType);
 
     const response = await fetch(`${API_BASE}/api/events/create`, {
       method: "POST",
@@ -770,7 +770,7 @@ const EventUserDashboard = () => {
     }
 
     const data = await response.json();
-    console.log("Response from server:", data);
+    ("Response from server:", data);
     
     if (!data.success) {
       throw new Error(data.message || "Failed to create event");

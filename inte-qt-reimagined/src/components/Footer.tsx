@@ -18,23 +18,20 @@ const Footer = () => {
     <footer
       className="
         relative overflow-hidden
-        bg-gradient-to-br
-        from-[#0b2a3f]
-        via-[#0f4c75]
-        to-[#1b6ca8]
+        bg-[#1f2a33]
         text-white
       "
     >
       
 
-      <div className="relative container mx-auto px-6 lg:px-12 py-20">
+      <div className="relative container mx-auto px-6 lg:px-12 py-20 bg-[#1f2a33]">
         {/* Main Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-14">
 
           {/* Brand */}
           <div>
             <img
-              src={theme === "dark" ? "/logo1.png" : "/logo-dark.png"}
+              src={"/logo1.png"}
               alt="inte-QT"
               className="w-32 h-auto mb-4"
             />
@@ -160,7 +157,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-white/25 pt-8 text-center">
           <p className="text-sm opacity-90">
-            © {currentYear} inte-QT. All rights reserved. Managed L3 Internet Global Services.
+            © {currentYear} INTELLIGENT QUOTING TECHNOLOGY S.L. All Rights Reserved.
           </p>
         </div>
       </div>

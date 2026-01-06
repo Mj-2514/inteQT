@@ -23,7 +23,7 @@ const ProtectedRoute: React.FC<Props> = ({
   const isEventRoute = path.includes('/event') || path.includes('/events');
   const isBlogRoute = path.includes('/admin') || path.includes('/create-blog') || path.includes('/user-dashboard');
   
-  console.log('ProtectedRoute check:', {
+  ('ProtectedRoute check:', {
     path,
     isCountryRoute,
     isEventRoute,
@@ -44,19 +44,19 @@ const ProtectedRoute: React.FC<Props> = ({
       );
     }
     
-    console.log('Country auth check:', { 
+    ('Country auth check:', { 
       user: countryUser, 
       isAdmin: countryIsAdmin,
       adminOnly 
     });
     
     if (!countryUser) {
-      console.log('No country user, redirecting to country login');
+      ('No country user, redirecting to country login');
       return <Navigate to="/country/login" replace />;
     }
     
     if (adminOnly && !countryIsAdmin) {
-      console.log('Country admin required but not admin, redirecting');
+      ('Country admin required but not admin, redirecting');
       return <Navigate to="/country/dashboard" replace />;
     }
     
@@ -78,7 +78,7 @@ const ProtectedRoute: React.FC<Props> = ({
       );
     }
     
-    console.log('Event auth check:', { 
+    ('Event auth check:', { 
       eventUser, 
       regularUser,
       activeEventUser,
@@ -86,7 +86,7 @@ const ProtectedRoute: React.FC<Props> = ({
     });
     
     if (!activeEventUser) {
-      console.log('No event user, redirecting to event login');
+      ('No event user, redirecting to event login');
       return <Navigate to="/events/login" replace />;
     }
     
@@ -94,7 +94,7 @@ const ProtectedRoute: React.FC<Props> = ({
     if (adminOnly) {
       const isEventAdmin = activeEventUser.role === 'admin' || activeEventUser.isAdmin;
       if (!isEventAdmin) {
-        console.log('Event admin required but not admin');
+        ('Event admin required but not admin');
         return <Navigate to="/events" replace />;
       }
     }
@@ -113,7 +113,7 @@ const ProtectedRoute: React.FC<Props> = ({
     );
   }
   
-  console.log('Regular auth check:', { user, adminOnly });
+  ('Regular auth check:', { user, adminOnly });
   
   if (!user) {
     return <Navigate to="/" replace />;
