@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { useCountryAuth } from "@/context/AuthContext";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
+const API_BASE =import.meta.env.VITE_API_BASE;
 
 const ManageSubmissions = () => {
   const { user, token, isAdmin } = useCountryAuth();

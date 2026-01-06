@@ -5,9 +5,7 @@ import { ArrowLeft, Calendar, User, Tag, Share2, ImageOff } from "lucide-react";
 import { motion } from "framer-motion";
 import Navbar from "../components/Navbar";
 
-const API_BASE = import.meta.env.DEV
-  ? "http://localhost:5000"
-  : "https://inteqt.onrender.com";
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 /* ================= TYPES ================= */
 

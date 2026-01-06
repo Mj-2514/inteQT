@@ -7,9 +7,7 @@ import { useNavigate } from "react-router-dom";
 import Footer from "@/components/Footer";
 import { useAuth } from "../context/AuthContext";
 
-const API_BASE = import.meta.env.DEV
-  ? "http://localhost:5000"
-  : "https://inteqt.onrender.com";
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 type BlogFromApi = {
   _id: string;
@@ -186,7 +184,7 @@ const Blogs = () => {
         setLoading(true);
         setError(null);
 
-        ("Fetching blogs from:", `${API_BASE}/api/blogs/all`);
+        
         const res = await fetch(`${API_BASE}/api/blogs/all`);
         
         if (!res.ok) {
@@ -194,13 +192,13 @@ const Blogs = () => {
         }
         
         const text = await res.text();
-        ("Raw response text (first 500 chars):", text.substring(0, 500));
+        
         
         let data: BlogFromApi[] = [];
 
         try {
           const parsedData = text ? JSON.parse(text) : null;
-          ("Raw API response:", parsedData);
+          
           
           // Check various possible response formats
           if (Array.isArray(parsedData)) {
@@ -239,7 +237,7 @@ const Blogs = () => {
           
           // Debug log for media info
           if (data.length > 0) {
-            ("First blog media info:", {
+            ({
               title: data[0].title,
               introImage: data[0].introImage,
               descriptionImage: data[0].descriptionImage,

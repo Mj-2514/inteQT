@@ -28,7 +28,7 @@ import {
   Home
 } from "lucide-react";
 
-const API = import.meta.env.DEV ? "http://localhost:5000" : "https://inteqt.onrender.com";
+const API =import.meta.env.VITE_API_BASE;
 
 // Separate ChangePasswordModal component
 const ChangePasswordModal = ({ 

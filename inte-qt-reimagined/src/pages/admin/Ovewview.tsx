@@ -17,7 +17,7 @@ import DashboardStats from "./DashboardStats";
 import CircularChart from "./CircularChart";
 import BlogStatsChart from "./BlogStatsChart";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
+const API_BASE =import.meta.env.VITE_API_BASE;
 
 const Overview = () => {
   const [stats, setStats] = useState({

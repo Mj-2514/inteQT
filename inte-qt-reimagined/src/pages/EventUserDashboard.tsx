@@ -34,9 +34,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
-const API_BASE = import.meta.env.DEV
-  ? "http://localhost:5000"
-  : "https://inteqt.onrender.com";
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 function looksLikeUrl(s: string) {
   if (!s) return false;
@@ -726,7 +724,7 @@ const EventUserDashboard = () => {
     // Add file if exists
     if (mediaFile) {
       formData.append("file", mediaFile);
-      ("Adding file to FormData:", mediaFile.name, mediaFile.type, mediaFile.size);
+      
     } else if (mediaUrl.trim()) {
       // If URL is provided (no file), add it to the eventData
       eventData.introMedia = mediaUrl.trim();
@@ -735,10 +733,7 @@ const EventUserDashboard = () => {
       formData.set("data", JSON.stringify(eventData));
     }
 
-    ("Submitting event data:", eventData);
-    ("Has file:", !!mediaFile);
-    ("Media URL:", mediaUrl);
-    ("Media type:", mediaType);
+   
 
     const response = await fetch(`${API_BASE}/api/events/create`, {
       method: "POST",
@@ -770,7 +765,7 @@ const EventUserDashboard = () => {
     }
 
     const data = await response.json();
-    ("Response from server:", data);
+    
     
     if (!data.success) {
       throw new Error(data.message || "Failed to create event");

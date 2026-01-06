@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { CheckCircle, XCircle, Eye, Calendar, User, Tag, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
+const API_BASE =import.meta.env.VITE_API_BASE;
 
 interface Blog {
   _id: string;

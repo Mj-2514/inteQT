@@ -4,9 +4,7 @@ import { useAuth } from "../context/AuthContext";
 
 import { UserPlus, Loader2 } from "lucide-react";
 
-const API_BASE = import.meta.env.DEV
-  ? "http://localhost:5000"
-  : "https://inteqt.onrender.com";
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 export default function EventCreateUser() {
   const navigate = useNavigate();

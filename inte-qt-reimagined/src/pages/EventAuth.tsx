@@ -4,9 +4,7 @@ import MonkeySVG, { MonkeySVGRef } from "../components/MonkeySVG";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 
 const EventAuth = () => {
-  const API_BASE = import.meta.env.DEV
-    ? "http://localhost:5000"
-    : "https://inteqt.onrender.com";
+  const API_BASE = import.meta.env.VITE_API_BASE;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

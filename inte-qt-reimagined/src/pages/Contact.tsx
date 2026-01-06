@@ -15,9 +15,7 @@ import Footer from "@/components/Footer";
  * - API_BASE_URL points to your production host. When running locally (Vite),
  *   ensure you set DEV env accordingly or use import.meta.env.DEV.
  */
-const API_BASE_URL = import.meta.env.DEV
-  ? "http://localhost:5000"
-  : "https://inte-qt.com";
+const API_BASE_URL =import.meta.env.VITE_API_BASE;
 
 /** Basic client-side email validation (keeps UX snappy) */
 const isValidEmail = (email: string) =>

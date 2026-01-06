@@ -18,9 +18,7 @@ import {
 } from "lucide-react";
 import Navbar from "../components/Navbar";
 
-const API_BASE = import.meta.env.DEV
-  ? "http://localhost:5000"
-  : "https://inteqt.onrender.com";
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 // Helpers
 function countWords(text = "") {
@@ -274,8 +272,7 @@ const UserCreateBlog: React.FC = () => {
         published: false
       };
 
-      ("Submitting blog data:", blogData);
-      ("Tags being sent:", blogData.tags, "Type:", typeof blogData.tags);
+      
 
       // Add data as JSON string (backend expects 'data' field)
       fd.append("data", JSON.stringify(blogData));
@@ -283,15 +280,14 @@ const UserCreateBlog: React.FC = () => {
       // Add files with exact field names backend expects
       if (introImageFile) {
         fd.append("introImage", introImageFile);
-        ("Intro file added:", introImageFile.name);
+        
       }
       if (descImageFile) {
         fd.append("descriptionImage", descImageFile);
-        ("Desc file added:", descImageFile.name);
+        
       }
 
-      ("Making request to:", `${API_BASE}/api/blogs/add`);
-      ("Authorization token present:", !!token);
+      
 
       const res = await fetch(`${API_BASE}/api/blogs/add`, {
         method: "POST",
@@ -301,16 +297,16 @@ const UserCreateBlog: React.FC = () => {
         body: fd,
       });
 
-      ("Response status:", res.status);
-      ("Response headers:", Object.fromEntries(res.headers.entries()));
+      ( res.status);
+      ( Object.fromEntries(res.headers.entries()));
       
       const responseText = await res.text();
-      ("Raw response:", responseText);
+      
       
       let data: any;
       try {
         data = responseText ? JSON.parse(responseText) : {};
-        ("Parsed response data:", data);
+        
       } catch (parseError) {
         console.error("Response parse error:", parseError, "Raw text:", responseText);
         throw new Error(`Server returned invalid response. Status: ${res.status}`);

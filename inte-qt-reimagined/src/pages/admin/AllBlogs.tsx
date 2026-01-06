@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Search, User, Mail, Calendar, Trash2, RefreshCw, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
+const API_BASE =import.meta.env.VITE_API_BASE;
 
 interface UserType {
   _id: string;

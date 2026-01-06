@@ -27,7 +27,7 @@ import {
 } from "lucide-react";
 import { useCountryAuth } from "../../context/AuthContext";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
+const API_BASE =import.meta.env.VITE_API_BASE;
 
 const CountryAdminDashboard = () => {
   const { user, token, logout, isAdmin, loading: authLoading } = useCountryAuth();
@@ -73,10 +73,7 @@ const CountryAdminDashboard = () => {
 
   // Check authentication
   useEffect(() => {
-    ('=== DASHBOARD AUTH CHECK ===');
-    ('authLoading:', authLoading);
-    ('user:', user);
-    ('isAdmin:', isAdmin);
+    
 
     if (authLoading) {
       ('Auth still loading... waiting');
@@ -100,7 +97,7 @@ const CountryAdminDashboard = () => {
 
     // Check admin status more reliably
     const userIsAdmin = effectiveUser?.role === 'admin' || effectiveUser?.isAdmin === true;
-    ('Final admin check - userIsAdmin:', userIsAdmin);
+    
     
     if (!userIsAdmin) {
       ('User is NOT admin, redirecting to user dashboard');
@@ -118,7 +115,7 @@ const CountryAdminDashboard = () => {
       
       // Get token from localStorage as fallback
       const effectiveToken = token || localStorage.getItem("countryToken");
-      ('Fetching data with token:', effectiveToken);
+      
       
       if (!effectiveToken) {
         ('No token for API calls');
@@ -138,9 +135,7 @@ const CountryAdminDashboard = () => {
         })
       ]);
 
-      ('Stats response:', statsRes.status);
-      ('Users response:', usersRes.status);
-      ('Submissions response:', submissionsRes.status);
+      
 
       if (!statsRes.ok || !usersRes.ok || !submissionsRes.ok) {
         if (statsRes.status === 401) {
@@ -158,9 +153,7 @@ const CountryAdminDashboard = () => {
         submissionsRes.json()
       ]);
 
-      ('Stats data:', statsData);
-      ('Users data count:', usersData.users?.length);
-      ('Submissions data count:', submissionsData.submissions?.length);
+      
 
       setStats({
         ...statsData,
@@ -335,7 +328,7 @@ const CountryAdminDashboard = () => {
   // FIXED: viewSubmissionDetails function
   const viewSubmissionDetails = (submissionSlug: string) => {
     // Navigate to detailed view
-    ('Navigating to review page with slug:', submissionSlug);
+    
     navigate(`/country/admin/submission/${submissionSlug}`);
   };
 

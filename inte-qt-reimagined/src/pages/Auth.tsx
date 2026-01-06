@@ -6,9 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useAuth } from "@/context/AuthContext";
 
-const API_BASE = import.meta.env.DEV
-  ? "http://localhost:5000"
-  : "https://inteqt.onrender.com";
+const API_BASE =import.meta.env.VITE_API_BASE;
 
 export default function AuthPage(): JSX.Element {
   const [email, setEmail] = useState("");

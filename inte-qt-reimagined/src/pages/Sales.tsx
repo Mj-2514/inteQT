@@ -8,9 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
-const API_BASE_URL = import.meta.env.DEV
-  ? "http://localhost:5000"
-  : "https://inteqt.onrender.com";
+const API_BASE_URL =import.meta.env.VITE_API_BASE;
 const Sales = () => {
   const [form, setForm] = useState({
     company: "",

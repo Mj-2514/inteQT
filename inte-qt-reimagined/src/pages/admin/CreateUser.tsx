@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const API = import.meta.env.DEV ? "http://localhost:5000" : "https://inteqt.onrender.com";
+const API =import.meta.env.VITE_API_BASE;
 
 export default function CreateUser() {
   const [name, setName] = useState("");
@@ -11,7 +11,7 @@ export default function CreateUser() {
  const submit = async () => {
   const token = localStorage.getItem("token");
 
-  const res = await fetch("http://localhost:5000/api/auth/create-user", {
+  const res = await fetch(`${API}/api/auth/create-user`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

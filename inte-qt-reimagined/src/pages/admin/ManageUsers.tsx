@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const API = import.meta.env.DEV ? "http://localhost:5000" : "https://inteqt.onrender.com";
+const API =import.meta.env.VITE_API_BASE;
 
 export default function DeletedUsers() {
   const [users, setUsers] = useState<any[]>([]);

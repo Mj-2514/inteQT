@@ -29,7 +29,7 @@ import {
   CalendarDays
 } from "lucide-react";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 interface EventData {
   _id: string;
@@ -96,7 +96,7 @@ const EventReview = () => {
       setLoading(true);
       setError(null);
       
-      ('Fetching event with ID:', id);
+      
       
       const res = await fetch(`${API_BASE}/api/events/auth/pending/${id}`, {
         headers: { 
@@ -105,7 +105,7 @@ const EventReview = () => {
         }
       });
       
-      ('Response status:', res.status);
+      
       
       if (!res.ok) {
         if (res.status === 404) {
@@ -118,7 +118,7 @@ const EventReview = () => {
       }
       
       const data: ApiResponse = await res.json();
-      ('API Response:', data);
+      
       
       if (data.success) {
         // Handle both response formats: data.data or data.event

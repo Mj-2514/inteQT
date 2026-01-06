@@ -100,10 +100,10 @@ const CountryLogin = () => {
   // Effect to check if user is already logged in when component mounts
   useEffect(() => {
     if (user && !authLoading && !hasJustLoggedIn) {
-      ('User already logged in from previous session, redirecting...');
+      
       const isAdminUser = user.role === 'admin' || user.isAdmin === true;
       if (isAdminUser) {
-        ('User already logged in from previous session, redirected');
+       
         navigate('/country/admin-dashboard');
 
       } else {
@@ -132,7 +132,7 @@ const CountryLogin = () => {
   const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
   setError("");
-  ('=== LOGIN SUBMIT START ===');
+  
 
   if (!email || !password) {
     setError("Enter both email and password.");
@@ -153,34 +153,28 @@ const CountryLogin = () => {
   setHasJustLoggedIn(true);
 
   try {
-    ('Calling login function with:', { email, password });
+    
     
     const loggedInUser = await login(email, password);
-    ('Login successful, returned user:', loggedInUser);
-    ('User role:', loggedInUser.role);
-    ('User isAdmin:', loggedInUser.isAdmin);
-    
+   
     // Check if token was stored
     const storedToken = localStorage.getItem("countryToken");
     const storedUser = localStorage.getItem("countryUser");
-    ('Stored token after login:', storedToken);
-    ('Stored user after login:', storedUser);
+    
     
     const isAdminUser = loggedInUser.role === 'admin' || loggedInUser.isAdmin === true;
-    ('Is admin after login?', isAdminUser);
+    
     
     if (isAdminUser) {
-      ('Redirecting to ADMIN dashboard');
+      
       navigate('/country/admin-dashboard');
     } else {
-      ('Redirecting to USER dashboard');
+      
       navigate('/country/dashboard');
     }
     
   } catch (err: any) {
-    console.error('Login error details:', err);
-    console.error('Error message:', err.message);
-    console.error('Error stack:', err.stack);
+   
     setError(err.message || "Network error. Try again.");
     setSubmitting(false);
     setHasJustLoggedIn(false);

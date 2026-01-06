@@ -30,7 +30,7 @@ import {
 // Change this import to use the EventAuthContext instead
 import { useAuth } from "../context/AuthContext"; // Updated import path
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 const EventAdminDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);

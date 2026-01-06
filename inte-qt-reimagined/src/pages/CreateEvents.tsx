@@ -5,9 +5,7 @@ import { Calendar, MapPin, AlertTriangle, CheckCircle2, Link as LinkIcon, LogOut
 import Navbar from "../components/Navbar";
 import { useAuth } from "../context/AuthContext";
 
-const API_BASE = import.meta.env.DEV
-  ? "http://localhost:5000"
-  : "https://inteqt.onrender.com";
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 function looksLikeUrl(s: string) {
   if (!s) return false;
