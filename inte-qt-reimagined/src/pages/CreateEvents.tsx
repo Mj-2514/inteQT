@@ -82,8 +82,7 @@ const CreateEvent: React.FC = () => {
       const token = localStorage.getItem("token");
       const storedUser = localStorage.getItem("user");
       
-      ("Token exists:", !!token);
-      ("User exists:", !!storedUser);
+      
       
       if (!token) {
         ("No token found, redirecting to login");
@@ -143,11 +142,11 @@ const CreateEvent: React.FC = () => {
           
           if (res.ok) {
             const data = await res.json();
-            ("Success at endpoint:", endpoint, data);
+            
             return { success: true, data };
           }
         } catch (err) {
-          (`Endpoint ${endpoint} failed:`, err.message);
+          console.log(`Endpoint ${endpoint} failed:`, err.message);
         }
       }
       
@@ -286,7 +285,7 @@ const CreateEvent: React.FC = () => {
         mediaType: mediaType
       };
 
-      ("Event data:", eventData);
+      
       
       // Add the event data as JSON
       formData.append("data", JSON.stringify(eventData));
@@ -294,13 +293,13 @@ const CreateEvent: React.FC = () => {
       // Add file if exists
       if (mediaFile && mediaType !== "none" && mediaType !== "external") {
         formData.append("file", mediaFile);
-        ("File added to formData:", mediaFile.name);
+        
       }
 
       // Log what we're sending
       ("FormData contents:");
       for (const [key, value] of formData.entries()) {
-        (key, value);
+        
       }
 
       const res = await fetch(`${API_BASE}/api/events/create`, {
@@ -317,7 +316,7 @@ const CreateEvent: React.FC = () => {
         throw new Error(data.message || `Failed to create event: ${res.statusText}`);
       }
 
-      ("Event created successfully:", data);
+      
       setSubmitted(true);
       
       // Redirect to events page after 2 seconds

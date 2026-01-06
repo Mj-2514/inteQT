@@ -113,7 +113,7 @@ export default function Events() {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
         const data = await res.json();
-        ("Events API Response:", data);
+       
 
         // 🔒 GUARANTEE ARRAY
         let safeEvents: EventItem[] = [];
@@ -128,7 +128,7 @@ export default function Events() {
           console.warn("Unexpected response format:", data);
         }
 
-        ("Parsed events:", safeEvents.length, safeEvents);
+        
         setEvents(safeEvents);
         setError(null);
       } catch (err) {

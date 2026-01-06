@@ -96,7 +96,7 @@ const CountryUserDashboard = () => {
         summaryRes.json()
       ]);
 
-      ("Summary data:", summaryData);
+     
       
       setStats(statsData);
       
