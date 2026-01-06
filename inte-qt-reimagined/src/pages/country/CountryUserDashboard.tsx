@@ -163,7 +163,7 @@ const CountryUserDashboard = () => {
 
     try {
       const res = await fetch(`${API_BASE}/api/country/change-password`, {
-        method: "POST",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
