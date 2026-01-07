@@ -1,5 +1,5 @@
 // src/pages/Home.tsx
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Seo from "@/components/Seo";
@@ -20,12 +20,34 @@ import {
   Calendar,
   Lightbulb,
   Hotel,
+  X,
 } from "lucide-react";
 
 const nsocImage = "https://www.hrcloud.com/hubfs/workplace.gif";
 
 const Home: React.FC = () => {
+  const [showPopup, setShowPopup] = useState(false);
+  const [showGlitters, setShowGlitters] = useState(true);
   
+  // Show popup on mount/refresh - ALWAYS shows
+  useEffect(() => {
+    // Always show popup on refresh
+    setShowPopup(true);
+    setShowGlitters(true);
+    
+    // Auto close after 5 seconds
+    const timer = setTimeout(() => {
+      setShowPopup(false);
+    }, 5000);
+    
+    return () => clearTimeout(timer);
+  }, []);
+  
+  const handleClosePopup = () => {
+    setShowPopup(false);
+    setShowGlitters(false);
+  };
+
   const services = [
     {
       title: "Dedicated Lines",
@@ -85,13 +107,17 @@ const Home: React.FC = () => {
       img: "https://i.imgur.com/XAx622Y.jpg",
     },
   ];
-    const partnerBenefits = [
+  
+  const partnerBenefits = [
     { title: "Global", subtitle: "Interfacing", icon: Globe },
     { title: "Transparency of", subtitle: "Deal Cycle", icon: TrendingUp },
     { title: "A Forum to", subtitle: "Gain", icon: Users },
     { title: "Opportunity to", subtitle: "Grow", icon: Award },
     { title: "Efficient", subtitle: "Quote to Cash", icon: DollarSign },
   ];
+
+  // Company logo for popup
+  const companylogo = "https://i.imgur.com/o0I3t65.jpeg";
 
   // === SEO values ===
   const title =
@@ -168,6 +194,134 @@ const Home: React.FC = () => {
 
   return (
     <div className="min-h-screen">
+      {/* POPUP */}
+      {showPopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fadeIn">
+          {/* Overlay */}
+          <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={handleClosePopup}
+          />
+          
+          {/* Glitter Animation */}
+          {showGlitters && (
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              {[...Array(30)].map((_, n) => (
+                <div
+                  key={n}
+                  className="absolute w-1 h-1 bg-yellow-300 rounded-full animate-twinkle"
+                  style={{
+                    left: `${Math.random() * 100}vw`,
+                    top: `${Math.random() * 100}vh`,
+                    animationDelay: `${Math.random()}s`,
+                    boxShadow: '0 0 8px 1px rgba(255, 215, 0, 0.5)',
+                  }}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Popup Box - Clean White Design */}
+          <div className="relative bg-white rounded-xl shadow-2xl max-w-4xl w-full overflow-hidden border border-gray-200">
+            {/* Close Button */}
+            <button
+              onClick={handleClosePopup}
+              className="absolute top-4 right-4 z-10 p-1.5 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+              aria-label="Close popup"
+            >
+              <X className="w-5 h-5 text-gray-600" />
+            </button>
+
+            <div className="flex flex-col md:flex-row">
+              {/* Left side - Light blue accent */}
+              <div className="md:w-2/5 bg-gradient-to-b from-blue-50 to-blue-100 p-8 flex flex-col justify-center">
+                <div className="text-center">
+                  {/* FT1000 Badge */}
+                  <div className="inline-block px-6 py-3 bg-white border border-blue-200 rounded-xl shadow-sm mb-6">
+                    <div className="flex items-center justify-center gap-2">
+                      <span className="text-blue-800 font-black text-3xl tracking-tighter">FT</span>
+                      <div className="text-left">
+                        <div className="text-blue-900 font-bold text-lg leading-tight">1000</div>
+                       
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Main Title */}
+                  <div className="mb-6">
+                    <h3 className="text-sm font-semibold text-blue-800 uppercase tracking-wider mb-2">
+                      WE ARE EUROPE'S FASTEST GROWING
+                    </h3>
+                    <h2 className="text-2xl font-black text-blue-900 leading-tight">
+                      COMPANIES
+                    </h2>
+                  </div>
+                  
+                  {/* Large FT100 */}
+                  <div className="mt-8">
+                    <div className="text-6xl md:text-7xl font-black text-blue-900 tracking-tighter">
+                      FT100
+                    </div>
+                    <div className="text-sm text-blue-600 mt-2 font-medium">
+                      Financial Times Ranking
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right side - White background with content */}
+              <div className="md:w-3/5 p-8 md:p-10">
+                <div className="text-center">
+                  {/* Company Logo */}
+                  <div className="flex justify-center mb-6">
+                    <div className="relative">
+                      <div className="w-16 h-16 rounded-full overflow-hidden border-4 border-white shadow-lg">
+                        <img 
+                          src={companylogo} 
+                          alt="inte-QT Logo" 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="absolute -bottom-2 -right-2 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+                        inte-QT
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Main Message */}
+                  <div className="mb-8">
+                    <h2 className="text-xl font-semibold text-gray-700 mb-4">
+                      We are one of the
+                    </h2>
+                    
+                    <h1 className="text-3xl md:text-4xl font-black text-gray-900 leading-tight mb-6">
+                      FT1000: Fastest-Growing
+                      <br />
+                      Companies in Europe!
+                    </h1>
+                    
+                    {/* Decorative line */}
+                    <div className="w-32 h-1 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full mx-auto mb-6"></div>
+                  </div>
+                  
+                  {/* Source */}
+                  <div className="mt-10 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <p className="text-sm text-gray-600 italic">
+                      (Source: Financial Times, Forbes España)
+                    </p>
+                  </div>
+                  
+                  {/* Auto-close message */}
+                  <p className="text-xs text-gray-500 mt-6">
+                    This notification will auto-close in 5 seconds
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Seo
         title={title}
         description={description}

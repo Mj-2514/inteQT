@@ -96,7 +96,7 @@ app.use("/api/events/auth", eventAdminRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/event-auth", eventAuthRoutes)
 app.use("/api/events/user", eventUserRoutes)
-app.use('/api/blogs/user', blogUserRoutes);
+app.use("/api/blogs/user", blogUserRoutes);
 app.use("/api/country", countryAuthRoutes);
 app.use("/api/country/dashboard", countryRoutes);
 

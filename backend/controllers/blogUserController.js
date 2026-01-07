@@ -1,5 +1,6 @@
 // controllers/blogUserController.js
 import Blog from '../models/blogs.js';
+import User from '../models/user.js';
 
 // Get all blogs of the logged-in user (with optional filtering)
 export const getUserBlogs = async (req, res) => {
@@ -306,73 +307,105 @@ export const getRejectedUserBlogs = async (req, res) => {
 // Get user blog statistics
 export const getUserBlogStats = async (req, res) => {
   try {
-    const userId = req.user.id; // From protect middleware
-    
-    // Get total counts by status
+    console.log("STATS USER:", req.user);
+
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({ message: "Unauthorized access" });
+    }
+
+    const userId = new mongoose.Types.ObjectId(req.user._id);
+
+    // Get counts by status
     const statusCounts = await Blog.aggregate([
+      { $match: { createdBy: userId } },
+      { $group: { _id: "$status", count: { $sum: 1 } } }
+    ]);
+
+    // Get total views
+    const totalViews = await Blog.aggregate([
+      { $match: { createdBy: userId } },
+      { $group: { _id: null, totalViews: { $sum: "$views" } } }
+    ]);
+
+    // Convert status counts to object
+    const counts = { 
+      total: 0, 
+      published: 0,  // Changed from "approved" to "published"
+      pending: 0, 
+      rejected: 0,
+      views: totalViews[0]?.totalViews || 0 
+    };
+
+    // Map the aggregation results
+    statusCounts.forEach(s => {
+      if (s._id === "approved" || s._id === "published") {
+        counts.published += s.count;
+      } else if (s._id === "pending") {
+        counts.pending = s.count;
+      } else if (s._id === "rejected") {
+        counts.rejected = s.count;
+      }
+      counts.total += s.count;
+    });
+
+    // Calculate approval rate
+    counts.approvalRate = counts.total > 0 
+      ? Math.round((counts.published / counts.total) * 100) 
+      : 0;
+
+    // Alternative: Get all counts in one query if you want to be more efficient
+    const allStats = await Blog.aggregate([
       { $match: { createdBy: userId } },
       {
         $group: {
-          _id: '$status',
-          count: { $sum: 1 }
+          _id: null,
+          total: { $sum: 1 },
+          published: {
+            $sum: {
+              $cond: [{ $in: ["$status", ["approved", "published"]] }, 1, 0]
+            }
+          },
+          pending: {
+            $sum: {
+              $cond: [{ $eq: ["$status", "pending"] }, 1, 0]
+            }
+          },
+          rejected: {
+            $sum: {
+              $cond: [{ $eq: ["$status", "rejected"] }, 1, 0]
+            }
+          },
+          totalViews: { $sum: "$views" }
         }
       }
     ]);
-    
-    // Get recent blogs (last 5)
-    const recentBlogs = await Blog.find({ createdBy: userId })
-      .sort({ createdAt: -1 })
-      .limit(5)
-      .select('title status createdAt')
-      .lean();
-    
-    // Get popular blogs (most viewed - if you have views field)
-    const popularBlogs = await Blog.find({ 
-      createdBy: userId,
-      status: 'approved'
-    })
-      .sort({ createdAt: -1 }) // Fallback to newest if no views field
-      .limit(5)
-      .select('title createdAt')
-      .lean();
-    
-    // Format counts
-    const counts = {
-      total: 0,
-      approved: 0,
-      pending: 0,
-      rejected: 0
+
+    // Use the alternative aggregation if it exists
+    const stats = allStats[0] || counts;
+
+    // Ensure all required fields exist
+    const result = {
+      total: stats.total || 0,
+      published: stats.published || 0,
+      pending: stats.pending || 0,
+      rejected: stats.rejected || 0,
+      views: stats.totalViews || stats.views || 0,
+      approvalRate: stats.total > 0 
+        ? Math.round((stats.published / stats.total) * 100) 
+        : 0
     };
-    
-    statusCounts.forEach(item => {
-      if (item._id === 'approved') counts.approved = item.count;
-      else if (item._id === 'pending') counts.pending = item.count;
-      else if (item._id === 'rejected') counts.rejected = item.count;
-      counts.total += item.count;
+
+    res.json({ 
+      success: true, 
+      data: result  // Return directly, not nested in "counts"
     });
-    
-    // Calculate approval rate
-    const approvalRate = counts.total > 0 
-      ? Math.round((counts.approved / counts.total) * 100)
-      : 0;
-    
-    res.json({
-      success: true,
-      message: 'User blog statistics retrieved successfully',
-      data: {
-        counts,
-        recentBlogs,
-        popularBlogs,
-        approvalRate
-      }
-    });
-    
-  } catch (error) {
-    console.error('Error in getUserBlogStats:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server error',
-      error: error.message
+
+  } catch (err) {
+    console.error("STATS ERROR:", err);
+    res.status(500).json({ 
+      success: false, 
+      message: "Failed to fetch stats", 
+      error: err.message 
     });
   }
 };
