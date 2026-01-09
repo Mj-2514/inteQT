@@ -28,10 +28,10 @@ const Services = () => {
       image:
         "https://assets.superhivemarket.com/cache/0346e49935ae63f6209492bf3994d0b4.gif",
       features: [
-        "Guaranteed bandwidth",
-        "Low latency connectivity",
-        "Symmetric upload/download",
-        "Service Level Agreements",
+        "Global coverage across Tier 1, Tier 3, Tier 3 cities along far-flung areas",
+        "High availability & Faster Delivery",
+        "Committed Bandwidth up to 10G",
+        "Diverse, Scalable, Secure and Reliable Solutions",
         "Priority support",
       ],
     },
@@ -44,11 +44,11 @@ const Services = () => {
       image:
         "https://cdn.dribbble.com/userupload/29647510/file/original-6c41bc159984aa848eec332e1d774c8d.gif",
       features: [
-        "High-speed connectivity",
-        "Scalable bandwidth",
-        "Static IP addresses",
-        "Business-grade support",
-        "Flexible contracts",
+        "Worldwide delivery capability in the segment",
+        "Fastest delivery with tailored option",
+        "High bandwidth offering",
+        "Best in class SLA with Proactive Network Health Monitoring",
+        "Convergent, Redundant Gateway, Hyper fast and fully flexible broadband services",
       ],
     },
     {
@@ -60,11 +60,11 @@ const Services = () => {
       image:
         "https://www.gadgetmatch.com/wp-content/uploads/2018/12/GadgetMatch-20181219-5G-Explainer-03.gif",
       features: [
-        "Rapid deployment",
-        "Flexible installation",
-        "No physical infrastructure needed",
-        "Backup connectivity options",
-        "Cost-effective solution",
+        "Global Wireless connectivity using 3G/4G/5G options",
+        "Quick deployments with High-capacity bandwidth",
+        "Secure, optimal performance wireless connectivity solutions",
+        "Low latency, High speed mobility",
+        "Services monitoring and 24*7 Customer support",
       ],
     },
   ];

@@ -140,14 +140,13 @@ const Footer = () => {
 
               <li className="flex items-start gap-2">
                 <Phone className="w-5 h-5 mt-1" />
-                <span>+1 (555) 123-4567</span>
+                <span>(+44) 203 289 6070</span>
               </li>
 
               <li className="flex items-start gap-2">
                 <MapPin className="w-5 h-5 mt-1" />
                 <span>
-                  Global Headquarters <br />
-                  Technology Park, Suite 100
+                  C. de Manzanares, 4, Arganzuela, 28005 Madrid, Spain
                 </span>
               </li>
             </ul>

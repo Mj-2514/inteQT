@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Eye, Shield, Award, Clock, CheckCircle } from "lucide-react";
 import nsocImage from "@/assets/nsoc-operations.jpg";
 import Seo from "@/components/Seo";
+import Counter from "@/components/ui/Counter";
 
 const canonical = "https://www.inte-qt.com/cases";
 const pageTitle = "NSOC 24×7 | Global Network Security Operations Center – inte-QT";
@@ -339,28 +340,37 @@ const Cases: React.FC = () => {
         </section>
 
         {/* STATS */}
-        <section className="py-16">
-          <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-6 text-center">
-              <div>
-                <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-gradient mb-1">99.9%</p>
-                <p className="text-sm text-muted-foreground">Uptime</p>
-              </div>
-              <div>
-                <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-gradient mb-1">&lt;15m</p>
-                <p className="text-sm text-muted-foreground">Response Time</p>
-              </div>
-              <div>
-                <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-gradient mb-1">10M+</p>
-                <p className="text-sm text-muted-foreground">Events Monitored / day</p>
-              </div>
-              <div>
-                <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-gradient mb-1">Global</p>
-                <p className="text-sm text-muted-foreground">Coverage</p>
-              </div>
-            </div>
-          </div>
-        </section>
+        
+<section className="py-16">
+  <div className="container mx-auto px-4">
+    <div className="grid grid-cols-1 sm:grid-cols-4 gap-6 text-center">
+      <div>
+        <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-gradient mb-1">
+          <Counter end={99.9} suffix="%" decimals={1} />
+        </p>
+        <p className="text-sm text-muted-foreground">Uptime</p>
+      </div>
+      <div>
+        <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-gradient mb-1">
+          &lt;<Counter end={15} suffix="m" duration={1500} />
+        </p>
+        <p className="text-sm text-muted-foreground">Response Time</p>
+      </div>
+      <div>
+        <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-gradient mb-1">
+          <Counter end={10} suffix="M+" duration={2500} />
+        </p>
+        <p className="text-sm text-muted-foreground">Events Monitored / day</p>
+      </div>
+      <div>
+        <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-gradient mb-1">
+          Global
+        </p>
+        <p className="text-sm text-muted-foreground">Coverage</p>
+      </div>
+    </div>
+  </div>
+</section>
         <Footer />
       </main>
     </Fragment>

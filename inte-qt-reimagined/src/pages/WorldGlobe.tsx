@@ -487,10 +487,16 @@ export default function WorldGlobe(): JSX.Element {
     setTypingTimeout(timeout);
   };
 
+  // DIRECT NAVIGATION WHEN USER CLICKS ON SEARCH RESULT
   const handleSelectCountry = (country: Country) => {
-    setPinpointCountry(country);
-    setSearchQuery(country.name);
+    // Navigate directly to the country page
+    navigate(`/country?slug=${country.slug}`);
+    
+    // Optionally clear the search state
+    setSearchQuery("");
     setShowResults(false);
+    setSearchResults([]);
+    setPinpointCountry(null);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -500,9 +506,15 @@ export default function WorldGlobe(): JSX.Element {
         country => country.name.toLowerCase() === searchQuery.toLowerCase()
       );
       if (exactMatch) {
-        handleSelectCountry(exactMatch);
+        // Navigate directly for exact match on Enter
+        navigate(`/country?slug=${exactMatch.slug}`);
+        setSearchQuery("");
+        setShowResults(false);
       } else if (searchResults.length > 0) {
-        handleSelectCountry(searchResults[0]);
+        // Navigate to first result on Enter
+        navigate(`/country?slug=${searchResults[0].slug}`);
+        setSearchQuery("");
+        setShowResults(false);
       }
     } else if (e.key === 'Escape') {
       setShowResults(false);
@@ -511,7 +523,7 @@ export default function WorldGlobe(): JSX.Element {
   };
 
   const handleCountryLinkClick = (country: Country) => {
-    navigate(`/country?slug=${country.slug}`); // Updated URL pattern
+    navigate(`/country?slug=${country.slug}`);
   };
 
   const clearPinpoint = () => {
@@ -566,7 +578,8 @@ export default function WorldGlobe(): JSX.Element {
                 <button
                   key={index}
                   className="block w-full text-left px-4 md:px-6 py-2 md:py-3 hover:bg-slate-800 border-b border-slate-800 last:border-b-0"
-                  onClick={() => handleSelectCountry(country)}
+                  onClick={() => handleSelectCountry(country)} // DIRECT NAVIGATION
+                  onMouseDown={(e) => e.preventDefault()} // Prevent input blur before click
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1 min-w-0">
@@ -579,7 +592,7 @@ export default function WorldGlobe(): JSX.Element {
                       </p>
                     </div>
                     <span className="text-xs text-sky-300 font-medium ml-2 whitespace-nowrap">
-                      {pinpointCountry?.name === country.name ? "Pinned" : "Select"}
+                      Visit Page →
                     </span>
                   </div>
                 </button>
@@ -598,7 +611,7 @@ export default function WorldGlobe(): JSX.Element {
         )}
       </div>
 
-      {/* Selected Country Info */}
+      {/* Selected Country Info - Only show if user wants to stay on globe */}
       {pinpointCountry && (
         <div className={`absolute ${isMobile ? 'bottom-16' : 'bottom-24'} left-1/2 transform -translate-x-1/2 bg-slate-900/80 backdrop-blur-sm border border-sky-600/30 rounded-lg px-4 py-3 text-center pointer-events-auto z-10 w-[90%] max-w-md`}>
           <div className="flex items-center justify-center mb-2">
@@ -620,9 +633,9 @@ export default function WorldGlobe(): JSX.Element {
       {/* Instructions */}
       <p className="absolute bottom-3 md:bottom-5 w-full text-center text-xs text-gray-300/80 pointer-events-none px-4">
         {isMobile ? (
-          <>Type country name above to pinpoint • Touch Earth to rotate • Touch space to scroll</>
+          <>Type country name above to search • Click result to visit page • Touch Earth to rotate</>
         ) : (
-          <>Type country name above to pinpoint • Click map to visit page</>
+          <>Type country name above to search • Click result to visit page</>
         )}
       </p>
       

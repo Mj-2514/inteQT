@@ -10,14 +10,18 @@ import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
 
-/**
- * Note:
- * - API_BASE_URL points to your production host. When running locally (Vite),
- *   ensure you set DEV env accordingly or use import.meta.env.DEV.
- */
-const API_BASE_URL =import.meta.env.VITE_API_BASE;
+// IMPORTANT: Check your Vite environment variables
+console.log("Environment check:", {
+  VITE_API_BASE: import.meta.env.VITE_API_BASE,
+  MODE: import.meta.env.MODE,
+  DEV: import.meta.env.DEV,
+  PROD: import.meta.env.PROD
+});
 
-/** Basic client-side email validation (keeps UX snappy) */
+// Use proper API base URL
+const API_BASE_URL = import.meta.env.VITE_API_BASE || "http://localhost:3000";
+
+/** Basic client-side email validation */
 const isValidEmail = (email: string) =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || "").trim());
 
@@ -57,48 +61,68 @@ export default function Contact() {
 
     setLoading(true);
 
-    // Optional: add captcha token here if you integrate reCAPTCHA/hCaptcha
     const payload = {
       name: form.name.trim(),
       email: form.email.trim(),
       message: form.message.trim(),
-      // captchaToken: '...' 
     };
+
+    // Debug: Log the API call
+    console.log("📤 Sending form data to:", `${API_BASE_URL}/api/forms/general`);
+    console.log("Payload:", payload);
 
     try {
       const res = await fetch(`${API_BASE_URL}/api/forms/general`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
         body: JSON.stringify(payload),
       });
 
-      // If server doesn't return JSON, guard safely
+      // Log response for debugging
+      console.log("📥 Response status:", res.status, res.statusText);
+
       const text = await res.text();
+      console.log("📥 Response text:", text);
+
       let data: any = {};
       try {
         data = text ? JSON.parse(text) : {};
-      } catch {
-        data = { message: text || null };
+      } catch (parseError) {
+        console.error("❌ Failed to parse JSON:", parseError);
+        data = { message: text || "No response body" };
       }
 
       if (!res.ok) {
-        const msg =
+        console.error("❌ Server error response:", data);
+        
+        const errorMessage = 
           data?.message ||
-          (Array.isArray(data?.errors) ? data.errors.map((x) => x.msg).join(", ") : "") ||
-          `Server responded with ${res.status}`;
-        toast.error(msg);
+          (Array.isArray(data?.errors) ? data.errors.map((x: any) => x.msg).join(", ") : "") ||
+          (data?.error || `Server responded with ${res.status}`);
+        
+        toast.error(`Error: ${errorMessage}`);
       } else {
-        // Expecting { success: true, ... } from your API
         if (data?.success === false) {
           toast.error(data.message || "Unable to send message right now.");
         } else {
-          toast.success(`Message sent — we'll reply to ${form.email}`);
+          toast.success(`✅ Message sent successfully! We'll reply to ${form.email} soon.`);
           setForm({ name: "", email: "", message: "" });
         }
       }
-    } catch (err) {
-      console.error("Contact form submission error:", err);
-      toast.error("Network error. Please try again.");
+    } catch (err: any) {
+      console.error("❌ Network/Contact form submission error:", err);
+      
+      // More specific error messages
+      if (err.name === 'TypeError' && err.message.includes('fetch')) {
+        toast.error("Network error: Cannot connect to server. Check your internet connection.");
+      } else if (err.name === 'AbortError') {
+        toast.error("Request timeout. Please try again.");
+      } else {
+        toast.error("Unable to send message. Please try again later.");
+      }
     } finally {
       setLoading(false);
     }
@@ -178,18 +202,18 @@ export default function Contact() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 max-w-6xl mx-auto">
               {/* Left: quick options */}
               <div>
-                <h2 className="text-3xl font-bold mb-6">Choose an Option</h2>
+                <h2 className="text-3xl font-bold mb-6 text-black">Choose an Option</h2>
                 <div className="space-y-6">
                   <Link to="/sales" aria-label="Sales form">
                     <div className="p-6 border rounded-xl cursor-pointer hover:shadow-lg transition">
-                      <p className="text-2xl font-semibold">Sales Form</p>
+                      <p className="text-2xl font-semibold text-black">Sales Form</p>
                       <p className="text-muted-foreground mt-1">Request pricing, quotes and new service connections.</p>
                     </div>
                   </Link>
 
                   <Link to="/support" aria-label="Support form">
                     <div className="p-6 border rounded-xl cursor-pointer hover:shadow-lg transition">
-                      <p className="text-2xl font-semibold">Support Form</p>
+                      <p className="text-2xl font-semibold text-black">Support Form</p>
                       <p className="text-muted-foreground mt-1">Need help with an existing service? Raise a support ticket.</p>
                     </div>
                   </Link>
@@ -271,7 +295,33 @@ export default function Contact() {
             </div>
           </div>
         </section>
+
+        {/* Debug Section (remove in production) */}
+        {import.meta.env.DEV && (
+          <div className="container mx-auto px-4 mt-8">
+            <Card className="bg-yellow-50 border-yellow-200">
+              <CardContent className="p-4">
+                <h3 className="text-lg font-semibold text-yellow-800 mb-2">Debug Info</h3>
+                <pre className="text-xs bg-white p-2 rounded overflow-auto">
+                  API_BASE_URL: {API_BASE_URL}<br />
+                  Full Endpoint: {API_BASE_URL}/api/forms/general<br />
+                  Form Data: {JSON.stringify(form, null, 2)}
+                </pre>
+                <div className="mt-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => console.log("Current form:", form)}
+                  >
+                    Log Form State
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
+      <Footer />
     </>
   );
 }

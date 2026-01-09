@@ -27,18 +27,21 @@ const nsocImage = "https://www.hrcloud.com/hubfs/workplace.gif";
 
 const Home: React.FC = () => {
   const [showPopup, setShowPopup] = useState(false);
-  const [showGlitters, setShowGlitters] = useState(true);
+  const [showGlitters, setShowGlitters] = useState(false);
   
-  // Show popup on mount/refresh - ALWAYS shows
+  // Show popup on mount
   useEffect(() => {
-    // Always show popup on refresh
-    setShowPopup(true);
-    setShowGlitters(true);
+    window.scrollTo(0, 0);
     
-    // Auto close after 5 seconds
+    // Start celebration after component mounts
+    setShowGlitters(true);
+    setShowPopup(true);
+    
+    // Auto close after 6 seconds (matching Vue)
     const timer = setTimeout(() => {
       setShowPopup(false);
-    }, 5000);
+      setShowGlitters(false);
+    }, 6000);
     
     return () => clearTimeout(timer);
   }, []);
@@ -117,207 +120,72 @@ const Home: React.FC = () => {
   ];
 
   // Company logo for popup
-  const companylogo = "https://i.imgur.com/o0I3t65.jpeg";
+  const companylogo = "https://www.inte-qt.com/img/logo.d6407a89.jpg";
 
   // === SEO values ===
-  const title =
-    "Global Internet Provider in 190+ Countries | Dedicated Line & SD-WAN Underlay – inte-QT";
-  const description =
-    "inte-QT delivers Dedicated Lines, Business Broadband, Wireless Connect and Global SD-WAN underlay solutions in 190+ countries. One provider. One SLA. 24×7 Global NSOC.";
+  const title = "inte-QT | Managed L3 Internet Global Services";
+  const description = "Internet access in more than 190 countries around the world offering a variety of solutions. Dedicated Lines, Business Broadband and Wireless Connect.";
   const canonical = "https://www.inte-qt.com/";
-  const image = "https://i.imgur.com/o0I3t65.jpeg";
+  const image = "https://i.imgur.com/fgarNxn.png";
   const siteName = "inte-QT";
-
-  // JSON-LD objects
-  const orgJson = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: siteName,
-    url: canonical,
-    logo: image,
-    description:
-      "Global provider of Dedicated Internet Access, Business Broadband, 4G/5G Wireless Connect and SD-WAN underlay services across 190+ countries.",
-    sameAs: [
-      "https://www.linkedin.com/company/bitsandbyteglobal/posts/?feedView=all",
-    ],
-  };
-
-  const websiteJson = {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    url: canonical,
-    name: siteName,
-    potentialAction: {
-      "@type": "SearchAction",
-      target: `${canonical}search?q={search_term_string}`,
-      "query-input": "required name=search_term_string",
-    },
-  };
-
-  const breadcrumbJson = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: canonical },
-    ],
-  };
-
-  // Backlink injection (SEO-safe)
-  const backlinkJson = {
-    "@context": "https://schema.org",
-    "@type": "WebPage",
-    name: "Global Connectivity by inte-QT",
-    mainEntityOfPage: canonical,
-    knowsAbout: [
-      {
-        "@type": "CreativeWork",
-        name: "Dedicated Internet Access",
-        url: "https://www.inte-qt.com/services/dedicated-lines",
-      },
-      {
-        "@type": "CreativeWork",
-        name: "SD-WAN Underlay",
-        url: "https://www.inte-qt.com/services/sd-wan-underlay",
-      },
-      {
-        "@type": "CreativeWork",
-        name: "Business Broadband",
-        url: "https://www.inte-qt.com/services/business-broadband",
-      },
-      {
-        "@type": "CreativeWork",
-        name: "Wireless 4G/5G Connect",
-        url: "https://www.inte-qt.com/services/wireless-connect",
-      },
-    ],
-  };
 
   return (
     <div className="min-h-screen">
-      {/* POPUP */}
+      {/* POPUP - EXACT VUE DESIGN */}
       {showPopup && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fadeIn">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           {/* Overlay */}
           <div 
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/60"
             onClick={handleClosePopup}
           />
           
-          {/* Glitter Animation */}
+          {/* Glitter Animation - EXACT FROM VUE */}
           {showGlitters && (
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
               {[...Array(30)].map((_, n) => (
                 <div
                   key={n}
-                  className="absolute w-1 h-1 bg-yellow-300 rounded-full animate-twinkle"
+                  className="absolute w-[10px] h-[10px] rounded-full animate-glitter"
                   style={{
                     left: `${Math.random() * 100}vw`,
                     top: `${Math.random() * 100}vh`,
                     animationDelay: `${Math.random()}s`,
-                    boxShadow: '0 0 8px 1px rgba(255, 215, 0, 0.5)',
+                    backgroundColor: n % 2 === 0 ? 'gold' : '#fff8dc',
+                    opacity: 0.8,
                   }}
                 />
               ))}
             </div>
           )}
 
-          {/* Popup Box - Clean White Design */}
-          <div className="relative bg-white rounded-xl shadow-2xl max-w-4xl w-full overflow-hidden border border-gray-200">
-            {/* Close Button */}
+          {/* Popup Box - EXACT FROM VUE */}
+          <div className="relative bg-white rounded-[15px] shadow-lg w-[350px] max-w-[90%] p-5 text-center animate-popup-fade z-10">
+            {/* Logo - 300px as in Vue */}
+            <img 
+              src={companylogo} 
+              alt="Company Logo" 
+              className="w-[300px] mx-auto mb-5"
+            />
+            
+            {/* Heading */}
+            <h2 className="text-lg font-bold text-gray-900 mb-4">
+              We are one of the FT1000: Fastest-Growing Companies in Europe 2025!
+            </h2>
+            
+            {/* Source */}
+            <p className="text-gray-600 text-sm">
+              (Source: Financial Times, Forbes España)
+            </p>
+            
+            {/* Close button (optional, not in Vue but good to have) */}
             <button
               onClick={handleClosePopup}
-              className="absolute top-4 right-4 z-10 p-1.5 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+              className="absolute top-2 right-2 p-1 rounded-full hover:bg-gray-100"
               aria-label="Close popup"
             >
-              <X className="w-5 h-5 text-gray-600" />
+              <X className="w-4 h-4 text-gray-500" />
             </button>
-
-            <div className="flex flex-col md:flex-row">
-              {/* Left side - Light blue accent */}
-              <div className="md:w-2/5 bg-gradient-to-b from-blue-50 to-blue-100 p-8 flex flex-col justify-center">
-                <div className="text-center">
-                  {/* FT1000 Badge */}
-                  <div className="inline-block px-6 py-3 bg-white border border-blue-200 rounded-xl shadow-sm mb-6">
-                    <div className="flex items-center justify-center gap-2">
-                      <span className="text-blue-800 font-black text-3xl tracking-tighter">FT</span>
-                      <div className="text-left">
-                        <div className="text-blue-900 font-bold text-lg leading-tight">1000</div>
-                       
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Main Title */}
-                  <div className="mb-6">
-                    <h3 className="text-sm font-semibold text-blue-800 uppercase tracking-wider mb-2">
-                      WE ARE EUROPE'S FASTEST GROWING
-                    </h3>
-                    <h2 className="text-2xl font-black text-blue-900 leading-tight">
-                      COMPANIES
-                    </h2>
-                  </div>
-                  
-                  {/* Large FT100 */}
-                  <div className="mt-8">
-                    <div className="text-6xl md:text-7xl font-black text-blue-900 tracking-tighter">
-                      FT100
-                    </div>
-                    <div className="text-sm text-blue-600 mt-2 font-medium">
-                      Financial Times Ranking
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Right side - White background with content */}
-              <div className="md:w-3/5 p-8 md:p-10">
-                <div className="text-center">
-                  {/* Company Logo */}
-                  <div className="flex justify-center mb-6">
-                    <div className="relative">
-                      <div className="w-16 h-16 rounded-full overflow-hidden border-4 border-white shadow-lg">
-                        <img 
-                          src={companylogo} 
-                          alt="inte-QT Logo" 
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div className="absolute -bottom-2 -right-2 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full">
-                        inte-QT
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Main Message */}
-                  <div className="mb-8">
-                    <h2 className="text-xl font-semibold text-gray-700 mb-4">
-                      We are one of the
-                    </h2>
-                    
-                    <h1 className="text-3xl md:text-4xl font-black text-gray-900 leading-tight mb-6">
-                      FT1000: Fastest-Growing
-                      <br />
-                      Companies in Europe!
-                    </h1>
-                    
-                    {/* Decorative line */}
-                    <div className="w-32 h-1 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full mx-auto mb-6"></div>
-                  </div>
-                  
-                  {/* Source */}
-                  <div className="mt-10 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                    <p className="text-sm text-gray-600 italic">
-                      (Source: Financial Times, Forbes España)
-                    </p>
-                  </div>
-                  
-                  {/* Auto-close message */}
-                  <p className="text-xs text-gray-500 mt-6">
-                    This notification will auto-close in 5 seconds
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       )}
@@ -328,22 +196,16 @@ const Home: React.FC = () => {
         canonical={canonical}
         image={image}
         siteName={siteName}
-        extraJsonLd={[
-          orgJson,
-          websiteJson,
-          breadcrumbJson,
-          backlinkJson,
-        ]}
       />
 
-      {/* HERO */}
+      {/* HERO - Using your BigBanner equivalent */}
       <section
         className="relative h-screen flex items-center justify-center overflow-hidden"
         aria-label="Hero"
       >
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url("${image}")` }}
+          style={{ backgroundImage: `url(https://i.imgur.com/o0I3t65.jpg)` }}
         />
         <div className="absolute inset-0 bg-black/45" />
 
@@ -363,7 +225,7 @@ const Home: React.FC = () => {
   text-white
   drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)]
 ">
-  Managed L3 Internet Global Services — Dedicated Lines, DIA, SD-WAN
+  Global connectivity solutions — Dedicated Lines, SD-WAN
   underlay and 24×7 NSOC.
 </p>
 
@@ -391,7 +253,7 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* SERVICES */}
+      {/* SERVICES - OurServices equivalent */}
       <section className="py-16 sm:py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-10">
@@ -469,41 +331,40 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* FULL-SCREEN VIDEO SECTION */}
-      <Link 
-        to="/services/aeta" 
-        className="block relative w-full group cursor-pointer overflow-hidden bg-black"
-      >
-        {/* Video fills entire section */}
-        <video
-          src="https://res.cloudinary.com/dmhhkhgny/video/upload/v1745406688/website/vzw7z92zdvomwfvwlguc.mp4"
-          className="w-full h-auto block"
-          autoPlay
-          muted
-          loop
-          playsInline
-        />
-        
-        {/* Overlay that darkens on hover */}
-        <div className="absolute inset-0  transition-all duration-500" />
-        
-        {/* Content overlay */}
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-4">
-          <div className="max-w-4xl mx-auto">
-            
-            
-            
-            {/* Click indicator - appears on hover */}
-            
-          </div>
-
-          {/* Global coverage badge - fixed at bottom */}
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
-            
-          </div>
+      {/* Add Typewriter component section here if needed */}
+      
+      {/* AETA Section */}
+      <section className="py-16 sm:py-20">
+        <div className="container mx-auto px-4 text-center">
+          <a 
+            href="https://portal.inte-qt.com/auth/login/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="block mb-8"
+          >
+            <h2 className="text-3xl sm:text-4xl font-bold mb-3">
+              Aeta: Revolutionizing Connectivity
+            </h2>
+          </a>
+          
+          {/* Inteqt video section */}
+          <Link 
+            to="/services/aeta" 
+            className="block relative w-full group cursor-pointer overflow-hidden bg-black rounded-2xl"
+          >
+            <video
+              src="https://res.cloudinary.com/dmhhkhgny/video/upload/v1745406688/website/vzw7z92zdvomwfvwlguc.mp4"
+              className="w-full h-auto block rounded-2xl"
+              autoPlay
+              muted
+              loop
+              playsInline
+            />
+          </Link>
         </div>
-      </Link>
+      </section>
 
+      {/* PARTNER BENEFITS */}
       <section className="py-16 sm:py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
@@ -558,28 +419,19 @@ const Home: React.FC = () => {
         />
         <div className="absolute inset-0 bg-black/35" />
 
-
         <div className="container mx-auto px-4 relative z-10">
-          <div
-  className="
-    max-w-3xl
-    px-6 sm:px-8
-    py-6
-  "
->
+          <div className="max-w-3xl px-6 sm:px-8 py-6">
+            <div className="flex items-center gap-4 mb-4">
+              <Eye className="w-10 h-10 text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]" />
+              <h2 className="text-2xl sm:text-3xl font-bold text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
+                Sit back &amp; Relax, We got our{" "}
+                <span className="">EYES</span> on it
+              </h2>
+            </div>
 
-           <div className="flex items-center gap-4 mb-4">
-  <Eye className="w-10 h-10 text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]" />
-  <h2 className="text-2xl sm:text-3xl font-bold text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
-    Sit back &amp; Relax, We got our{" "}
-    <span className="">EYES</span> on it
-  </h2>
-</div>
-
-<p className="text-base sm:text-lg mb-6 text-white font-bold drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
-  24×7 Global Network Security Operations Center
-</p>
-
+            <p className="text-base sm:text-lg mb-6 text-white font-bold drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
+              24×7 Global Network Security Operations Center
+            </p>
 
             <Button
               asChild
@@ -595,7 +447,7 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* INDUSTRIES */}
+      {/* INDUSTRIES - CarouselIndu equivalent */}
       <section className="py-16 sm:py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
@@ -626,6 +478,8 @@ const Home: React.FC = () => {
         </div>
       </section>
 
+      {/* GEMS Section - Add your GemsSection component here */}
+
       {/* EVENTS */}
       <section className="py-16 sm:py-20">
         <div className="container mx-auto px-4">
@@ -645,12 +499,12 @@ const Home: React.FC = () => {
                 className="overflow-hidden hover:shadow-lg transition-all duration-300 w-full"
               >
                 <div className="w-full aspect-[16/9] overflow-hidden rounded-t-xl bg-muted">
-  <img
-    src={event.img}
-    alt={event.title}
-    className="w-full h-full object-contain"
-  />
-</div>
+                  <img
+                    src={event.img}
+                    alt={event.title}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
 
                 <CardContent>
                   <div className="flex items-start gap-3 mb-3">
@@ -696,7 +550,7 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* TESTIMONIAL */}
+      {/* TESTIMONIAL - TestimonialCarousel equivalent */}
       <section
         className="relative py-20 sm:py-28 overflow-hidden"
         aria-label="Client testimonials"
@@ -746,7 +600,7 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* CTA */}
+      {/* CTA - GetInTouch equivalent */}
       <section className="py-16 sm:py-20 gradient-hero text-primary-foreground">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-2xl sm:text-3xl font-bold mb-3 text-white">

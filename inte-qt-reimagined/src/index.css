@@ -204,47 +204,43 @@ button::after {
   background: transparent !important;
   box-shadow: none !important;
 }
-/* Glitter/Twinkle Animation */
-@keyframes twinkle {
-  0%, 100% {
-    opacity: 0;
-    transform: scale(0.5);
-  }
-  50% {
+/* Glitter Animation - EXACT FROM VUE */
+@keyframes glitter {
+  0% {
+    transform: translateY(0) scale(1);
     opacity: 1;
-    transform: scale(1);
+  }
+  100% {
+    transform: translateY(200px) scale(0);
+    opacity: 0;
   }
 }
 
-@keyframes fadeIn {
+@keyframes popup-fade {
   from {
+    transform: scale(0.8);
     opacity: 0;
-    transform: scale(0.95);
   }
   to {
-    opacity: 1;
     transform: scale(1);
-  }
-}
-
-.animate-twinkle {
-  animation: twinkle 1.5s ease-in-out infinite;
-}
-
-.animate-fadeIn {
-  animation: fadeIn 0.3s ease-out;
-}
-
-/* Optional: Add a subtle pulse animation to the FT100 text */
-@keyframes subtle-pulse {
-  0%, 100% {
     opacity: 1;
   }
-  50% {
-    opacity: 0.9;
-  }
 }
 
-.animate-subtle-pulse {
-  animation: subtle-pulse 3s ease-in-out infinite;
+.animate-glitter {
+  animation: glitter 5s ease-out forwards;
+}
+
+.animate-popup-fade {
+  animation: popup-fade 0.5s ease;
+}
+
+/* Add Typewriter animation if needed */
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+@keyframes blink {
+  50% { border-color: transparent }
 }

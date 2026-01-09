@@ -57,6 +57,7 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:8080",
+  "process.env.FRONTEND_URL",
   "https://inte-qt.vercel.app",
   "https://inte-qt.com",
   "https://www.inte-qt.com",

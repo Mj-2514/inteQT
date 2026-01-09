@@ -78,14 +78,8 @@ const BusinessBroadband: React.FC = () => {
             </h1>
 
             <p className="text-white text-xl md:text-2xl opacity-90 mt-4 max-w-3xl mx-auto animate-fade-in-up">
-              High-performance broadband built for modern enterprises that rely on{" "}
-              <Link to="/services/dedicated-internet-access" className="underline font-semibold">
-                high-speed DIA
-              </Link>{" "}
-              and{" "}
-              <Link to="/services/managed-services" className="underline font-semibold">
-                mission-critical connectivity
-              </Link>.
+              High-performance broadband built for modern enterprises{" "}
+              
             </p>
           </div>
         </section>
@@ -99,28 +93,14 @@ const BusinessBroadband: React.FC = () => {
                 <h2 className="text-2xl md:text-3xl font-bold mb-4">What is Business Broadband (BB)?</h2>
 
                 <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-4">
-                  Business Broadband is a{" "}
-                  <span className="font-semibold text-primary">contended connection</span>, where multiple
-                  users share the same service. For enterprises exploring structured, guaranteed bandwidth,
-                  <Link to="/services/dedicated-internet-access" className="underline ml-1 font-semibold">
-                    Dedicated Internet Access (DIA)
-                  </Link>{" "}
-                  is also available.
+                  Business Broadband is a contended connection, with different users sharing the same service. Data routes from Enterprises to the nearest local cabinet through which it goes to backhaul and then to the Internet.
                 </p>
 
                 <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-4">
-                  For businesses that rely on cloud workloads, collaboration tools, and seamless customer
-                  operations, a robust broadband connection becomes a{" "}
-                  <span className="font-semibold">strategic advantage</span>.
+                  To address an organization’s Internet needs and help gain competitive advantage, business broadband gives an edge. If a business utilizes internet-based services, relies on connection to communicate with stakeholders or deliver excellent customer services online, then a business broadband could be an important investment.
                 </p>
 
-                <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
-                  Need a hybrid model? Combine Business Broadband with{" "}
-                  <Link to="/services/sd-wan-underlay" className="underline font-semibold">
-                    SD-WAN underlay
-                  </Link>{" "}
-                  for maximum performance and failover protection.
-                </p>
+                
               </div>
 
               <div className="flex-1 w-full">
@@ -150,13 +130,7 @@ const BusinessBroadband: React.FC = () => {
                 </h2>
 
                 <p className="text-muted-foreground">
-                  With partnerships across{" "}
-                  <span className="font-semibold text-primary">190+ countries</span>, we deliver broadband
-                  with superior SLAs. Explore our{" "}
-                  <Link to="/coverage" className="underline font-semibold">
-                    global coverage map
-                  </Link>{" "}
-                  for more details.
+                  Relationships with carriers and managed services partners in more than 190+ countries provide us an edge for business broadband services. Worldwide faster delivery capabilities and SLAs which are best in the segment, ensure customer satisfaction with reliable internet access.
                 </p>
               </div>
 
@@ -241,7 +215,7 @@ const BusinessBroadband: React.FC = () => {
                 <a href="/contact">Contact Sales</a>
               </Button>
 
-              <Button asChild size="lg" variant="outline" className="border-2">
+              <Button asChild size="lg" variant="outline" className="gradient-primary shadow-glow">
                 <a href="/services">Explore Services</a>
               </Button>
             </div>

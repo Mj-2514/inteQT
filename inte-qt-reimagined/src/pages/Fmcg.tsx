@@ -44,11 +44,8 @@ const mainSections = [
     icon: Shield,
     image: "https://images.unsplash.com/photo-1641706531193-03f3fa564779?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cmVzaWxpZW5jZXxlbnwwfDB8MHx8fDI%3D",
     paragraphs: [
-      `Given the customer's confidence in inte-QT based on previous successful projects, we quickly engaged with them to address their urgent needs. Our strong partner network in Latin America, aligned with COVID-19 regulations, allowed us to meet the delivery timeline.
-
-Our operations team collaborated closely with both the partner and the customer to finalize the delivery framework. Effective communication was key; we assigned a dedicated resource to facilitate timely delivery through virtual meetings and discussions.
-
-.`,
+      `Given the customer's confidence in inte-QT based on previous successful projects, we quickly engaged with them to address their urgent needs. Our strong partner network in Latin America, aligned with COVID-19 regulations, allowed us to meet the delivery timeline.`,
+      `Our operations team collaborated closely with both the partner and the customer to finalize the delivery framework. Effective communication was key; we assigned a dedicated resource to facilitate timely delivery through virtual meetings and discussions.`,
     ],
     highlights: [
       "Customer delighted with early delivery, meeting all regulatory compliance.",
@@ -110,26 +107,28 @@ const Fmcg = () => {
 
       <Navbar />
 
-      {/* Hero */}
-      <section className="bg-muted/40 pt-32 pb-20">
-        <div className="container max-w-6xl">
-          <motion.h1
+      {/* Hero Section - Responsive */}
+      <section className="pt-24 md:pt-32 pb-12 md:pb-20 bg-muted/40">
+        <div className="container max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-5xl font-bold mb-6"
+            className="max-w-4xl"
           >
-            Strategic Network Transformation Across Argentina
-          </motion.h1>
-
-          <p className="text-lg text-muted-foreground max-w-3xl">
-            As Argentina’s enterprises and institutional sectors embraced digital transformation in the face of growing data demands, inte-QT delivered a comprehensive network strategy built for performance, resilience, and future growth across the country.
-          </p>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 leading-tight">
+              Strategic Network Transformation Across Argentina
+            </h1>
+            
+            <p className="text-base sm:text-lg md:text-xl text-muted-foreground">
+              As Argentina's enterprises and institutional sectors embraced digital transformation in the face of growing data demands, inte-QT delivered a comprehensive network strategy built for performance, resilience, and future growth across the country.
+            </p>
+          </motion.div>
         </div>
       </section>
 
-      {/* Narrative Sections */}
-      <section className="py-14 sm:py-16 lg:py-20">
-        <div className="container mx-auto px-4 space-y-24">
+      {/* Narrative Sections - Fully Responsive */}
+      <section className="py-8 sm:py-12 md:py-16 lg:py-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 space-y-12 sm:space-y-16 md:space-y-20 lg:space-y-24">
           {mainSections.map((section, idx) => {
             const Icon = section.icon;
             const reverse = idx % 2 !== 0;
@@ -137,44 +136,88 @@ const Fmcg = () => {
             return (
               <div
                 key={idx}
-                className={`flex flex-col lg:flex-row ${
-                  reverse ? "lg:flex-row-reverse" : ""
-                } gap-12 items-center`}
+                className={`flex flex-col ${
+                  reverse ? "lg:flex-row-reverse" : "lg:flex-row"
+                } gap-6 sm:gap-8 md:gap-10 lg:gap-12 items-center`}
               >
-                <div className="flex-1">
-                  <Card className="relative h-[300px] lg:h-[360px] rounded-2xl overflow-hidden border-0 shadow-xl">
+                {/* Image Card - Responsive */}
+                <div className="w-full lg:w-1/2">
+                  <Card className="relative h-[250px] sm:h-[300px] md:h-[350px] lg:h-[360px] rounded-xl sm:rounded-2xl overflow-hidden border-0 shadow-lg sm:shadow-xl">
                     <div
                       className="absolute inset-0 bg-cover bg-center"
-                      style={{ backgroundImage: `url(${section.image})` }}
+                      style={{ 
+                        backgroundImage: `url(${section.image})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center'
+                      }}
                     />
                     <div className="absolute inset-0 bg-black/20" />
                     <CardContent />
                   </Card>
                 </div>
 
-                <div className="flex-1 text-center lg:text-left">
-                  <Icon className="w-14 h-14 mb-4 text-primary mx-auto lg:mx-0" />
-                  <h2 className="text-3xl font-semibold mb-6">
-                    {section.title}
-                  </h2>
-                  {section.paragraphs.map((p, i) => (
-                    <p key={i} className="text-muted-foreground mb-6">
-                      {p}
-                    </p>
-                  ))}
+                {/* Content - Responsive */}
+                <div className="w-full lg:w-1/2">
+                  <div className="text-center lg:text-left">
+                    {/* Icon - Responsive */}
+                    <div className={`flex ${reverse ? 'lg:justify-start' : 'lg:justify-start'} justify-center mb-4 md:mb-6`}>
+                      <Icon className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 text-primary" />
+                    </div>
 
-                  <ul className="space-y-3">
-                    {section.highlights.map((h, i) => (
-                      <li key={i} className="flex items-start gap-2">
-                        <CheckCircle className="w-5 h-5 text-primary shrink-0" />
-                        <span>{h}</span>
-                      </li>
-                    ))}
-                  </ul>
+                    {/* Title - Responsive */}
+                    <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold mb-4 md:mb-6 leading-tight">
+                      {section.title}
+                    </h2>
+
+                    {/* Paragraphs - Responsive */}
+                    <div className="space-y-3 md:space-y-4 mb-6 md:mb-8">
+                      {section.paragraphs.map((p, i) => (
+                        <p 
+                          key={i} 
+                          className="text-sm sm:text-base md:text-lg text-muted-foreground leading-relaxed"
+                        >
+                          {p}
+                        </p>
+                      ))}
+                    </div>
+
+                    {/* Highlights List - Responsive */}
+                    <ul className="space-y-2 sm:space-y-3">
+                      {section.highlights.map((h, i) => (
+                        <li 
+                          key={i} 
+                          className="flex items-start gap-2 sm:gap-3"
+                        >
+                          <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-primary shrink-0 mt-0.5 sm:mt-1" />
+                          <span className="text-sm sm:text-base">{h}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               </div>
             );
           })}
+        </div>
+      </section>
+
+      {/* CTA Section - Responsive */}
+      <section className="py-12 sm:py-16 md:py-20 bg-gradient-to-r from-primary/10 to-secondary/10">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 md:mb-6">
+              Ready to Transform Your Network?
+            </h2>
+            <p className="text-sm sm:text-base md:text-lg text-muted-foreground mb-6 md:mb-8">
+              Contact inte-QT today to discuss how we can deliver resilient, scalable network solutions for your organization.
+            </p>
+            <a
+              href="/contact"
+              className="inline-block bg-primary text-white px-6 py-3 sm:px-8 sm:py-4 rounded-lg font-semibold text-sm sm:text-base hover:bg-primary/90 transition-colors duration-300"
+            >
+              Get in Touch
+            </a>
+          </div>
         </div>
       </section>
 

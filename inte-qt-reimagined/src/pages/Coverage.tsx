@@ -3,6 +3,7 @@ import { Globe, MapPin, Network, CheckCircle, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Canvas } from "@react-three/fiber";
 import WorldGlobe from "./WorldGlobe";
+import Counter from "@/components/ui/Counter";
 import Footer from "@/components/Footer";
 import { Link } from "react-router-dom";
 
@@ -141,19 +142,28 @@ const Coverage = () => {
       <section className="py-20 bg-gradient-to-br from-primary/10 to-secondary/10">
         <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
           <div>
-            <p className="text-5xl font-bold text-gradient mb-2">190+</p>
+            <p className="text-5xl font-bold text-gradient mb-2">
+              <Counter end={190} suffix="+" duration={2200} />
+            </p>
             <p className="text-muted-foreground">Countries</p>
           </div>
           <div>
-            <p className="text-5xl font-bold text-gradient mb-2">500+</p>
+            <p className="text-5xl font-bold text-gradient mb-2">
+              <Counter end={1152} suffix="+" duration={2500} />
+            </p>
             <p className="text-muted-foreground">Network Partners</p>
           </div>
           <div>
-            <p className="text-5xl font-bold text-gradient mb-2">99.9%</p>
+            <p className="text-5xl font-bold text-gradient mb-2">
+              <Counter end={99.9} suffix="%" duration={1800} decimals={1} />
+            </p>
             <p className="text-muted-foreground">Uptime SLA</p>
           </div>
           <div>
-            <p className="text-5xl font-bold text-gradient mb-2">24/7</p>
+            <div className="text-5xl font-bold text-gradient mb-2 flex items-center justify-center">
+              <Counter end={24} suffix="/" duration={1500} />
+              <Counter end={7} duration={1500} delay={200} />
+            </div>
             <p className="text-muted-foreground">Support</p>
           </div>
         </div>

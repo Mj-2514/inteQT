@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import NotFound from "../NotFound";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -39,6 +38,7 @@ import {
   Target
 } from "lucide-react";
 import { motion } from "framer-motion";
+import Counter from "@/components/ui/Counter";
 
 const API_BASE =import.meta.env.VITE_API_BASE;
 
@@ -104,10 +104,9 @@ const Country: React.FC = () => {
     const slugFromQuery = queryParams.get("slug");
     
     if (!slugFromQuery) {
-  navigate("/*", { replace: true });
-  return;
-}
-
+      navigate("/*", { replace: true });
+      return;
+    }
     
     setCountrySlug(slugFromQuery);
     fetchCountryData(slugFromQuery);
@@ -121,22 +120,20 @@ const Country: React.FC = () => {
       const res = await fetch(`${API_BASE}/api/country/${slug}`);
       
       if (!res.ok) {
-  if (res.status === 404) {
-    navigate("/*", { replace: true });
-    return;
-  } else {
-    throw new Error(`Failed to load country data: ${res.status}`);
-  }
-}
-
+        if (res.status === 404) {
+          navigate("/*", { replace: true });
+          return;
+        } else {
+          throw new Error(`Failed to load country data: ${res.status}`);
+        }
+      }
       
       const data = await res.json();
       
       if (data.success === false || !data.data) {
-  navigate("/*", { replace: true });
-  return;
-}
-
+        navigate("/*", { replace: true });
+        return;
+      }
       
       setCountryData(data.data);
       
@@ -175,60 +172,384 @@ const Country: React.FC = () => {
 
   const getFlagUrl = (countryName: string) => {
     const flagMap: Record<string, string> = {
-      "Iceland": "is",
-      "Germany": "de",
-      "France": "fr",
-      "UK": "gb",
-      "United Kingdom": "gb",
-      "Italy": "it",
-      "Spain": "es",
-      "Japan": "jp",
-      "China": "cn",
-      "India": "in",
-      "Bangladesh": "bd",
-      "Pakistan": "pk",
-      "Brazil": "br",
-      "USA": "us",
-      "United States": "us",
+      // North America (23)
+      "Antigua and Barbuda": "ag",
+      "Bahamas": "bs",
+      "Barbados": "bb",
+      "Belize": "bz",
       "Canada": "ca",
-      "Australia": "au",
-      "Russia": "ru",
-      "Norway": "no",
-      "Sweden": "se",
-      "Finland": "fi",
-      "Denmark": "dk",
-      "Netherlands": "nl",
-      "Belgium": "be",
-      "Switzerland": "ch",
-      "Austria": "at",
-      "Portugal": "pt",
-      "Greece": "gr",
-      "Turkey": "tr",
-      "South Korea": "kr",
-      "Singapore": "sg",
-      "Malaysia": "my",
-      "Thailand": "th",
-      "Vietnam": "vn",
-      "Philippines": "ph",
-      "Indonesia": "id",
+      "Costa Rica": "cr",
+      "Cuba": "cu",
+      "Dominica": "dm",
+      "Dominican Republic": "do",
+      "El Salvador": "sv",
+      "Grenada": "gd",
+      "Guatemala": "gt",
+      "Haiti": "ht",
+      "Honduras": "hn",
+      "Jamaica": "jm",
       "Mexico": "mx",
+      "Nicaragua": "ni",
+      "Panama": "pa",
+      "Saint Kitts and Nevis": "kn",
+      "Saint Lucia": "lc",
+      "Saint Vincent and the Grenadines": "vc",
+      "Trinidad and Tobago": "tt",
+      "United States": "us",
+      "USA": "us",
+      "US": "us",
+      
+      // South America (12)
       "Argentina": "ar",
+      "Bolivia": "bo",
+      "Brazil": "br",
       "Chile": "cl",
       "Colombia": "co",
+      "Ecuador": "ec",
+      "Guyana": "gy",
+      "Paraguay": "py",
       "Peru": "pe",
-      "South Africa": "za",
-      "Egypt": "eg",
-      "Nigeria": "ng",
-      "Kenya": "ke",
-      "Morocco": "ma",
-      "Saudi Arabia": "sa",
-      "UAE": "ae",
-      "Qatar": "qa",
+      "Suriname": "sr",
+      "Uruguay": "uy",
+      "Venezuela": "ve",
+      
+      // Europe (44)
+      "Albania": "al",
+      "Andorra": "ad",
+      "Armenia": "am",
+      "Austria": "at",
+      "Azerbaijan": "az",
+      "Belarus": "by",
+      "Belgium": "be",
+      "Bosnia and Herzegovina": "ba",
+      "Bulgaria": "bg",
+      "Croatia": "hr",
+      "Cyprus": "cy",
+      "Czech Republic": "cz",
+      "Czechia": "cz",
+      "Denmark": "dk",
+      "Estonia": "ee",
+      "Finland": "fi",
+      "France": "fr",
+      "Georgia": "ge",
+      "Germany": "de",
+      "Greece": "gr",
+      "Hungary": "hu",
+      "Iceland": "is",
+      "Ireland": "ie",
+      "Italy": "it",
+      "Kazakhstan": "kz",
+      "Kosovo": "xk",
+      "Latvia": "lv",
+      "Liechtenstein": "li",
+      "Lithuania": "lt",
+      "Luxembourg": "lu",
+      "Malta": "mt",
+      "Moldova": "md",
+      "Monaco": "mc",
+      "Montenegro": "me",
+      "Netherlands": "nl",
+      "North Macedonia": "mk",
+      "Norway": "no",
+      "Poland": "pl",
+      "Portugal": "pt",
+      "Romania": "ro",
+      "Russia": "ru",
+      "Russian Federation": "ru",
+      "San Marino": "sm",
+      "Serbia": "rs",
+      "Slovakia": "sk",
+      "Slovenia": "si",
+      "Spain": "es",
+      "Sweden": "se",
+      "Switzerland": "ch",
+      "Turkey": "tr",
+      "Türkiye": "tr",
+      "Ukraine": "ua",
+      "United Kingdom": "gb",
+      "UK": "gb",
+      "Great Britain": "gb",
+      "Britain": "gb",
+      "England": "gb",
+      "Scotland": "gb",
+      "Wales": "gb",
+      "Vatican City": "va",
+      
+      // Asia (48)
+      "Afghanistan": "af",
+      "Bahrain": "bh",
+      "Bangladesh": "bd",
+      "Bhutan": "bt",
+      "Brunei": "bn",
+      "Brunei Darussalam": "bn",
+      "Cambodia": "kh",
+      "China": "cn",
+      "India": "in",
+      "Indonesia": "id",
+      "Iran": "ir",
+      "Iran, Islamic Republic of": "ir",
+      "Iraq": "iq",
       "Israel": "il",
+      "Japan": "jp",
+      "Jordan": "jo",
+      "Kuwait": "kw",
+      "Kyrgyzstan": "kg",
+      "Laos": "la",
+      "Lebanon": "lb",
+      "Malaysia": "my",
+      "Maldives": "mv",
+      "Mongolia": "mn",
+      "Myanmar": "mm",
+      "Burma": "mm",
+      "Nepal": "np",
+      "North Korea": "kp",
+      "Democratic People's Republic of Korea": "kp",
+      "Oman": "om",
+      "Pakistan": "pk",
+      "Palestine": "ps",
+      "State of Palestine": "ps",
+      "Philippines": "ph",
+      "Qatar": "qa",
+      "Saudi Arabia": "sa",
+      "Singapore": "sg",
+      "South Korea": "kr",
+      "Republic of Korea": "kr",
+      "Korea, Republic of": "kr",
+      "Sri Lanka": "lk",
+      "Syria": "sy",
+      "Syrian Arab Republic": "sy",
+      "Taiwan": "tw",
+      "Tajikistan": "tj",
+      "Thailand": "th",
+      "Timor-Leste": "tl",
+      "East Timor": "tl",
+      "Turkmenistan": "tm",
+      "United Arab Emirates": "ae",
+      "UAE": "ae",
+      "Uzbekistan": "uz",
+      "Vietnam": "vn",
+      "Viet Nam": "vn",
+      "Yemen": "ye",
+      
+      // Africa (54)
+      "Algeria": "dz",
+      "Angola": "ao",
+      "Benin": "bj",
+      "Botswana": "bw",
+      "Burkina Faso": "bf",
+      "Burundi": "bi",
+      "Cabo Verde": "cv",
+      "Cape Verde": "cv",
+      "Cameroon": "cm",
+      "Central African Republic": "cf",
+      "Chad": "td",
+      "Comoros": "km",
+      "Congo": "cg",
+      "Congo, Republic of the": "cg",
+      "Democratic Republic of the Congo": "cd",
+      "DR Congo": "cd",
+      "Congo, Democratic Republic of": "cd",
+      "Côte d'Ivoire": "ci",
+      "Ivory Coast": "ci",
+      "Djibouti": "dj",
+      "Egypt": "eg",
+      "Equatorial Guinea": "gq",
+      "Eritrea": "er",
+      "Eswatini": "sz",
+      "Swaziland": "sz",
+      "Ethiopia": "et",
+      "Gabon": "ga",
+      "Gambia": "gm",
+      "Ghana": "gh",
+      "Guinea": "gn",
+      "Guinea-Bissau": "gw",
+      "Kenya": "ke",
+      "Lesotho": "ls",
+      "Liberia": "lr",
+      "Libya": "ly",
+      "Madagascar": "mg",
+      "Malawi": "mw",
+      "Mali": "ml",
+      "Mauritania": "mr",
+      "Mauritius": "mu",
+      "Morocco": "ma",
+      "Mozambique": "mz",
+      "Namibia": "na",
+      "Niger": "ne",
+      "Nigeria": "ng",
+      "Rwanda": "rw",
+      "São Tomé and Príncipe": "st",
+      "Senegal": "sn",
+      "Seychelles": "sc",
+      "Sierra Leone": "sl",
+      "Somalia": "so",
+      "South Africa": "za",
+      "South Sudan": "ss",
+      "Sudan": "sd",
+      "Tanzania": "tz",
+      "United Republic of Tanzania": "tz",
+      "Togo": "tg",
+      "Tunisia": "tn",
+      "Uganda": "ug",
+      "Zambia": "zm",
+      "Zimbabwe": "zw",
+      
+      // Oceania (14)
+      "Australia": "au",
+      "Fiji": "fj",
+      "Kiribati": "ki",
+      "Marshall Islands": "mh",
+      "Micronesia": "fm",
+      "Federated States of Micronesia": "fm",
+      "Nauru": "nr",
+      "New Zealand": "nz",
+      "Palau": "pw",
+      "Papua New Guinea": "pg",
+      "Samoa": "ws",
+      "Solomon Islands": "sb",
+      "Tonga": "to",
+      "Tuvalu": "tv",
+      "Vanuatu": "vu",
     };
     
-    const code = flagMap[countryName]?.toLowerCase() || "un";
-    return `https://flagcdn.com/w320/${code}.png`;
+    // Clean and normalize the country name
+    const cleanName = countryName.trim();
+    
+    // Try exact match first
+    if (flagMap[cleanName]) {
+      return `https://flagcdn.com/w320/${flagMap[cleanName].toLowerCase()}.png`;
+    }
+    
+    // Try case-insensitive match
+    const normalizedName = cleanName.toLowerCase();
+    for (const [key, value] of Object.entries(flagMap)) {
+      if (key.toLowerCase() === normalizedName) {
+        return `https://flagcdn.com/w320/${value.toLowerCase()}.png`;
+      }
+    }
+    
+    // Try partial match (if country name contains parts)
+    for (const [key, value] of Object.entries(flagMap)) {
+      if (normalizedName.includes(key.toLowerCase()) || key.toLowerCase().includes(normalizedName)) {
+        return `https://flagcdn.com/w320/${value.toLowerCase()}.png`;
+      }
+    }
+    
+    // Common aliases that might not match exactly
+    const aliases: Record<string, string> = {
+      "united states of america": "us",
+      "america": "us",
+      "great britain": "gb",
+      "britain": "gb",
+      "england": "gb",
+      "scotland": "gb",
+      "wales": "gb",
+      "northern ireland": "gb",
+      "south korea": "kr",
+      "north korea": "kp",
+      "czech": "cz",
+      "slovak": "sk",
+      "vietnam": "vn",
+      "uae": "ae",
+      "emirates": "ae",
+      "u.a.e": "ae",
+      "dr congo": "cd",
+      "democratic republic of congo": "cd",
+      "congo dr": "cd",
+      "congo (democratic republic)": "cd",
+      "congo (kinshasa)": "cd",
+      "congo brazzaville": "cg",
+      "republic of congo": "cg",
+      "congo (republic)": "cg",
+      "timor leste": "tl",
+      "east timor": "tl",
+      "ivory coast": "ci",
+      "cote d'ivoire": "ci",
+      "côte d'ivoire": "ci",
+      "cape verde": "cv",
+      "swaziland": "sz",
+      "eswatini": "sz",
+      "burma": "mm",
+      "myanmar": "mm",
+      "palestine": "ps",
+      "türkiye": "tr",
+      "turkey": "tr",
+      "united arab emirates": "ae",
+      "hong kong": "hk",
+      "macau": "mo",
+      "macao": "mo",
+      "puerto rico": "pr",
+      "guam": "gu",
+      "american samoa": "as",
+      "virgin islands": "vi",
+      "british virgin islands": "vg",
+      "cayman islands": "ky",
+      "bermuda": "bm",
+      "greenland": "gl",
+      "faroe islands": "fo",
+      "isle of man": "im",
+      "jersey": "je",
+      "guernsey": "gg",
+      "aland islands": "ax",
+      "svalbard": "sj",
+      "mayotte": "yt",
+      "reunion": "re",
+      "martinique": "mq",
+      "guadeloupe": "gp",
+      "french guiana": "gf",
+      "new caledonia": "nc",
+      "french polynesia": "pf",
+      "wallis and futuna": "wf",
+      "cook islands": "ck",
+      "niue": "nu",
+      "tokelau": "tk",
+      "gibraltar": "gi",
+      "montserrat": "ms",
+      "anguilla": "ai",
+      "saint helena": "sh",
+      "ascension island": "ac",
+      "tristan da cunha": "ta",
+      "falkland islands": "fk",
+      "south georgia": "gs",
+      "antarctica": "aq",
+      "british indian ocean territory": "io",
+      "christmas island": "cx",
+      "cocos islands": "cc",
+      "norfolk island": "nf",
+      "pitcairn islands": "pn",
+      "saint pierre and miquelon": "pm",
+      "saint barthelemy": "bl",
+      "saint martin": "mf",
+      "sint maarten": "sx",
+      "aruba": "aw",
+      "curacao": "cw",
+      "bonaire": "bq",
+      "kosrae": "fm",
+      "ponape": "fm",
+      "truk": "fm",
+      "yap": "fm",
+      "palestine state": "ps",
+      "west bank": "ps",
+      "gaza": "ps",
+      "taiwan province of china": "tw",
+      "taiwan (province of china)": "tw",
+    };
+    
+    if (aliases[normalizedName]) {
+      return `https://flagcdn.com/w320/${aliases[normalizedName].toLowerCase()}.png`;
+    }
+    
+    // If still not found, return UN flag
+    console.warn(`Flag not found for country: "${countryName}"`);
+    return `https://flagcdn.com/w320/un.png`;
+  };
+
+  // Parse range values for counters
+  const parseRangeValue = (range: string): number => {
+    if (!range) return 0;
+    // Extract the first number from range (e.g., "10-20" -> 10)
+    const match = range.match(/(\d+)/);
+    return match ? parseInt(match[1]) : 0;
   };
 
   if (loading) {
@@ -530,7 +851,12 @@ const Country: React.FC = () => {
                     <metric.icon className="h-7 w-7" />
                   </div>
                   <div className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                    {metric.value || "N/A"}
+                    <Counter 
+                      end={parseRangeValue(metric.value)} 
+                      suffix={metric.label.includes("Latency") ? "ms" : ""}
+                      duration={2000 + index * 200}
+                      delay={index * 100}
+                    />
                   </div>
                   <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     {metric.label}
@@ -717,19 +1043,27 @@ const Country: React.FC = () => {
                       <div className="grid grid-cols-2 gap-6 mt-6">
                         <div className="space-y-2">
                           <p className="font-medium text-gray-900 dark:text-white">IPv4 Gateways</p>
-                          <p className="text-2xl font-bold text-blue-600">{countryData.Ipv4GatewaysRange || "N/A"}</p>
+                          <p className="text-2xl font-bold text-blue-600">
+                            <Counter end={parseRangeValue(countryData.Ipv4GatewaysRange)} suffix="" duration={2200} />
+                          </p>
                         </div>
                         <div className="space-y-2">
                           <p className="font-medium text-gray-900 dark:text-white">IPv6 Gateways</p>
-                          <p className="text-2xl font-bold text-purple-600">{countryData.Ipv6GatewaysRange || "N/A"}</p>
+                          <p className="text-2xl font-bold text-purple-600">
+                            <Counter end={parseRangeValue(countryData.Ipv6GatewaysRange)} suffix="" duration={2400} />
+                          </p>
                         </div>
                         <div className="space-y-2">
                           <p className="font-medium text-gray-900 dark:text-white">Average Latency</p>
-                          <p className="text-2xl font-bold text-green-600">{countryData.avgServiceLatencyRange || "N/A"}</p>
+                          <p className="text-2xl font-bold text-green-600">
+                            <Counter end={parseRangeValue(countryData.avgServiceLatencyRange)} suffix="ms" duration={1800} />
+                          </p>
                         </div>
                         <div className="space-y-2">
                           <p className="font-medium text-gray-900 dark:text-white">Cloud Partners</p>
-                          <p className="text-2xl font-bold text-orange-600">{countryData.CloudPartnersRange || "N/A"}</p>
+                          <p className="text-2xl font-bold text-orange-600">
+                            <Counter end={parseRangeValue(countryData.CloudPartnersRange)} suffix="" duration={2000} />
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -836,15 +1170,17 @@ const Country: React.FC = () => {
 
                   <div className="relative group">
                     <div 
-                      className={`rounded-2xl overflow-hidden border-2 ${hasNetworkLink ? 'cursor-pointer border-blue-300 hover:border-blue-500 dark:border-blue-700 dark:hover:border-blue-500' : 'border-gray-200 dark:border-gray-700'} transition-all duration-300 shadow-lg`}
+                      className={`rounded-2xl overflow-hidden border-2 ${hasNetworkLink ? 'cursor-pointer border-blue-300 hover:border-blue-500 dark:border-blue-700 dark:hover:border-blue-500' : 'border-gray-200 dark:border-gray-700'} transition-all duration-300 shadow-lg bg-gray-100 dark:bg-gray-800/50`}
                       onClick={() => hasNetworkLink && window.open(countryData.submarineCableLink, '_blank')}
                     >
-                      <img
-                        src={countryData.submarineCableImage}
-                        alt="Network connectivity map showing submarine cables and infrastructure"
-                        className="w-full h-auto transition-transform duration-300 group-hover:scale-105"
-                        loading="lazy"
-                      />
+                      <div className="relative w-full h-64 md:h-80 lg:h-96 overflow-hidden flex items-center justify-center">
+                        <img
+                          src={countryData.submarineCableImage}
+                          alt="Network connectivity map showing submarine cables and infrastructure"
+                          className="max-w-full max-h-full object-contain transition-transform duration-300 group-hover:scale-105"
+                          loading="lazy"
+                        />
+                      </div>
                     </div>
                     
                     {hasNetworkLink && (
@@ -872,15 +1208,15 @@ const Country: React.FC = () => {
                 </p>
                 
                 <div className="flex flex-col sm:flex-row gap-6 justify-center mb-10">
-  <Button
-    size="lg"
-    className="bg-white text-blue-700 hover:bg-blue-50 px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-    onClick={() => navigate("/contact")}
-  >
-    <Rocket className="h-5 w-5 mr-2" />
-    Request Enterprise Consultation
-  </Button>
-</div>
+                  <Button
+                    size="lg"
+                    className="bg-white text-blue-700 hover:bg-blue-50 px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                    onClick={() => navigate("/contact")}
+                  >
+                    <Rocket className="h-5 w-5 mr-2" />
+                    Request Enterprise Consultation
+                  </Button>
+                </div>
                 
                 {countryData.commercialOfferDateRange && (
                   <div className="inline-flex items-center gap-3 bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-full border border-white/30">

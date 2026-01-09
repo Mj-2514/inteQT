@@ -2,6 +2,7 @@
 import React, { Fragment } from "react";
 import Footer from "@/components/Footer";
 import { Link } from "react-router-dom";
+import Counter from "@/components/ui/Counter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Seo from "@/components/Seo";
@@ -62,11 +63,7 @@ const benefits = [
 ];
 
 const partnerTypes = [
-  {
-    title: "Technology Partners",
-    description: "Integrate your solutions with our global connectivity platform",
-    icon: Zap,
-  },
+  
   {
     title: "Reseller Partners",
     description: "Expand your portfolio with our comprehensive connectivity services",
@@ -292,28 +289,36 @@ const PartnerCenter: React.FC = () => {
         </section>
 
         {/* STATS */}
-        <section className="py-16 bg-gradient-to-br from-primary/10 to-secondary/10">
-          <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-center">
-              <div>
-                <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-gradient mb-1">500+</p>
-                <p className="text-sm text-muted-foreground">Active Partners</p>
-              </div>
-              <div>
-                <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-gradient mb-1">190+</p>
-                <p className="text-sm text-muted-foreground">Countries Covered</p>
-              </div>
-              <div>
-                <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-gradient mb-1">95%</p>
-                <p className="text-sm text-muted-foreground">Partner Satisfaction</p>
-              </div>
-              <div>
-                <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-gradient mb-1">24/7</p>
-                <p className="text-sm text-muted-foreground">Partner Support</p>
-              </div>
-            </div>
-          </div>
-        </section>
+<section className="py-16 bg-gradient-to-br from-primary/10 to-secondary/10">
+  <div className="container mx-auto px-4">
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-center">
+      <div>
+        <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-gradient mb-1">
+          <Counter end={500} suffix="+" duration={2500} />
+        </p>
+        <p className="text-sm text-muted-foreground">Active Partners</p>
+      </div>
+      <div>
+        <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-gradient mb-1">
+          <Counter end={190} suffix="+" duration={2000} />
+        </p>
+        <p className="text-sm text-muted-foreground">Countries Covered</p>
+      </div>
+      <div>
+        <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-gradient mb-1">
+          <Counter end={95} suffix="%" duration={1800} />
+        </p>
+        <p className="text-sm text-muted-foreground">Partner Satisfaction</p>
+      </div>
+      <div>
+        <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-gradient mb-1">
+          24/7
+        </p>
+        <p className="text-sm text-muted-foreground">Partner Support</p>
+      </div>
+    </div>
+  </div>
+</section>
 
         {/* CTA */}
         <section className="py-16">
