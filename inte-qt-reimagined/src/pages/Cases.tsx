@@ -358,7 +358,7 @@ const Cases: React.FC = () => {
       </div>
       <div>
         <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-gradient mb-1">
-          <Counter end={10} suffix="M+" duration={2500} />
+          <Counter end={500} suffix="+" duration={2500} />
         </p>
         <p className="text-sm text-muted-foreground">Events Monitored / day</p>
       </div>

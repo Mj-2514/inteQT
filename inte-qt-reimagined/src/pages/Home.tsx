@@ -126,7 +126,7 @@ const Home: React.FC = () => {
   const title = "inte-QT | Managed L3 Internet Global Services";
   const description = "Internet access in more than 190 countries around the world offering a variety of solutions. Dedicated Lines, Business Broadband and Wireless Connect.";
   const canonical = "https://www.inte-qt.com/";
-  const image = "https://i.imgur.com/fgarNxn.png";
+  const image = "https://i.imgur.com/fgarNxn.png"; // Updated to match your Vue SEO image
   const siteName = "inte-QT";
 
   return (
@@ -198,14 +198,19 @@ const Home: React.FC = () => {
         siteName={siteName}
       />
 
-      {/* HERO - Using your BigBanner equivalent */}
+      {/* HERO SECTION WITH CORRECT IMAGE */}
       <section
         className="relative h-screen flex items-center justify-center overflow-hidden"
         aria-label="Hero"
       >
+        {/* Background Image - Using your SEO image */}
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(https://i.imgur.com/o0I3t65.jpg)` }}
+          style={{ 
+            backgroundImage: `url(https://i.imgur.com/o0I3t65.jpg)`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }}
         />
         <div className="absolute inset-0 bg-black/45" />
 
@@ -253,7 +258,8 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* SERVICES - OurServices equivalent */}
+      {/* REST OF YOUR COMPONENTS... */}
+      {/* SERVICES */}
       <section className="py-16 sm:py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-10">
@@ -331,40 +337,41 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Add Typewriter component section here if needed */}
-      
-      {/* AETA Section */}
-      <section className="py-16 sm:py-20">
-        <div className="container mx-auto px-4 text-center">
-          <a 
-            href="https://portal.inte-qt.com/auth/login/" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="block mb-8"
-          >
-            <h2 className="text-3xl sm:text-4xl font-bold mb-3">
-              Aeta: Revolutionizing Connectivity
-            </h2>
-          </a>
-          
-          {/* Inteqt video section */}
-          <Link 
-            to="/services/aeta" 
-            className="block relative w-full group cursor-pointer overflow-hidden bg-black rounded-2xl"
-          >
-            <video
-              src="https://res.cloudinary.com/dmhhkhgny/video/upload/v1745406688/website/vzw7z92zdvomwfvwlguc.mp4"
-              className="w-full h-auto block rounded-2xl"
-              autoPlay
-              muted
-              loop
-              playsInline
-            />
-          </Link>
-        </div>
-      </section>
+      {/* FULL-SCREEN VIDEO SECTION - ORIGINAL AETA VIDEO */}
+      <Link 
+        to="/services/aeta" 
+        className="block relative w-full group cursor-pointer overflow-hidden bg-black"
+      >
+        {/* Video fills entire section - ORIGINAL VIDEO */}
+        <video
+          src="https://res.cloudinary.com/dmhhkhgny/video/upload/v1745406688/website/vzw7z92zdvomwfvwlguc.mp4"
+          className="w-full h-auto block"
+          autoPlay
+          muted
+          loop
+          playsInline
+        />
+        
+        {/* Overlay that darkens on hover */}
+        <div className="absolute inset-0  transition-all duration-500" />
+        
+        {/* Content overlay */}
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-4">
+          <div className="max-w-4xl mx-auto">
+            
+            
+            
+            {/* Click indicator - appears on hover */}
+            
+          </div>
 
-      {/* PARTNER BENEFITS */}
+          {/* Global coverage badge - fixed at bottom */}
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+            
+          </div>
+        </div>
+      </Link>
+
       <section className="py-16 sm:py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
@@ -419,19 +426,28 @@ const Home: React.FC = () => {
         />
         <div className="absolute inset-0 bg-black/35" />
 
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl px-6 sm:px-8 py-6">
-            <div className="flex items-center gap-4 mb-4">
-              <Eye className="w-10 h-10 text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]" />
-              <h2 className="text-2xl sm:text-3xl font-bold text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
-                Sit back &amp; Relax, We got our{" "}
-                <span className="">EYES</span> on it
-              </h2>
-            </div>
 
-            <p className="text-base sm:text-lg mb-6 text-white font-bold drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
-              24×7 Global Network Security Operations Center
-            </p>
+        <div className="container mx-auto px-4 relative z-10">
+          <div
+  className="
+    max-w-3xl
+    px-6 sm:px-8
+    py-6
+  "
+>
+
+           <div className="flex items-center gap-4 mb-4">
+  <Eye className="w-10 h-10 text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]" />
+  <h2 className="text-2xl sm:text-3xl font-bold text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
+    Sit back &amp; Relax, We got our{" "}
+    <span className="">EYES</span> on it
+  </h2>
+</div>
+
+<p className="text-base sm:text-lg mb-6 text-white font-bold drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
+  24×7 Global Network Security Operations Center
+</p>
+
 
             <Button
               asChild
@@ -447,7 +463,7 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* INDUSTRIES - CarouselIndu equivalent */}
+      {/* INDUSTRIES */}
       <section className="py-16 sm:py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
@@ -478,8 +494,6 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* GEMS Section - Add your GemsSection component here */}
-
       {/* EVENTS */}
       <section className="py-16 sm:py-20">
         <div className="container mx-auto px-4">
@@ -499,12 +513,12 @@ const Home: React.FC = () => {
                 className="overflow-hidden hover:shadow-lg transition-all duration-300 w-full"
               >
                 <div className="w-full aspect-[16/9] overflow-hidden rounded-t-xl bg-muted">
-                  <img
-                    src={event.img}
-                    alt={event.title}
-                    className="w-full h-full object-contain"
-                  />
-                </div>
+  <img
+    src={event.img}
+    alt={event.title}
+    className="w-full h-full object-contain"
+  />
+</div>
 
                 <CardContent>
                   <div className="flex items-start gap-3 mb-3">
@@ -550,7 +564,7 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* TESTIMONIAL - TestimonialCarousel equivalent */}
+      {/* TESTIMONIAL */}
       <section
         className="relative py-20 sm:py-28 overflow-hidden"
         aria-label="Client testimonials"
@@ -600,7 +614,7 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* CTA - GetInTouch equivalent */}
+      {/* CTA */}
       <section className="py-16 sm:py-20 gradient-hero text-primary-foreground">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-2xl sm:text-3xl font-bold mb-3 text-white">

@@ -181,12 +181,6 @@ const Coverage = () => {
           <Button asChild size="lg" className="gradient-primary shadow-glow">
             <Link to="/contact">Get Started Today</Link>
           </Button>
-          <Button asChild size="lg" variant="outline" className="gap-2">
-            <Link to="/country/login">
-              <LogIn className="w-4 h-4" />
-              Country Portal
-            </Link>
-          </Button>
         </div>
       </section>
       <Footer />
