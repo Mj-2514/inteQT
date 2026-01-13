@@ -28,7 +28,7 @@ const Services = () => {
       image:
         "https://assets.superhivemarket.com/cache/0346e49935ae63f6209492bf3994d0b4.gif",
       features: [
-        "Global coverage across Tier 1, Tier 3, Tier 3 cities along far-flung areas",
+        "Global coverage across Tier 1, Tier 2, Tier 3 cities along far-flung areas",
         "High availability & Faster Delivery",
         "Committed Bandwidth up to 10G",
         "Diverse, Scalable, Secure and Reliable Solutions",

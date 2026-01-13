@@ -33,15 +33,17 @@ export const createOrUpdateCountry = async (req, res) => {
       capabilities,
       submarineCableImage,
       submarineCableLink,
+      references,  // Added references field
     } = req.body;
 
-    ('Form Data Received:', {
+    console.log('Form Data Received:', {
       name,
       Countryname,
       slug,
       partnersRange,
       Ipv4PeersRange,
-      CloudPartnersRange
+      CloudPartnersRange,
+      references
     });
 
     // Use whichever is provided
@@ -71,6 +73,40 @@ export const createOrUpdateCountry = async (req, res) => {
       return res.status(400).json({ message: "Slug already exists" });
     }
 
+    // Prepare references array
+    let referencesArray = [];
+    if (references) {
+      if (Array.isArray(references)) {
+        // Filter out empty strings and validate URLs
+        referencesArray = references.filter(ref => ref.trim() !== '');
+        
+        // Optional: Validate URLs
+        const urlPattern = /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/;
+        const invalidUrls = referencesArray.filter(url => !urlPattern.test(url));
+        
+        if (invalidUrls.length > 0) {
+          return res.status(400).json({ 
+            message: `Invalid URLs found: ${invalidUrls.join(', ')}` 
+          });
+        }
+      } else if (typeof references === 'string') {
+        // Handle comma-separated string
+        referencesArray = references.split(',')
+          .map(ref => ref.trim())
+          .filter(ref => ref !== '');
+        
+        // Validate URLs
+        const urlPattern = /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/;
+        const invalidUrls = referencesArray.filter(url => !urlPattern.test(url));
+        
+        if (invalidUrls.length > 0) {
+          return res.status(400).json({ 
+            message: `Invalid URLs found: ${invalidUrls.join(', ')}` 
+          });
+        }
+      }
+    }
+
     // Prepare data object with correct field names
     const countryData = {
       Countryname: countryName,
@@ -94,9 +130,10 @@ export const createOrUpdateCountry = async (req, res) => {
       capabilities: capabilities || "",
       submarineCableImage: submarineCableImage || "",
       submarineCableLink: submarineCableLink || "",
+      references: referencesArray, // Add references
     };
 
-    ('Prepared country data:', countryData);
+    console.log('Prepared country data:', countryData);
 
     // If updating existing submission
     if (existing && isEditingOwnSubmission) {
@@ -107,7 +144,7 @@ export const createOrUpdateCountry = async (req, res) => {
           if (oldUrl.includes('cloudinary.com')) {
             const publicId = oldUrl.split('/').pop().split('.')[0];
             await cloudinary.uploader.destroy(publicId);
-            ('Deleted old Cloudinary image:', publicId);
+            console.log('Deleted old Cloudinary image:', publicId);
           }
         } catch (cloudinaryErr) {
           console.error('Error deleting old image:', cloudinaryErr);
@@ -282,6 +319,7 @@ export const getMySubmissionsSummary = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
 /* =========================
    ADMIN: GET ALL SUBMISSIONS
 ========================= */
@@ -352,6 +390,8 @@ export const reviewSubmission = async (req, res) => {
       country.rejectionNote = rejectionNote;
       // Remove the slug when rejected to prevent SEO conflicts
       country.slug = undefined;
+      // Clear references if rejected (optional)
+      country.references = [];
     } else {
       country.rejectionNote = "";
       // Ensure slug exists for approved submissions
@@ -436,14 +476,9 @@ export const getUserStats = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
 /* =========================
-   GET SUBMISSION BY ID (FOR ADMIN REVIEW)
-========================= */
-/* =========================
-   GET SUBMISSION BY ID (FOR ADMIN REVIEW)
-========================= */
-/* =========================
-   GET SUBMISSION BY ID (FOR ADMIN REVIEW)
+   GET SUBMISSION BY SLUG (FOR ADMIN REVIEW)
 ========================= */
 export const getSubmissionBySlug = async (req, res) => {
   try {
@@ -467,7 +502,6 @@ export const getSubmissionBySlug = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
 
 /* =========================
    USER: GET MY SUBMISSIONS BY STATUS
@@ -513,6 +547,172 @@ export const getMySubmissionsByStatus = async (req, res) => {
     });
   } catch (err) {
     console.error("Error in getMySubmissionsByStatus:", err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+/* =========================
+   ADMIN: MANAGE REFERENCES FOR A COUNTRY
+   Add/Remove/Update references
+========================= */
+export const manageReferences = async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ message: "Admin only" });
+    }
+
+    const { id } = req.params;
+    const { action, references } = req.body;
+
+    const country = await Country.findById(id);
+    if (!country) {
+      return res.status(404).json({ message: "Country not found" });
+    }
+
+    switch (action) {
+      case 'add':
+        if (!Array.isArray(references) && typeof references !== 'string') {
+          return res.status(400).json({ message: "References must be an array or comma-separated string" });
+        }
+        
+        let newReferences = [];
+        if (Array.isArray(references)) {
+          newReferences = references.filter(ref => ref.trim() !== '');
+        } else {
+          newReferences = references.split(',')
+            .map(ref => ref.trim())
+            .filter(ref => ref !== '');
+        }
+        
+        // Add new references, avoiding duplicates
+        const existingRefs = new Set(country.references || []);
+        newReferences.forEach(ref => {
+          if (!existingRefs.has(ref)) {
+            existingRefs.add(ref);
+          }
+        });
+        
+        country.references = Array.from(existingRefs);
+        break;
+
+      case 'remove':
+        if (!Array.isArray(references)) {
+          return res.status(400).json({ message: "References to remove must be an array" });
+        }
+        
+        country.references = (country.references || []).filter(
+          ref => !references.includes(ref)
+        );
+        break;
+
+      case 'replace':
+        if (!Array.isArray(references) && typeof references !== 'string') {
+          return res.status(400).json({ message: "References must be an array or comma-separated string" });
+        }
+        
+        let replacementRefs = [];
+        if (Array.isArray(references)) {
+          replacementRefs = references.filter(ref => ref.trim() !== '');
+        } else {
+          replacementRefs = references.split(',')
+            .map(ref => ref.trim())
+            .filter(ref => ref !== '');
+        }
+        
+        country.references = replacementRefs;
+        break;
+
+      default:
+        return res.status(400).json({ 
+          message: "Invalid action. Use 'add', 'remove', or 'replace'" 
+        });
+    }
+
+    await country.save();
+
+    res.json({ 
+      message: `References ${action}ed successfully`,
+      references: country.references,
+      totalReferences: country.references.length
+    });
+  } catch (err) {
+    console.error("Error in manageReferences:", err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+/* =========================
+   USER: UPDATE REFERENCES FOR OWN SUBMISSION
+   (Only for drafts or pending submissions)
+========================= */
+export const updateMyReferences = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { references } = req.body;
+
+    const country = await Country.findOne({ 
+      _id: id, 
+      createdBy: req.user._id 
+    });
+
+    if (!country) {
+      return res.status(404).json({ 
+        message: "Submission not found or you don't have permission" 
+      });
+    }
+
+    // Only allow updates for drafts or pending submissions
+    if (!['draft', 'pending'].includes(country.status)) {
+      return res.status(400).json({ 
+        message: "Can only update references for draft or pending submissions" 
+      });
+    }
+
+    let referencesArray = [];
+    if (references) {
+      if (Array.isArray(references)) {
+        referencesArray = references.filter(ref => ref.trim() !== '');
+      } else if (typeof references === 'string') {
+        referencesArray = references.split(',')
+          .map(ref => ref.trim())
+          .filter(ref => ref !== '');
+      }
+      
+      // Validate URLs (optional)
+      const urlPattern = /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/;
+      const invalidUrls = referencesArray.filter(url => !urlPattern.test(url));
+      
+      if (invalidUrls.length > 0) {
+        return res.status(400).json({ 
+          message: `Invalid URLs found: ${invalidUrls.join(', ')}` 
+        });
+      }
+    }
+
+    country.references = referencesArray;
+    
+    // If updating a draft, keep it as draft
+    // If updating a pending submission, reset to pending (admin needs to review again)
+    if (country.status === 'pending') {
+      country.status = 'pending';
+      country.rejectionNote = '';
+    }
+    
+    await country.save();
+
+    res.json({ 
+      message: "References updated successfully",
+      country: {
+        _id: country._id,
+        Countryname: country.Countryname,
+        slug: country.slug,
+        status: country.status,
+        references: country.references,
+        updatedAt: country.updatedAt
+      }
+    });
+  } catch (err) {
+    console.error("Error in updateMyReferences:", err);
     res.status(500).json({ message: err.message });
   }
 };

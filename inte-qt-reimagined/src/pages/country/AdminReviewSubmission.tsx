@@ -32,7 +32,11 @@ import {
   Copy,
   ChevronLeft,
   ChevronRight,
-  RefreshCw
+  RefreshCw,
+  Link as LinkIcon, // Added
+  Plus, // Added
+  Trash2, // Added
+  Link // Added
 } from "lucide-react";
 import { useCountryAuth } from "../../context/AuthContext";
 
@@ -48,9 +52,10 @@ const AdminReviewSubmission = () => {
   const [error, setError] = useState<string | null>(null);
   const [rejectionNote, setRejectionNote] = useState("");
   const [showRejectModal, setShowRejectModal] = useState(false);
-  const [activeTab, setActiveTab] = useState<'details' | 'image' | 'history'>('details');
+  const [activeTab, setActiveTab] = useState<'details' | 'image' | 'history' | 'references'>('details');
   const [imageLoaded, setImageLoaded] = useState(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [newReference, setNewReference] = useState(""); // For adding new references
 
   // Submission data
   const [submission, setSubmission] = useState<any>(null);
@@ -58,16 +63,14 @@ const AdminReviewSubmission = () => {
 
   // Check authentication and admin status
   useEffect(() => {
-    
-    
     if (!token || !user) {
-      ('No auth, redirecting to login');
+      console.log('No auth, redirecting to login');
       navigate("/country/login");
       return;
     }
     
     if (!isAdmin) {
-      ('Not admin, redirecting to dashboard');
+      console.log('Not admin, redirecting to dashboard');
       navigate("/country/dashboard");
       return;
     }
@@ -87,10 +90,10 @@ const AdminReviewSubmission = () => {
       
       const effectiveToken = token || localStorage.getItem("countryToken");
       
-      
       // Fetch submission details
       const url = `${API_BASE}/api/country/dashboard/submission/${slug}`;
       
+      console.log('Fetching submission:', url);
       
       const submissionRes = await fetch(url, {
         headers: { 
@@ -99,11 +102,11 @@ const AdminReviewSubmission = () => {
         }
       });
 
-      
+      console.log('Submission response:', submissionRes.status);
 
       if (!submissionRes.ok) {
         if (submissionRes.status === 401) {
-          ('Unauthorized, logging out');
+          console.log('Unauthorized, logging out');
           logout();
           navigate("/country/login");
           return;
@@ -153,19 +156,20 @@ const AdminReviewSubmission = () => {
       const effectiveToken = token || localStorage.getItem("countryToken");
       const url = `${API_BASE}/api/country/dashboard/user/${userId}`;
       
+      console.log('Fetching user details:', url);
       
       const res = await fetch(url, {
         headers: { "Authorization": `Bearer ${effectiveToken}` }
       });
       
-      
+      console.log('User details response:', res.status);
       
       if (res.ok) {
         const data = await res.json();
-        
+        console.log('User details:', data);
         setUserDetails(data.user);
       } else {
-        
+        console.log('Failed to fetch user details');
       }
     } catch (err) {
       console.error("Error fetching user details:", err);
@@ -198,6 +202,7 @@ const AdminReviewSubmission = () => {
       const effectiveToken = token || localStorage.getItem("countryToken");
       const url = `${API_BASE}/api/country/dashboard/review/${submission._id}`;
       
+      console.log('Submitting review:', url);
       
       const res = await fetch(url, {
         method: "PUT",
@@ -211,7 +216,7 @@ const AdminReviewSubmission = () => {
         })
       });
 
-      
+      console.log('Review response:', res.status);
 
       if (!res.ok) {
         const errorText = await res.text();
@@ -228,7 +233,7 @@ const AdminReviewSubmission = () => {
 
       const data = await res.json();
       
-      
+      console.log('Review success:', data);
       alert(`Submission ${status} successfully!`);
       
       // Navigate back to admin dashboard or submissions list
@@ -252,6 +257,7 @@ const AdminReviewSubmission = () => {
       const effectiveToken = token || localStorage.getItem("countryToken");
       const url = `${API_BASE}/api/country/dashboard/submission/${submission._id}`;
       
+      console.log('Deleting submission:', url);
       
       const res = await fetch(url, {
         method: "DELETE",
@@ -260,7 +266,7 @@ const AdminReviewSubmission = () => {
         }
       });
 
-      
+      console.log('Delete response:', res.status);
 
       if (!res.ok) {
         const errorText = await res.text();
@@ -320,6 +326,138 @@ const AdminReviewSubmission = () => {
     }
   };
 
+  // Handle adding a new reference
+  const handleAddReference = async () => {
+    if (!newReference.trim()) {
+      alert("Please enter a URL");
+      return;
+    }
+
+    // Basic URL validation
+    const urlPattern = /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/;
+    if (!urlPattern.test(newReference)) {
+      alert("Please enter a valid URL (must start with http:// or https://)");
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      const effectiveToken = token || localStorage.getItem("countryToken");
+      const url = `${API_BASE}/api/country/dashboard/submission/${submission._id}/references`;
+      
+      const res = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${effectiveToken}`
+        },
+        body: JSON.stringify({
+          action: "add",
+          references: [newReference]
+        })
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to add reference");
+      }
+
+      const data = await res.json();
+      setSubmission((prev: any) => ({
+        ...prev,
+        references: data.references
+      }));
+      setNewReference("");
+      alert("Reference added successfully!");
+    } catch (err: any) {
+      console.error("Error adding reference:", err);
+      alert(err.message || "Failed to add reference");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Handle removing a reference
+  const handleRemoveReference = async (reference: string) => {
+    if (!confirm("Are you sure you want to remove this reference?")) {
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      const effectiveToken = token || localStorage.getItem("countryToken");
+      const url = `${API_BASE}/api/country/dashboard/submission/${submission._id}/references`;
+      
+      const res = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${effectiveToken}`
+        },
+        body: JSON.stringify({
+          action: "remove",
+          references: [reference]
+        })
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to remove reference");
+      }
+
+      const data = await res.json();
+      setSubmission((prev: any) => ({
+        ...prev,
+        references: data.references
+      }));
+      alert("Reference removed successfully!");
+    } catch (err: any) {
+      console.error("Error removing reference:", err);
+      alert(err.message || "Failed to remove reference");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Handle clearing all references
+  const handleClearReferences = async () => {
+    if (!confirm("Are you sure you want to clear all references?")) {
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      const effectiveToken = token || localStorage.getItem("countryToken");
+      const url = `${API_BASE}/api/country/dashboard/submission/${submission._id}/references`;
+      
+      const res = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${effectiveToken}`
+        },
+        body: JSON.stringify({
+          action: "replace",
+          references: []
+        })
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to clear references");
+      }
+
+      const data = await res.json();
+      setSubmission((prev: any) => ({
+        ...prev,
+        references: data.references
+      }));
+      alert("All references cleared successfully!");
+    } catch (err: any) {
+      console.error("Error clearing references:", err);
+      alert(err.message || "Failed to clear references");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const exportToCSV = () => {
     if (!submission) return;
     
@@ -339,7 +477,7 @@ const AdminReviewSubmission = () => {
       ['IPv6 Peers', submission.avgIpv6PeersRange || submission.Ipv6PeersRange || ''],
       ['IXP Partners', submission.avgIxpPartnersRange || submission.IxpPartnersRange || ''],
       ['IPv4 Gateways', submission.avgIpv4GatewaysRange || submission.Ipv4GatewaysRange || ''],
-      ['IPv6 Gateways', submission.avgIpv6GatewaysRange || submission.Ipv6GatewaysRange || ''],
+      ['IPv6 Gateways', submission.avgIpv6PeersRange || submission.Ipv6GatewaysRange || ''],
       ['Cloud Partners', submission.avgCloudPartnersRange || submission.CloudPartnersRange || ''],
       ['DDoS Protection', submission.ddosProtection ? 'Enabled' : 'Disabled'],
       ['Min Service Latency', submission.minServiceLatencyRange || ''],
@@ -347,6 +485,7 @@ const AdminReviewSubmission = () => {
       ['Commercial Offer Date', submission.commercialOfferDateRange || ''],
       ['Delivery Date', submission.deliveryDateRange || ''],
       ['Submarine Cable Link', submission.submarineCableLink || ''],
+      ['References', submission.references?.join('\n') || ''],
     ];
     
     const csvContent = [
@@ -649,6 +788,7 @@ const AdminReviewSubmission = () => {
                     <FileText className="inline h-4 w-4 mr-2" />
                     Details
                   </button>
+                  
                   <button
                     onClick={() => setActiveTab('image')}
                     className={`flex-1 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${activeTab === 'image' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
@@ -860,14 +1000,14 @@ const AdminReviewSubmission = () => {
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Commercial Offer Date</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Commercial Offer Days</label>
                           <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
                             <p className="text-gray-900">{submission.commercialOfferDateRange || 'Not specified'}</p>
                           </div>
                         </div>
                         
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Delivery Date</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Delivery Days</label>
                           <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
                             <p className="text-gray-900">{submission.deliveryDateRange || 'Not specified'}</p>
                           </div>
@@ -894,6 +1034,8 @@ const AdminReviewSubmission = () => {
                     </div>
                   </div>
                 )}
+
+                
 
                 {activeTab === 'image' && submission.submarineCableImage && (
                   <div className="space-y-6">

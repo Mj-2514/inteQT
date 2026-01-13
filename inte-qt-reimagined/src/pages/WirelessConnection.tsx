@@ -128,7 +128,7 @@ const WirelessConnection = () => {
                 <div className="mb-4 sm:mb-6">
                   <Globe className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 text-primary" />
                 </div>
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 md:mb-4 leading-tight">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 md:mb-4 leading-tight text-black">
                   End-to-End Fully Managed Global Wireless Connect
                 </h2>
                 <p className="text-base sm:text-lg md:text-xl text-muted-foreground leading-relaxed">

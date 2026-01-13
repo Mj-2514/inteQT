@@ -11,7 +11,10 @@ import {
   Save,
   Send,
   RefreshCw,
-  Copy
+  Copy,
+  Plus,
+  Trash2,
+  Link
 } from "lucide-react";
 import { useCountryAuth } from "../../context/AuthContext";
 
@@ -39,6 +42,7 @@ interface CountryFormData {
   capabilities: string;
   submarineCableImage: string;
   submarineCableLink: string;
+  references: string[]; // Added references field
 }
 
 const CreateCountryForm = () => {
@@ -52,6 +56,7 @@ const CreateCountryForm = () => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
+  const [newReference, setNewReference] = useState(""); // For adding new references
 
   const [formData, setFormData] = useState<CountryFormData>({
     name: "",
@@ -75,6 +80,7 @@ const CreateCountryForm = () => {
     capabilities: "",
     submarineCableImage: "",
     submarineCableLink: "",
+    references: [], // Initialize empty array
   });
 
   const generateSlug = useCallback((name: string): string => {
@@ -142,6 +148,7 @@ const CreateCountryForm = () => {
           capabilities: data.capabilities || "",
           submarineCableImage: data.submarineCableImage || "",
           submarineCableLink: data.submarineCableLink || "",
+          references: data.references || [], // Load references
         });
 
         if (data.submarineCableImage && looksLikeUrl(data.submarineCableImage)) {
@@ -177,6 +184,13 @@ const CreateCountryForm = () => {
       return "Submarine cable link must be a valid URL";
     }
 
+    // Validate references URLs
+    for (const ref of formData.references) {
+      if (ref && !looksLikeUrl(ref)) {
+        return `Invalid URL in references: ${ref}`;
+      }
+    }
+
     return null;
   };
 
@@ -195,7 +209,7 @@ const CreateCountryForm = () => {
     try {
       const url = `${API_BASE}/api/country/dashboard/submit`;
       
-      
+      console.log('Submitting to:', url);
 
       const payload = {
         name: formData.name.trim(),
@@ -219,9 +233,10 @@ const CreateCountryForm = () => {
         capabilities: formData.capabilities.trim(),
         submarineCableImage: formData.submarineCableImage.trim(),
         submarineCableLink: formData.submarineCableLink.trim(),
+        references: formData.references.filter(ref => ref.trim() !== ''), // Include references
       };
 
-      
+      console.log('Payload:', payload);
 
       const res = await fetch(url, {
         method: "POST",
@@ -233,7 +248,7 @@ const CreateCountryForm = () => {
       });
 
       const data = await res.json();
-      
+      console.log('Response:', data);
 
       if (!res.ok) {
         throw new Error(data.message || "Failed to submit country form");
@@ -338,6 +353,78 @@ const CreateCountryForm = () => {
     }
   };
 
+  // Handle adding a new reference
+  const handleAddReference = () => {
+    if (!newReference.trim()) {
+      setError("Please enter a URL");
+      return;
+    }
+
+    if (!looksLikeUrl(newReference)) {
+      setError("Please enter a valid URL (must start with http:// or https://)");
+      return;
+    }
+
+    // Check for duplicates
+    if (formData.references.includes(newReference.trim())) {
+      setError("This URL is already in the references list");
+      return;
+    }
+
+    setFormData(prev => ({
+      ...prev,
+      references: [...prev.references, newReference.trim()]
+    }));
+    setNewReference("");
+    setError(null);
+  };
+
+  // Handle removing a reference
+  const handleRemoveReference = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      references: prev.references.filter((_, i) => i !== index)
+    }));
+  };
+
+  // Handle clearing all references
+  const handleClearReferences = () => {
+    if (confirm("Are you sure you want to clear all references?")) {
+      setFormData(prev => ({
+        ...prev,
+        references: []
+      }));
+    }
+  };
+
+  // Handle pasting multiple URLs
+  const handlePasteReferences = (e: React.ClipboardEvent) => {
+    const pastedText = e.clipboardData.getData('text');
+    const urls = pastedText.split(/[\n,;]+/).map(url => url.trim()).filter(url => url);
+    
+    if (urls.length > 1) {
+      e.preventDefault();
+      const validUrls = urls.filter(url => looksLikeUrl(url));
+      const invalidUrls = urls.filter(url => !looksLikeUrl(url));
+      
+      if (validUrls.length > 0) {
+        const uniqueUrls = validUrls.filter(url => !formData.references.includes(url));
+        setFormData(prev => ({
+          ...prev,
+          references: [...prev.references, ...uniqueUrls]
+        }));
+        
+        if (invalidUrls.length > 0) {
+          alert(`Added ${validUrls.length} valid URLs. ${invalidUrls.length} invalid URLs were ignored.`);
+        } else {
+          alert(`Added ${validUrls.length} URLs`);
+        }
+      } else {
+        setError("No valid URLs found in pasted text");
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
       <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b">
@@ -411,15 +498,7 @@ const CreateCountryForm = () => {
                         <span className="text-xs text-gray-500 ml-2">(URL-friendly identifier)</span>
                       </label>
                       <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={regenerateSlug}
-                          className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800"
-                          title="Regenerate slug from country name"
-                        >
-                          <RefreshCw className="h-3 w-3" />
-                          Regenerate
-                        </button>
+                        
                         <button
                           type="button"
                           onClick={copySlugToClipboard}
@@ -510,7 +589,7 @@ const CreateCountryForm = () => {
                       value={formData.minServiceLatencyRange}
                       onChange={(e) => setFormData({...formData, minServiceLatencyRange: e.target.value})}
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-black"
-                      placeholder="e.g., 10-20ms"
+                      placeholder="e.g., 10-20ms (mention ms if applicable)"
                     />
                   </div>
 
@@ -523,7 +602,7 @@ const CreateCountryForm = () => {
                       value={formData.avgServiceLatencyRange}
                       onChange={(e) => setFormData({...formData, avgServiceLatencyRange: e.target.value})}
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-black"
-                      placeholder="e.g., 20-30ms"
+                      placeholder="e.g., 20-30ms (mention ms if applicable)"
                     />
                   </div>
                 </div>
@@ -542,16 +621,16 @@ const CreateCountryForm = () => {
                   </label>
                 </div>
               </div>
-
+                
               <div className="bg-white rounded-2xl shadow-lg p-6 space-y-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-3 border-b">
                   Detailed Information
                 </h2>
                 
                 {[
-                  { label: "Features", key: "features", rows: 3, placeholder: "Key features of your network infrastructure..." },
+                  { label: "Landline and Mobile", key: "features", rows: 3, placeholder: "Key features of your network infrastructure..." },
                   { label: "Our Services", key: "ourServices", rows: 3, placeholder: "Services offered to clients..." },
-                  { label: "Integration Note", key: "integrationNote", rows: 3, placeholder: "Notes about integration process..." },
+                  { label: "Country Internet", key: "integrationNote", rows: 3, placeholder: "Notes about integration process..." },
                   { label: "Why Choose Us", key: "whyChooseUs", rows: 4, placeholder: "What makes your offering unique..." },
                   { label: "Capabilities", key: "capabilities", rows: 4, placeholder: "Technical capabilities and expertise..." },
                 ].map((field) => (
@@ -572,7 +651,7 @@ const CreateCountryForm = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Commercial Offer Date Range
+                      Commercial Offer Days Range
                     </label>
                     <input
                       type="text"
@@ -585,7 +664,7 @@ const CreateCountryForm = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Delivery Date Range
+                      Delivery Days Range
                     </label>
                     <input
                       type="text"
@@ -755,6 +834,10 @@ const CreateCountryForm = () => {
                 </li>
                 <li className="flex items-start gap-2">
                   <div className="h-1.5 w-1.5 bg-blue-600 rounded-full mt-1.5"></div>
+                  <span>Add references to supporting documents or reports</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <div className="h-1.5 w-1.5 bg-blue-600 rounded-full mt-1.5"></div>
                   <span>Submissions will be reviewed by admin before publishing</span>
                 </li>
               </ul>
@@ -790,11 +873,37 @@ const CreateCountryForm = () => {
             <div className="bg-gray-50 rounded-2xl shadow-lg p-6 border border-gray-200">
               <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                 <Globe className="h-5 w-5 text-gray-600" />
+                About References
+              </h3>
+              <div className="space-y-3 text-sm text-gray-600">
+                <p>
+                  <strong>What are references?</strong> URLs to supporting documents, reports, or related resources.
+                </p>
+                <div className="bg-white p-3 rounded-lg border">
+                  <p className="font-medium mb-1">Examples:</p>
+                  <ul className="text-xs space-y-1">
+                    <li>• https://example.com/whitepaper.pdf</li>
+                    <li>• https://stats.example.com/report-2024</li>
+                    <li>• https://docs.example.com/technical-specs</li>
+                  </ul>
+                </div>
+                <ul className="list-disc pl-4 space-y-1">
+                  <li>URLs must start with http:// or https://</li>
+                  <li>You can add multiple references</li>
+                  <li>Paste multiple URLs at once (separated by commas or new lines)</li>
+                  <li>References help validate your submission</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="bg-gray-50 rounded-2xl shadow-lg p-6 border border-gray-200">
+              <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                <Globe className="h-5 w-5 text-gray-600" />
                 About Slugs
               </h3>
               <div className="space-y-3 text-sm text-gray-600">
                 <p>
-                  <strong>What is a slug?</strong> A slug is a URL-friendly version of your country name.
+                  <strong>What is a slug?</strong> A URL-friendly version of your country name.
                 </p>
                 <div className="bg-white p-3 rounded-lg border">
                   <p className="font-medium mb-1">Example:</p>

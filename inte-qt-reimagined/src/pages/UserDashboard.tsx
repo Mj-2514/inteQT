@@ -28,7 +28,7 @@ import {
   Home
 } from "lucide-react";
 
-const API =import.meta.env.VITE_API_BASE;
+const API = import.meta.env.VITE_API_BASE;
 
 // Separate ChangePasswordModal component
 const ChangePasswordModal = ({ 
@@ -415,7 +415,7 @@ export default function UserDashboard() {
       navigate("/auth");
     } else {
       fetchBlogs();
-      fetchStats();
+      fetchStatsFromAPI();
     }
   }, [user, navigate]);
 
@@ -424,6 +424,31 @@ export default function UserDashboard() {
       fetchBlogs();
     }
   }, [activeTab]);
+
+  // Recalculate stats whenever blogs change
+  useEffect(() => {
+    if (blogs.length > 0) {
+      calculateStatsFromBlogs();
+    }
+  }, [blogs]);
+
+  const calculateStatsFromBlogs = () => {
+    const statsFromBlogs = {
+      total: blogs.length,
+      published: blogs.filter(b => b.status === 'published' || b.status === 'approved').length,
+      pending: blogs.filter(b => b.status === 'pending').length,
+      rejected: blogs.filter(b => b.status === 'rejected').length,
+      views: blogs.reduce((sum, blog) => sum + (blog.views || 0), 0),
+      approvalRate: 0
+    };
+    
+    if (statsFromBlogs.total > 0) {
+      const approvedCount = statsFromBlogs.published;
+      statsFromBlogs.approvalRate = Math.round((approvedCount / statsFromBlogs.total) * 100);
+    }
+    
+    setStats(statsFromBlogs);
+  };
 
   const fetchBlogs = async (page = 1) => {
     try {
@@ -503,6 +528,9 @@ export default function UserDashboard() {
         
         setBlogs(blogsData);
         
+        // Calculate stats immediately from fetched blogs
+        calculateStatsFromBlogs();
+        
         let paginationData = {
           total: blogsData.length,
           page: page,
@@ -547,7 +575,7 @@ export default function UserDashboard() {
     }
   };
 
-  const fetchStats = async () => {
+  const fetchStatsFromAPI = async () => {
     try {
       const token = localStorage.getItem("token");
       
@@ -569,7 +597,7 @@ export default function UserDashboard() {
           return;
         }
         
-        calculateStatsFromBlogs();
+        // If API fails, we'll calculate from blogs when they're loaded
         return;
       }
 
@@ -588,31 +616,11 @@ export default function UserDashboard() {
         };
         
         setStats(newStats);
-      } else {
-        calculateStatsFromBlogs();
       }
     } catch (error) {
       console.error('Error fetching stats:', error);
-      calculateStatsFromBlogs();
+      // If API fails, we'll calculate from blogs when they're loaded
     }
-  };
-
-  const calculateStatsFromBlogs = () => {
-    const statsFromBlogs = {
-      total: blogs.length,
-      published: blogs.filter(b => b.status === 'published' || b.status === 'approved').length,
-      pending: blogs.filter(b => b.status === 'pending').length,
-      rejected: blogs.filter(b => b.status === 'rejected').length,
-      views: blogs.reduce((sum, blog) => sum + (blog.views || 0), 0),
-      approvalRate: 0
-    };
-    
-    if (statsFromBlogs.total > 0) {
-      const approvedCount = statsFromBlogs.published;
-      statsFromBlogs.approvalRate = Math.round((approvedCount / statsFromBlogs.total) * 100);
-    }
-    
-    setStats(statsFromBlogs);
   };
 
   const handleLogout = () => {
@@ -685,8 +693,10 @@ export default function UserDashboard() {
       });
 
       if (response.ok) {
+        // Remove the deleted blog from state
         setBlogs(prev => prev.filter(blog => blog._id !== blogId));
-        fetchStats();
+        // Recalculate stats after deletion
+        calculateStatsFromBlogs();
       } else {
         const errorData = await response.json();
         alert(errorData.message || 'Failed to delete blog');
@@ -840,12 +850,7 @@ export default function UserDashboard() {
               <div className="pt-4 mt-4 border-t border-gray-200">
                 <p className="px-4 pb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Quick Stats</p>
                 <div className="space-y-2">
-                  <div className="px-4 py-2 rounded-lg bg-gray-100">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs md:text-sm text-gray-700 truncate">Total Views</span>
-                      <span className="font-semibold text-gray-900 text-sm md:text-base">{stats.views}</span>
-                    </div>
-                  </div>
+                  
                   <div className="px-4 py-2 rounded-lg bg-blue-500/10">
                     <div className="flex items-center justify-between">
                       <span className="text-xs md:text-sm text-blue-600 truncate">Approval Rate</span>
@@ -932,7 +937,7 @@ export default function UserDashboard() {
                     <button
                       onClick={() => {
                         fetchBlogs(pagination.page);
-                        fetchStats();
+                        fetchStatsFromAPI();
                       }}
                       className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 whitespace-nowrap"
                     >
@@ -1141,8 +1146,8 @@ export default function UserDashboard() {
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Blog</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Views</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                          
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Your blog</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200">
@@ -1171,9 +1176,7 @@ export default function UserDashboard() {
                                 </p>
                               )}
                             </td>
-                            <td className="px-6 py-4">
-                              <div className="text-sm font-medium text-gray-900">{blog.views || 0}</div>
-                            </td>
+                            
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-2">
                                 <button

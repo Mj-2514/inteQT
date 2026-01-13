@@ -30,6 +30,18 @@ const countrySchema = new mongoose.Schema(
     submarineCableImage: String,
     submarineCableLink: String,
 
+    // New references field - array of URLs
+    references: [{
+      type: String,
+      validate: {
+        validator: function(v) {
+          // Basic URL validation (optional, can be removed if you want to store any string)
+          return /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/.test(v);
+        },
+        message: props => `${props.value} is not a valid URL!`
+      }
+    }],
+
     status: {
       type: String,
       enum: ["draft", "pending", "approved", "rejected"],
