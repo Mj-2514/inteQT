@@ -8,7 +8,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
-const API_BASE_URL =import.meta.env.VITE_API_BASE;
+const API_BASE_URL = import.meta.env.DEV
+  ? "http://localhost:5000"
+  : "https://inteqt.onrender.com";
 const Sales = () => {
   const [form, setForm] = useState({
     company: "",
@@ -141,7 +143,7 @@ const isValidEmail = (email) => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">Your Email Address*</label>
+                    <label className="block text-sm font-medium mb-2">Email Address*</label>
                     <Input type="email" name="email" placeholder="you@company.com" value={form.email} onChange={handleChange} required />
                   </div>
 
