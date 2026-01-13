@@ -9,9 +9,7 @@ import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
 
-const API_BASE_URL = import.meta.env.DEV
-  ? "http://localhost:5000"
-  : "https://inteqt.onrender.com";
+const API_BASE = import.meta.env.VITE_API_BASE;
 
   // simple client-side email validation
 const isValidEmail = (email) => {

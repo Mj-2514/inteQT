@@ -658,7 +658,7 @@ const CreateCountryForm = () => {
                       value={formData.commercialOfferDateRange}
                       onChange={(e) => setFormData({...formData, commercialOfferDateRange: e.target.value})}
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-black"
-                      placeholder="e.g., Q1 2024 - Q2 2024"
+                      placeholder="e.g., 30-60 days"
                     />
                   </div>
 
