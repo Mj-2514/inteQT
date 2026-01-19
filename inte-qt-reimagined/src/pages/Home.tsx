@@ -197,8 +197,8 @@ const Home: React.FC = () => {
 
   // === SEO Configuration ===
   const seoConfig = {
-    title: "Global Connectivity Services Partner | Dedicated Lines & SD-WAN Solutions | inte-QT",
-    description: "inte-QT: Global connectivity partner providing Dedicated Lines, Business Broadband, SD-WAN underlay, and 24/7 NSOC across 190+ countries. Join our partner center for enterprise solutions.",
+    title: "Global Connectivity Services Partner | Network Solutions",
+    description: "inte-QT: Global connectivity partner providing Dedicated Lines, Business Broadband, SD-WAN underlay, and 24/7 NSOC across 190+ countries with local partnerships.",
     canonical: "https://www.inte-qt.com/",
     image: "https://i.imgur.com/fgarNxn.png",
     siteName: "inte-QT - Global Connectivity Partner",
