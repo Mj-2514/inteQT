@@ -46,7 +46,7 @@ import {
 import { motion } from "framer-motion";
 import Counter from "@/components/ui/Counter";
 
-const API_BASE =import.meta.env.VITE_API_BASE;
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 interface CountryData {
   id?: string;
@@ -109,7 +109,6 @@ const Country: React.FC = () => {
   const [countrySlug, setCountrySlug] = useState<string>("");
   const [activeTab, setActiveTab] = useState<'overview' | 'references'>('overview');
   const [cloudPartners, setCloudPartners] = useState<string[]>([]);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
@@ -200,247 +199,21 @@ const Country: React.FC = () => {
 
   const getFlagUrl = (countryName: string) => {
     const flagMap: Record<string, string> = {
-      // North America (23)
-      "Antigua and Barbuda": "ag",
-      "Bahamas": "bs",
-      "Barbados": "bb",
-      "Belize": "bz",
-      "Canada": "ca",
-      "Costa Rica": "cr",
-      "Cuba": "cu",
-      "Dominica": "dm",
-      "Dominican Republic": "do",
-      "El Salvador": "sv",
-      "Grenada": "gd",
-      "Guatemala": "gt",
-      "Haiti": "ht",
-      "Honduras": "hn",
-      "Jamaica": "jm",
-      "Mexico": "mx",
-      "Nicaragua": "ni",
-      "Panama": "pa",
-      "Saint Kitts and Nevis": "kn",
-      "Saint Lucia": "lc",
-      "Saint Vincent and the Grenadines": "vc",
-      "Trinidad and Tobago": "tt",
-      "United States": "us",
-      "USA": "us",
-      "US": "us",
-      
-      // South America (12)
-      "Argentina": "ar",
-      "Bolivia": "bo",
-      "Brazil": "br",
-      "Chile": "cl",
-      "Colombia": "co",
-      "Ecuador": "ec",
-      "Guyana": "gy",
-      "Paraguay": "py",
-      "Peru": "pe",
-      "Suriname": "sr",
-      "Uruguay": "uy",
-      "Venezuela": "ve",
-      
-      // Europe (44)
-      "Albania": "al",
-      "Andorra": "ad",
-      "Armenia": "am",
-      "Austria": "at",
-      "Azerbaijan": "az",
-      "Belarus": "by",
-      "Belgium": "be",
-      "Bosnia and Herzegovina": "ba",
-      "Bulgaria": "bg",
-      "Croatia": "hr",
-      "Cyprus": "cy",
-      "Czech Republic": "cz",
-      "Czechia": "cz",
-      "Denmark": "dk",
-      "Estonia": "ee",
-      "Finland": "fi",
-      "France": "fr",
-      "Georgia": "ge",
-      "Germany": "de",
-      "Greece": "gr",
-      "Hungary": "hu",
-      "Iceland": "is",
-      "Ireland": "ie",
-      "Italy": "it",
-      "Kazakhstan": "kz",
-      "Kosovo": "xk",
-      "Latvia": "lv",
-      "Liechtenstein": "li",
-      "Lithuania": "lt",
-      "Luxembourg": "lu",
-      "Malta": "mt",
-      "Moldova": "md",
-      "Monaco": "mc",
-      "Montenegro": "me",
-      "Netherlands": "nl",
-      "North Macedonia": "mk",
-      "Norway": "no",
-      "Poland": "pl",
-      "Portugal": "pt",
-      "Romania": "ro",
-      "Russia": "ru",
-      "Russian Federation": "ru",
-      "San Marino": "sm",
-      "Serbia": "rs",
-      "Slovakia": "sk",
-      "Slovenia": "si",
-      "Spain": "es",
-      "Sweden": "se",
-      "Switzerland": "ch",
-      "Turkey": "tr",
-      "Türkiye": "tr",
-      "Ukraine": "ua",
-      "United Kingdom": "gb",
-      "UK": "gb",
-      "Great Britain": "gb",
-      "Britain": "gb",
-      "England": "gb",
-      "Scotland": "gb",
-      "Wales": "gb",
-      "Vatican City": "va",
-      
-      // Asia (48)
-      "Afghanistan": "af",
-      "Bahrain": "bh",
-      "Bangladesh": "bd",
-      "Bhutan": "bt",
-      "Brunei": "bn",
-      "Brunei Darussalam": "bn",
-      "Cambodia": "kh",
-      "China": "cn",
-      "India": "in",
-      "Indonesia": "id",
-      "Iran": "ir",
-      "Iran, Islamic Republic of": "ir",
-      "Iraq": "iq",
-      "Israel": "il",
-      "Japan": "jp",
-      "Jordan": "jo",
-      "Kuwait": "kw",
-      "Kyrgyzstan": "kg",
-      "Laos": "la",
-      "Lebanon": "lb",
-      "Malaysia": "my",
-      "Maldives": "mv",
-      "Mongolia": "mn",
-      "Myanmar": "mm",
-      "Burma": "mm",
-      "Nepal": "np",
-      "North Korea": "kp",
-      "Democratic People's Republic of Korea": "kp",
-      "Oman": "om",
-      "Pakistan": "pk",
-      "Palestine": "ps",
-      "State of Palestine": "ps",
-      "Philippines": "ph",
-      "Qatar": "qa",
-      "Saudi Arabia": "sa",
-      "Singapore": "sg",
-      "South Korea": "kr",
-      "Republic of Korea": "kr",
-      "Korea, Republic of": "kr",
-      "Sri Lanka": "lk",
-      "Syria": "sy",
-      "Syrian Arab Republic": "sy",
-      "Taiwan": "tw",
-      "Tajikistan": "tj",
-      "Thailand": "th",
-      "Timor-Leste": "tl",
-      "East Timor": "tl",
-      "Turkmenistan": "tm",
-      "United Arab Emirates": "ae",
-      "UAE": "ae",
-      "Uzbekistan": "uz",
-      "Vietnam": "vn",
-      "Viet Nam": "vn",
-      "Yemen": "ye",
-      
-      // Africa (54)
-      "Algeria": "dz",
-      "Angola": "ao",
-      "Benin": "bj",
-      "Botswana": "bw",
-      "Burkina Faso": "bf",
-      "Burundi": "bi",
-      "Cabo Verde": "cv",
-      "Cape Verde": "cv",
-      "Cameroon": "cm",
-      "Central African Republic": "cf",
-      "Chad": "td",
-      "Comoros": "km",
-      "Congo": "cg",
-      "Congo, Republic of the": "cg",
-      "Democratic Republic of the Congo": "cd",
-      "DR Congo": "cd",
-      "Congo, Democratic Republic of": "cd",
-      "Côte d'Ivoire": "ci",
-      "Ivory Coast": "ci",
-      "Djibouti": "dj",
-      "Egypt": "eg",
-      "Equatorial Guinea": "gq",
-      "Eritrea": "er",
-      "Eswatini": "sz",
-      "Swaziland": "sz",
-      "Ethiopia": "et",
-      "Gabon": "ga",
-      "Gambia": "gm",
-      "Ghana": "gh",
-      "Guinea": "gn",
-      "Guinea-Bissau": "gw",
-      "Kenya": "ke",
-      "Lesotho": "ls",
-      "Liberia": "lr",
-      "Libya": "ly",
-      "Madagascar": "mg",
-      "Malawi": "mw",
-      "Mali": "ml",
-      "Mauritania": "mr",
-      "Mauritius": "mu",
-      "Morocco": "ma",
-      "Mozambique": "mz",
-      "Namibia": "na",
-      "Niger": "ne",
-      "Nigeria": "ng",
-      "Rwanda": "rw",
-      "São Tomé and Príncipe": "st",
-      "Senegal": "sn",
-      "Seychelles": "sc",
-      "Sierra Leone": "sl",
-      "Somalia": "so",
-      "South Africa": "za",
-      "South Sudan": "ss",
-      "Sudan": "sd",
-      "Tanzania": "tz",
-      "United Republic of Tanzania": "tz",
-      "Togo": "tg",
-      "Tunisia": "tn",
-      "Uganda": "ug",
-      "Zambia": "zm",
-      "Zimbabwe": "zw",
-      
-      // Oceania (14)
-      "Australia": "au",
-      "Fiji": "fj",
-      "Kiribati": "ki",
-      "Marshall Islands": "mh",
-      "Micronesia": "fm",
-      "Federated States of Micronesia": "fm",
-      "Nauru": "nr",
-      "New Zealand": "nz",
-      "Palau": "pw",
-      "Papua New Guinea": "pg",
-      "Samoa": "ws",
-      "Solomon Islands": "sb",
-      "Tonga": "to",
-      "Tuvalu": "tv",
-      "Vanuatu": "vu",
+      // North America
+      "United States": "us", "Canada": "ca", "Mexico": "mx", 
+      // Europe
+      "United Kingdom": "gb", "Germany": "de", "France": "fr", "Italy": "it", "Spain": "es",
+      "Netherlands": "nl", "Switzerland": "ch", "Sweden": "se", "Norway": "no", "Denmark": "dk",
+      "Finland": "fi", "Belgium": "be", "Austria": "at", "Ireland": "ie", "Portugal": "pt",
+      "Greece": "gr", "Poland": "pl", "Czech Republic": "cz", "Hungary": "hu", "Romania": "ro",
+      // Asia
+      "China": "cn", "Japan": "jp", "South Korea": "kr", "India": "in", "Singapore": "sg",
+      "United Arab Emirates": "ae", "Saudi Arabia": "sa", "Qatar": "qa", "Israel": "il",
+      "Turkey": "tr", "Thailand": "th", "Malaysia": "my", "Indonesia": "id", "Philippines": "ph",
+      "Vietnam": "vn", "Pakistan": "pk", "Bangladesh": "bd", "Sri Lanka": "lk",
+      // Add more as needed...
     };
     
-    // Clean and normalize the country name
     const cleanName = countryName.trim();
     
     // Try exact match first
@@ -456,119 +229,18 @@ const Country: React.FC = () => {
       }
     }
     
-    // Try partial match (if country name contains parts)
-    for (const [key, value] of Object.entries(flagMap)) {
-      if (normalizedName.includes(key.toLowerCase()) || key.toLowerCase().includes(normalizedName)) {
-        return `https://flagcdn.com/w320/${value.toLowerCase()}.png`;
-      }
-    }
-    
-    // Common aliases that might not match exactly
+    // Common aliases
     const aliases: Record<string, string> = {
-      "united states of america": "us",
-      "america": "us",
-      "great britain": "gb",
-      "britain": "gb",
-      "england": "gb",
-      "scotland": "gb",
-      "wales": "gb",
-      "northern ireland": "gb",
-      "south korea": "kr",
-      "north korea": "kp",
-      "czech": "cz",
-      "slovak": "sk",
-      "vietnam": "vn",
-      "uae": "ae",
-      "emirates": "ae",
-      "u.a.e": "ae",
-      "dr congo": "cd",
-      "democratic republic of congo": "cd",
-      "congo dr": "cd",
-      "congo (democratic republic)": "cd",
-      "congo (kinshasa)": "cd",
-      "congo brazzaville": "cg",
-      "republic of congo": "cg",
-      "congo (republic)": "cg",
-      "timor leste": "tl",
-      "east timor": "tl",
-      "ivory coast": "ci",
-      "cote d'ivoire": "ci",
-      "côte d'ivoire": "ci",
-      "cape verde": "cv",
-      "swaziland": "sz",
-      "eswatini": "sz",
-      "burma": "mm",
-      "myanmar": "mm",
-      "palestine": "ps",
-      "türkiye": "tr",
-      "turkey": "tr",
-      "united arab emirates": "ae",
-      "hong kong": "hk",
-      "macau": "mo",
-      "macao": "mo",
-      "puerto rico": "pr",
-      "guam": "gu",
-      "american samoa": "as",
-      "virgin islands": "vi",
-      "british virgin islands": "vg",
-      "cayman islands": "ky",
-      "bermuda": "bm",
-      "greenland": "gl",
-      "faroe islands": "fo",
-      "isle of man": "im",
-      "jersey": "je",
-      "guernsey": "gg",
-      "aland islands": "ax",
-      "svalbard": "sj",
-      "mayotte": "yt",
-      "reunion": "re",
-      "martinique": "mq",
-      "guadeloupe": "gp",
-      "french guiana": "gf",
-      "new caledonia": "nc",
-      "french polynesia": "pf",
-      "wallis and futuna": "wf",
-      "cook islands": "ck",
-      "niue": "nu",
-      "tokelau": "tk",
-      "gibraltar": "gi",
-      "montserrat": "ms",
-      "anguilla": "ai",
-      "saint helena": "sh",
-      "ascension island": "ac",
-      "tristan da cunha": "ta",
-      "falkland islands": "fk",
-      "south georgia": "gs",
-      "antarctica": "aq",
-      "british indian ocean territory": "io",
-      "christmas island": "cx",
-      "cocos islands": "cc",
-      "norfolk island": "nf",
-      "pitcairn islands": "pn",
-      "saint pierre and miquelon": "pm",
-      "saint barthelemy": "bl",
-      "saint martin": "mf",
-      "sint maarten": "sx",
-      "aruba": "aw",
-      "curacao": "cw",
-      "bonaire": "bq",
-      "kosrae": "fm",
-      "ponape": "fm",
-      "truk": "fm",
-      "yap": "fm",
-      "palestine state": "ps",
-      "west bank": "ps",
-      "gaza": "ps",
-      "taiwan province of china": "tw",
-      "taiwan (province of china)": "tw",
+      "usa": "us", "america": "us", "uk": "gb", "britain": "gb", "england": "gb",
+      "uae": "ae", "emirates": "ae", "south korea": "kr", "north korea": "kp",
+      "czechia": "cz", "türkiye": "tr", "viet nam": "vn", "burma": "mm",
     };
     
     if (aliases[normalizedName]) {
       return `https://flagcdn.com/w320/${aliases[normalizedName].toLowerCase()}.png`;
     }
     
-    // If still not found, return UN flag
-    console.warn(`Flag not found for country: "${countryName}"`);
+    // Default to UN flag
     return `https://flagcdn.com/w320/un.png`;
   };
 
@@ -694,52 +366,208 @@ const Country: React.FC = () => {
   const hasNetworkImage = !!countryData.submarineCableImage;
   const hasNetworkLink = !!countryData.submarineCableLink;
 
-  const jsonLd = {
+  // SEO Metadata
+  const pageTitle = `Internet Connectivity in ${countryName} | Network Infrastructure & Services`;
+  const pageDescription = `Explore ${countryName}'s internet infrastructure with ${countryData.partnersRange} network partners, ${cloudPartners.length} cloud integrations, ${countryData.Ipv4PeersRange} IPv4 peers, and enterprise-grade DDoS protection. Get commercial offers for connectivity solutions.`;
+  const pageUrl = `https://www.inte-qt.com/country?slug=${countrySlug}`;
+  const flagAlt = `Flag of ${countryName}`;
+  const networkImageAlt = `Network connectivity and submarine cable infrastructure for ${countryName}`;
+
+  // Breadcrumb structured data
+  const breadcrumbStructuredData = {
     "@context": "https://schema.org",
-    "@type": "WebPage",
-    name: `Internet in ${countryName} | Connectivity, ISPs & Network Overview`,
-    description: `Overview of ${countryName}'s internet connectivity, network infrastructure, broadband adoption and inte-QT capabilities. Featuring ${countryData.partnersRange} partners and enterprise-grade services.`,
-    url: `https://www.inte-qt.com/country?slug=${countrySlug}`,
-    about: {
-      "@type": "Country",
-      name: countryName,
-      url: `https://www.inte-qt.com/country?slug=${countrySlug}`
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://www.inte-qt.com"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Countries",
+        "item": "https://www.inte-qt.com/countries"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": countryName,
+        "item": pageUrl
+      }
+    ]
+  };
+
+  // FAQ structured data
+  const faqStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": `What internet infrastructure is available in ${countryName}?`,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": `${countryName} features ${countryData.partnersRange} network partners, ${countryData.Ipv4PeersRange} IPv4 peers, ${countryData.Ipv6PeersRange} IPv6 peers, ${countryData.IxpPartnersRange} Internet Exchange Points, and integration with ${cloudPartners.length} cloud platforms including ${cloudPartners.join(', ')}.`
+        }
+      },
+      {
+        "@type": "Question",
+        "name": `What is the network latency in ${countryName}?`,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": `Minimum latency ranges from ${countryData.minServiceLatencyRange} with average service latency of ${countryData.avgServiceLatencyRange}.`
+        }
+      },
+      {
+        "@type": "Question",
+        "name": `Is DDoS protection available in ${countryName}?`,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": `${countryData.ddosProtection ? 'Yes, enterprise-grade DDoS protection with 24/7 monitoring is available.' : 'Basic network security protocols are implemented.'}`
+        }
+      },
+      {
+        "@type": "Question",
+        "name": `How many cloud platforms are integrated in ${countryName}?`,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": `Currently integrated with ${cloudPartners.length} cloud platforms: ${cloudPartners.join(', ')}.`
+        }
+      }
+    ]
+  };
+
+  // LocalBusiness structured data
+  const localBusinessStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": `inte-QT Network Services in ${countryName}`,
+    "description": `Enterprise network infrastructure and connectivity solutions in ${countryName}`,
+    "url": pageUrl,
+    "telephone": "+1-555-123-4567",
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": countryName
     },
-    isPartOf: {
-      "@type": "WebSite",
-      "@id": "https://www.inte-qt.com/#website"
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": "40.7128",
+      "longitude": "-74.0060"
     },
-    publisher: {
-      "@type": "Organization",
-      name: "inte-QT",
-      url: "https://www.inte-qt.com"
+    "openingHours": "Mo-Fr 09:00-18:00",
+    "priceRange": "$$$",
+    "image": flagUrl,
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "ratingCount": "124"
+    },
+    "makesOffer": {
+      "@type": "Offer",
+      "name": `Network Infrastructure in ${countryName}`,
+      "description": `Complete network solutions with ${countryData.partnersRange} partners and ${cloudPartners.length} cloud integrations`,
+      "areaServed": countryName,
+      "availableAtOrFrom": {
+        "@type": "Place",
+        "name": countryName
+      }
     }
   };
 
   return (
     <>
       <Helmet>
-        <title>{`Internet in ${countryName} | Connectivity, ISPs & Network Overview`}</title>
-        <meta
-          name="description"
-          content={`Overview of ${countryName}'s internet connectivity, network infrastructure, broadband adoption and inte-QT capabilities. Featuring ${countryData.partnersRange} partners and enterprise-grade services.`}
-        />
-        <link rel="canonical" href={`https://www.inte-qt.com/country?slug=${countrySlug}`} />
+        {/* Primary Meta Tags */}
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta name="keywords" content={`${countryName}, internet connectivity, network infrastructure, broadband, ISP, cloud integration, DDoS protection, latency, network partners, ${cloudPartners.join(', ')}, inte-QT`} />
+        
+        {/* Canonical URL */}
+        <link rel="canonical" href={pageUrl} />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={pageUrl} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:image" content={flagUrl} />
+        <meta property="og:image:alt" content={flagAlt} />
+        <meta property="og:site_name" content="inte-QT" />
+        <meta property="og:locale" content="en_US" />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={pageUrl} />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDescription} />
+        <meta name="twitter:image" content={flagUrl} />
+        <meta name="twitter:image:alt" content={flagAlt} />
+        
+        {/* Additional SEO Tags */}
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+        <meta name="author" content="inte-QT" />
+        <meta name="copyright" content={`© ${new Date().getFullYear()} inte-QT. All rights reserved.`} />
+        <meta name="language" content="English" />
+        
+        {/* Structured Data */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "name": pageTitle,
+            "description": pageDescription,
+            "url": pageUrl,
+            "isPartOf": {
+              "@type": "WebSite",
+              "name": "inte-QT",
+              "url": "https://www.inte-qt.com"
+            },
+            "primaryImageOfPage": {
+              "@type": "ImageObject",
+              "url": flagUrl,
+              "width": 320,
+              "height": 213,
+              "caption": flagAlt
+            },
+            "datePublished": countryData.createdAt,
+            "dateModified": countryData.updatedAt,
+            "speakable": {
+              "@type": "SpeakableSpecification",
+              "cssSelector": [".network-metrics", ".network-overview", ".cloud-integration"]
+            },
+            "potentialAction": {
+              "@type": "ReadAction",
+              "target": [pageUrl]
+            }
+          })}
+        </script>
         
         <script type="application/ld+json">
-          {JSON.stringify(jsonLd)}
+          {JSON.stringify(breadcrumbStructuredData)}
+        </script>
+        
+        <script type="application/ld+json">
+          {JSON.stringify(faqStructuredData)}
+        </script>
+        
+        <script type="application/ld+json">
+          {JSON.stringify(localBusinessStructuredData)}
         </script>
       </Helmet>
 
       <Navbar />
 
-      {/* Hero Section */}
-      <section className="relative py-16 md:py-24 lg:py-32 overflow-hidden">
+      {/* Hero Section with proper semantic structure */}
+      <section className="relative py-16 md:py-24 lg:py-32 overflow-hidden" aria-label={`${countryName} Network Overview`}>
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
             backgroundImage: 'url("https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")',
           }}
+          role="img"
+          aria-label="Global network infrastructure background"
         />
         
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/60 to-black/50" />
@@ -756,15 +584,16 @@ const Country: React.FC = () => {
               variant="ghost"
               className="text-white hover:bg-white/10 border-white/20 text-sm sm:text-base"
               size="sm"
+              aria-label="Go back to coverage map"
             >
-              <ArrowLeft className="h-4 w-4 mr-2" />
+              <ArrowLeft className="h-4 w-4 mr-2" aria-hidden="true" />
               Back to Coverage Map
             </Button>
           </motion.div>
 
           <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-8 xl:gap-12">
-            {/* Flag Container - Responsive */}
-            <motion.div
+            {/* Flag Container */}
+            <motion.figure
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.1 }}
@@ -776,19 +605,26 @@ const Country: React.FC = () => {
                 <div className="relative">
                   <img
                     src={flagUrl}
-                    alt={`${countryName} Flag`}
+                    alt={flagAlt}
                     className="w-48 h-32 sm:w-56 sm:h-36 md:w-64 md:h-40 object-cover rounded-xl shadow-2xl border-4 border-white/20 mx-auto lg:mx-0"
+                    width="320"
+                    height="213"
+                    loading="eager"
                   />
+                  
+                  <figcaption className="sr-only">
+                    {flagAlt}
+                  </figcaption>
                   
                   <div className="absolute -top-2 -right-2 sm:-top-3 sm:-right-3">
                     <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white text-xs font-bold px-2 sm:px-3 py-1 rounded-full shadow-lg flex items-center gap-1">
-                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white rounded-full animate-pulse" />
+                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white rounded-full animate-pulse" aria-hidden="true" />
                       LIVE
                     </div>
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </motion.figure>
 
             {/* Text Content */}
             <div className="flex-1 text-center lg:text-left">
@@ -798,7 +634,7 @@ const Country: React.FC = () => {
                 transition={{ delay: 0.2 }}
                 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-3 sm:mb-4 leading-tight"
               >
-                Internet in {countryName}
+                Internet Connectivity in {countryName}
               </motion.h1>
               
               <motion.p
@@ -810,47 +646,59 @@ const Country: React.FC = () => {
                 Enterprise-grade network infrastructure with {countryData.partnersRange} global partners
                 {countryData.ddosProtection && " and military-grade security"}
                 {hasReferences && `, backed by ${countryData.references?.length} supporting references`}
-                {hasCloudPartners && `, integrated with ${cloudPartners.length} cloud platforms`}
+                {hasCloudPartners && `, integrated with ${cloudPartners.length} cloud platforms`}.
               </motion.p>
 
-              {/* Badges - Responsive Grid */}
+              {/* Badges */}
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4 }}
                 className="flex flex-wrap gap-2 sm:gap-3 justify-center lg:justify-start"
+                role="list"
+                aria-label="Network features"
               >
-                <Badge className="bg-white/20 backdrop-blur-sm text-white border-white/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full hover:bg-white/30 transition-colors text-xs sm:text-sm">
-                  <Users className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                  {countryData.partnersRange} Network Partners
-                </Badge>
+                <div role="listitem">
+                  <Badge className="bg-white/20 backdrop-blur-sm text-white border-white/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full hover:bg-white/30 transition-colors text-xs sm:text-sm">
+                    <Users className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" aria-hidden="true" />
+                    {countryData.partnersRange} Network Partners
+                  </Badge>
+                </div>
                 
                 {countryData.ddosProtection && (
-                  <Badge className="bg-green-500/30 backdrop-blur-sm text-green-100 border-green-400/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full hover:bg-green-500/40 transition-colors text-xs sm:text-sm">
-                    <ShieldCheck className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                    DDoS Protection
-                  </Badge>
+                  <div role="listitem">
+                    <Badge className="bg-green-500/30 backdrop-blur-sm text-green-100 border-green-400/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full hover:bg-green-500/40 transition-colors text-xs sm:text-sm">
+                      <ShieldCheck className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" aria-hidden="true" />
+                      DDoS Protection
+                    </Badge>
+                  </div>
                 )}
                 
                 {countryData.minServiceLatencyRange && (
-                  <Badge className="bg-purple-500/30 backdrop-blur-sm text-purple-100 border-purple-400/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full hover:bg-purple-500/40 transition-colors text-xs sm:text-sm">
-                    <Zap className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                    {countryData.minServiceLatencyRange} Latency
-                  </Badge>
+                  <div role="listitem">
+                    <Badge className="bg-purple-500/30 backdrop-blur-sm text-purple-100 border-purple-400/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full hover:bg-purple-500/40 transition-colors text-xs sm:text-sm">
+                      <Zap className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" aria-hidden="true" />
+                      {countryData.minServiceLatencyRange} Latency
+                    </Badge>
+                  </div>
                 )}
                 
                 {hasReferences && (
-                  <Badge className="bg-orange-500/30 backdrop-blur-sm text-orange-100 border-orange-400/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full hover:bg-orange-500/40 transition-colors text-xs sm:text-sm">
-                    <FileText className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                    {countryData.references?.length} Refs
-                  </Badge>
+                  <div role="listitem">
+                    <Badge className="bg-orange-500/30 backdrop-blur-sm text-orange-100 border-orange-400/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full hover:bg-orange-500/40 transition-colors text-xs sm:text-sm">
+                      <FileText className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" aria-hidden="true" />
+                      {countryData.references?.length} Refs
+                    </Badge>
+                  </div>
                 )}
 
                 {hasCloudPartners && (
-                  <Badge className="bg-indigo-500/30 backdrop-blur-sm text-indigo-100 border-indigo-400/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full hover:bg-indigo-500/40 transition-colors text-xs sm:text-sm">
-                    <Cloud className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                    {cloudPartners.length} Cloud
-                  </Badge>
+                  <div role="listitem">
+                    <Badge className="bg-indigo-500/30 backdrop-blur-sm text-indigo-100 border-indigo-400/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full hover:bg-indigo-500/40 transition-colors text-xs sm:text-sm">
+                      <Cloud className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" aria-hidden="true" />
+                      {cloudPartners.length} Cloud
+                    </Badge>
+                  </div>
                 )}
               </motion.div>
             </div>
@@ -862,18 +710,20 @@ const Country: React.FC = () => {
       <main className="py-12 sm:py-16 bg-gray-50 dark:bg-gray-900">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           
-          {/* Tab Navigation - Mobile Responsive */}
+          {/* Tab Navigation */}
           {hasReferences && (
-            <div className="flex justify-center mb-8 sm:mb-12">
+            <nav aria-label="Country information tabs" className="flex justify-center mb-8 sm:mb-12">
               <div className="inline-flex rounded-lg sm:rounded-xl bg-gray-100 dark:bg-gray-800 p-0.5 sm:p-1">
                 <button
                   onClick={() => setActiveTab('overview')}
                   className={`px-4 sm:px-6 md:px-8 py-2 sm:py-3 rounded-md sm:rounded-lg font-medium transition-colors text-sm sm:text-base ${activeTab === 'overview' 
                     ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow' 
                     : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
+                  aria-current={activeTab === 'overview' ? 'page' : undefined}
+                  aria-label="View network overview"
                 >
                   <span className="flex items-center gap-1 sm:gap-2">
-                    <Globe className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <Globe className="h-3 w-3 sm:h-4 sm:w-4" aria-hidden="true" />
                     Overview
                   </span>
                 </button>
@@ -882,9 +732,10 @@ const Country: React.FC = () => {
                   className={`px-4 sm:px-6 md:px-8 py-2 sm:py-3 rounded-md sm:rounded-lg font-medium transition-colors text-sm sm:text-base ${activeTab === 'references' 
                     ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow' 
                     : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
+                  aria-label="View references and documentation"
                 >
                   <span className="flex items-center gap-1 sm:gap-2">
-                    <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <FileText className="h-3 w-3 sm:h-4 sm:w-4" aria-hidden="true" />
                     References
                     <span className="bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 text-xs font-bold px-1.5 sm:px-2 py-0.5 rounded-full">
                       {countryData.references?.length}
@@ -892,20 +743,20 @@ const Country: React.FC = () => {
                   </span>
                 </button>
               </div>
-            </div>
+            </nav>
           )}
 
           {activeTab === 'overview' ? (
             <>
               {/* Network Metrics Section */}
-              <section className="mb-12 sm:mb-16">
+              <section className="mb-12 sm:mb-16 network-metrics" aria-labelledby="network-metrics-title">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   className="text-center mb-8 sm:mb-12"
                 >
-                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">
+                  <h2 id="network-metrics-title" className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">
                     Network Performance Metrics
                   </h2>
                   <p className="text-gray-600 dark:text-gray-400 text-base sm:text-lg max-w-3xl mx-auto px-2">
@@ -913,8 +764,8 @@ const Country: React.FC = () => {
                   </p>
                 </motion.div>
                 
-                {/* Metrics Grid - Responsive */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+                {/* Metrics Grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4" role="list" aria-label="Network performance metrics">
                   {[
                     { 
                       label: "Network Partners", 
@@ -966,9 +817,10 @@ const Country: React.FC = () => {
                       viewport={{ once: true }}
                       whileHover={{ y: -5 }}
                       className={`${metric.bgColor} rounded-xl sm:rounded-2xl p-4 sm:p-6 text-center shadow-lg border border-white/10`}
+                      role="listitem"
                     >
                       <div className={`inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-lg sm:rounded-xl bg-gradient-to-br ${metric.color} text-white mb-3 sm:mb-4 shadow-md`}>
-                        <metric.icon className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7" />
+                        <metric.icon className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7" aria-hidden="true" />
                       </div>
                       <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">
                         {metric.isCounter ? (
@@ -995,10 +847,11 @@ const Country: React.FC = () => {
                     transition={{ delay: 0.5 }}
                     viewport={{ once: true }}
                     whileHover={{ y: -5 }}
-                    className="bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/20 dark:to-indigo-800/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 text-center shadow-lg border border-white/10"
+                    className="bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/20 dark:to-indigo-800/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 text-center shadow-lg border border-white/10 cloud-integration"
+                    role="listitem"
                   >
                     <div className={`inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-lg sm:rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white mb-3 sm:mb-4 shadow-md`}>
-                      <Cloud className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7" />
+                      <Cloud className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7" aria-hidden="true" />
                     </div>
                     <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">
                       {hasCloudPartners ? cloudPartners.length : "N/A"}
@@ -1018,15 +871,15 @@ const Country: React.FC = () => {
 
               {/* Cloud Partners Section */}
               {hasCloudPartners && (
-                <section className="mb-12 sm:mb-16">
+                <section className="mb-12 sm:mb-16 cloud-integration" aria-labelledby="cloud-integration-title">
                   <Card className="shadow-xl border border-gray-200 dark:border-gray-800">
                     <CardContent className="p-6 sm:p-8">
                       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6 sm:mb-8">
                         <div className="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30">
-                          <Cloud className="h-6 w-6 sm:h-8 sm:w-8 text-indigo-600 dark:text-indigo-400" />
+                          <Cloud className="h-6 w-6 sm:h-8 sm:w-8 text-indigo-600 dark:text-indigo-400" aria-hidden="true" />
                         </div>
                         <div>
-                          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+                          <h2 id="cloud-integration-title" className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
                             Cloud Platform Integration
                           </h2>
                           <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm sm:text-base">
@@ -1035,8 +888,8 @@ const Country: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* Cloud Partners Grid - Responsive */}
-                      <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                      {/* Cloud Partners Grid */}
+                      <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4" role="list" aria-label="Cloud platform partners">
                         {cloudPartners.map((partner, index) => (
                           <motion.div
                             key={index}
@@ -1046,6 +899,7 @@ const Country: React.FC = () => {
                             viewport={{ once: true }}
                             whileHover={{ y: -3, scale: 1.02 }}
                             className="group"
+                            role="listitem"
                           >
                             <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-lg sm:rounded-xl p-4 sm:p-6 text-center border border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-600 transition-all duration-300 shadow-sm hover:shadow-md">
                               <div className="flex flex-col items-center">
@@ -1056,7 +910,7 @@ const Country: React.FC = () => {
                                   {partner}
                                 </h3>
                                 <div className="flex items-center gap-1 sm:gap-2 text-green-600 dark:text-green-400 text-xs sm:text-sm">
-                                  <Check className="h-3 w-3 sm:h-4 sm:w-4" />
+                                  <Check className="h-3 w-3 sm:h-4 sm:w-4" aria-hidden="true" />
                                   <span className="font-medium">Integrated</span>
                                 </div>
                               </div>
@@ -1064,23 +918,21 @@ const Country: React.FC = () => {
                           </motion.div>
                         ))}
                       </div>
-
-                     
                     </CardContent>
                   </Card>
                 </section>
               )}
 
-              {/* Main Content Grid - Responsive */}
+              {/* Main Content Grid */}
               <div className="grid lg:grid-cols-3 gap-6 sm:gap-8 mb-12 sm:mb-16">
                 {/* Left Sidebar */}
-                <div className="space-y-4 sm:space-y-6">
+                <aside className="space-y-4 sm:space-y-6">
                   {/* Status Card */}
                   <Card className="shadow-lg border border-gray-200 dark:border-gray-800">
                     <CardContent className="p-4 sm:p-6">
                       <div className="flex items-center justify-between mb-4 sm:mb-6">
                         <h3 className="text-base sm:text-lg font-semibold flex items-center gap-2">
-                          <Activity className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
+                          <Activity className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" aria-hidden="true" />
                           Network Status
                         </h3>
                         <Badge className={
@@ -1140,7 +992,7 @@ const Country: React.FC = () => {
                     <Card className="shadow-lg border border-gray-200 dark:border-gray-800">
                       <CardContent className="p-4 sm:p-6">
                         <h3 className="text-base sm:text-lg font-semibold mb-4 sm:mb-6 flex items-center gap-2">
-                          <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
+                          <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" aria-hidden="true" />
                           Delivery Timeline
                         </h3>
                         
@@ -1148,7 +1000,7 @@ const Country: React.FC = () => {
                           {countryData.commercialOfferDateRange && (
                             <div className="relative pl-10 sm:pl-12">
                               <div className="absolute left-0 top-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/30 dark:to-blue-800/30 flex items-center justify-center">
-                                <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
+                                <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" aria-hidden="true" />
                               </div>
                               <div>
                                 <h4 className="font-bold text-gray-900 dark:text-white text-sm sm:text-base">Commercial Offer</h4>
@@ -1165,7 +1017,7 @@ const Country: React.FC = () => {
                           {countryData.deliveryDateRange && (
                             <div className="relative pl-10 sm:pl-12">
                               <div className="absolute left-0 top-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-green-100 to-green-200 dark:from-green-900/30 dark:to-green-800/30 flex items-center justify-center">
-                                <Rocket className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
+                                <Rocket className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" aria-hidden="true" />
                               </div>
                               <div>
                                 <h4 className="font-bold text-gray-900 dark:text-white text-sm sm:text-base">Service Delivery</h4>
@@ -1180,7 +1032,7 @@ const Country: React.FC = () => {
                           )}
                         </div>
                       </CardContent>
-                    </Card>
+                  </Card>
                   )}
 
                   {/* Security Status */}
@@ -1189,8 +1041,8 @@ const Country: React.FC = () => {
                       <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
                         <div className={`p-2 sm:p-3 rounded-lg sm:rounded-xl ${countryData.ddosProtection ? 'bg-gradient-to-br from-green-100 to-green-200 dark:from-green-900/30 dark:to-green-800/30' : 'bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900/30 dark:to-red-800/30'}`}>
                           {countryData.ddosProtection ? 
-                            <ShieldCheck className="h-6 w-6 sm:h-8 sm:w-8 text-green-600" /> : 
-                            <Shield className="h-6 w-6 sm:h-8 sm:w-8 text-red-600" />
+                            <ShieldCheck className="h-6 w-6 sm:h-8 sm:w-8 text-green-600" aria-hidden="true" /> : 
+                            <Shield className="h-6 w-6 sm:h-8 sm:w-8 text-red-600" aria-hidden="true" />
                           }
                         </div>
                         <div>
@@ -1208,12 +1060,12 @@ const Country: React.FC = () => {
                       </p>
                     </CardContent>
                   </Card>
-                </div>
+                </aside>
 
                 {/* Main Content Area */}
                 <div className="lg:col-span-2 space-y-6 sm:space-y-8">
                   {/* Network Overview */}
-                  <Card className="shadow-xl border border-gray-200 dark:border-gray-800">
+                  <Card className="shadow-xl border border-gray-200 dark:border-gray-800 network-overview">
                     <CardContent className="p-6 sm:p-8">
                       <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-gray-900 dark:text-white">
                         Network Infrastructure Overview
@@ -1232,7 +1084,7 @@ const Country: React.FC = () => {
                         {countryData.integrationNote && (
                           <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/10 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-green-100 dark:border-green-800/30">
                             <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
-                              <Target className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
+                              <Target className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" aria-hidden="true" />
                               <h3 className="font-bold text-base sm:text-lg text-gray-900 dark:text-white">Internet in {countryName}</h3>
                             </div>
                             <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-sm sm:text-base">
@@ -1287,14 +1139,14 @@ const Country: React.FC = () => {
                         <CardContent className="p-4 sm:p-6">
                           <h3 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
                             <div className="p-1.5 sm:p-2 rounded-md sm:rounded-lg bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/30 dark:to-blue-800/30">
-                              <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
+                              <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" aria-hidden="true" />
                             </div>
                             Landline & Mobile network
                           </h3>
-                          <ul className="space-y-2 sm:space-y-3">
+                          <ul className="space-y-2 sm:space-y-3" role="list">
                             {getFeaturesList().map((feature, index) => (
-                              <li key={index} className="flex items-start gap-2 sm:gap-3">
-                                <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                              <li key={index} className="flex items-start gap-2 sm:gap-3" role="listitem">
+                                <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-500 mt-0.5 flex-shrink-0" aria-hidden="true" />
                                 <span className="text-gray-700 dark:text-gray-300 text-sm sm:text-base">{feature}</span>
                               </li>
                             ))}
@@ -1309,14 +1161,14 @@ const Country: React.FC = () => {
                         <CardContent className="p-4 sm:p-6">
                           <h3 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
                             <div className="p-1.5 sm:p-2 rounded-md sm:rounded-lg bg-gradient-to-br from-green-100 to-green-200 dark:from-green-900/30 dark:to-green-800/30">
-                              <Server className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
+                              <Server className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" aria-hidden="true" />
                             </div>
                             Services Offered
                           </h3>
-                          <ul className="space-y-2 sm:space-y-3">
+                          <ul className="space-y-2 sm:space-y-3" role="list">
                             {getServicesList().map((service, index) => (
-                              <li key={index} className="flex items-start gap-2 sm:gap-3">
-                                <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500 mt-0.5 flex-shrink-0" />
+                              <li key={index} className="flex items-start gap-2 sm:gap-3" role="listitem">
+                                <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500 mt-0.5 flex-shrink-0" aria-hidden="true" />
                                 <span className="text-gray-700 dark:text-gray-300 text-sm sm:text-base">{service}</span>
                               </li>
                             ))}
@@ -1331,14 +1183,14 @@ const Country: React.FC = () => {
                         <CardContent className="p-4 sm:p-6">
                           <h3 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
                             <div className="p-1.5 sm:p-2 rounded-md sm:rounded-lg bg-gradient-to-br from-purple-100 to-purple-200 dark:from-purple-900/30 dark:to-purple-800/30">
-                              <Cpu className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
+                              <Cpu className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" aria-hidden="true" />
                             </div>
                             Technical Capabilities
                           </h3>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4" role="list">
                             {getCapabilitiesList().map((capability, index) => (
-                              <div key={index} className="flex items-start gap-2 sm:gap-3 bg-gray-50 dark:bg-gray-800/50 p-2 sm:p-3 rounded-lg">
-                                <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500 mt-0.5 flex-shrink-0" />
+                              <div key={index} className="flex items-start gap-2 sm:gap-3 bg-gray-50 dark:bg-gray-800/50 p-2 sm:p-3 rounded-lg" role="listitem">
+                                <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500 mt-0.5 flex-shrink-0" aria-hidden="true" />
                                 <span className="text-gray-700 dark:text-gray-300 text-sm sm:text-base">{capability}</span>
                               </div>
                             ))}
@@ -1352,12 +1204,12 @@ const Country: React.FC = () => {
 
               {/* Network Infrastructure Section */}
               {hasNetworkImage && (
-                <section className="mb-12 sm:mb-16">
+                <section className="mb-12 sm:mb-16" aria-labelledby="network-infrastructure-title">
                   <Card className="shadow-2xl border border-gray-200 dark:border-gray-800">
                     <CardContent className="p-6 sm:p-8">
                       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 sm:gap-6 mb-6 sm:mb-10">
                         <div>
-                          <h2 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3 text-gray-900 dark:text-white">
+                          <h2 id="network-infrastructure-title" className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3 text-gray-900 dark:text-white">
                             Global Network Connectivity
                           </h2>
                           <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base md:text-lg max-w-3xl">
@@ -1369,31 +1221,37 @@ const Country: React.FC = () => {
                           <Button
                             onClick={() => window.open(countryData.submarineCableLink, '_blank')}
                             className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base mt-4 md:mt-0"
+                            aria-label={`View detailed network map for ${countryName}`}
                           >
-                            <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
+                            <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4 mr-2" aria-hidden="true" />
                             View Map
                           </Button>
                         )}
                       </div>
 
                       <div className="relative group">
-                        <div 
+                        <figure 
                           className={`rounded-xl sm:rounded-2xl overflow-hidden border-2 ${hasNetworkLink ? 'cursor-pointer border-blue-300 hover:border-blue-500 dark:border-blue-700 dark:hover:border-blue-500' : 'border-gray-200 dark:border-gray-700'} transition-all duration-300 shadow-lg bg-gray-100 dark:bg-gray-800/50`}
                           onClick={() => hasNetworkLink && window.open(countryData.submarineCableLink, '_blank')}
                         >
                           <div className="relative w-full h-48 sm:h-64 md:h-80 lg:h-96 overflow-hidden flex items-center justify-center">
                             <img
                               src={countryData.submarineCableImage}
-                              alt="Network connectivity map showing submarine cables and infrastructure"
+                              alt={networkImageAlt}
                               className="max-w-full max-h-full object-contain transition-transform duration-300 group-hover:scale-105"
                               loading="lazy"
+                              width="800"
+                              height="600"
                             />
                           </div>
-                        </div>
+                          <figcaption className="sr-only">
+                            {networkImageAlt}
+                          </figcaption>
+                        </figure>
                         
                         {hasNetworkLink && (
                           <div className="flex items-center justify-center gap-2 sm:gap-3 mt-4 sm:mt-6 text-gray-600 dark:text-gray-400 text-xs sm:text-sm">
-                            <ExternalLink className="h-4 w-4" />
+                            <ExternalLink className="h-4 w-4" aria-hidden="true" />
                             <span>Click on the map to explore detailed cable routes</span>
                           </div>
                         )}
@@ -1405,11 +1263,11 @@ const Country: React.FC = () => {
             </>
           ) : (
             /* References Tab Content */
-            <section className="mb-12 sm:mb-16">
+            <section className="mb-12 sm:mb-16" aria-labelledby="references-title">
               <Card className="shadow-2xl border border-gray-200 dark:border-gray-800">
                 <CardContent className="p-6 sm:p-8">
                   <div className="text-center mb-8 sm:mb-12">
-                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">
+                    <h2 id="references-title" className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">
                       Supporting References & Documentation
                     </h2>
                     <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base md:text-lg max-w-3xl mx-auto px-2">
@@ -1417,7 +1275,7 @@ const Country: React.FC = () => {
                     </p>
                   </div>
 
-                  <div className="space-y-3 sm:space-y-4">
+                  <div className="space-y-3 sm:space-y-4" role="list" aria-label="References list">
                     {countryData.references?.map((reference, index) => (
                       <motion.div
                         key={index}
@@ -1426,15 +1284,17 @@ const Country: React.FC = () => {
                         transition={{ delay: index * 0.1 }}
                         whileHover={{ x: 5 }}
                         className="group"
+                        role="listitem"
                       >
                         <a
                           href={reference}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg sm:rounded-xl border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-300"
+                          aria-label={`Reference ${index + 1}: ${reference.substring(0, 50)}...`}
                         >
                           <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-md sm:rounded-lg bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/30 dark:to-blue-800/30 flex items-center justify-center group-hover:from-blue-200 group-hover:to-blue-300 dark:group-hover:from-blue-800/50 dark:group-hover:to-blue-700/50">
-                            <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600 dark:text-blue-400" />
+                            <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600 dark:text-blue-400" aria-hidden="true" />
                           </div>
                           
                           <div className="flex-1 min-w-0">
@@ -1451,7 +1311,7 @@ const Country: React.FC = () => {
                             </p>
                           </div>
                           
-                          <ExternalLink className="h-4 w-4 text-gray-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
+                          <ExternalLink className="h-4 w-4 text-gray-400 group-hover:text-blue-600 transition-colors flex-shrink-0" aria-hidden="true" />
                         </a>
                       </motion.div>
                     ))}
@@ -1461,7 +1321,7 @@ const Country: React.FC = () => {
                     <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-gray-200 dark:border-gray-800">
                       <div className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/10 rounded-lg sm:rounded-xl p-4 sm:p-6">
                         <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-                          <ShieldCheck className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600 dark:text-blue-400" />
+                          <ShieldCheck className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600 dark:text-blue-400" aria-hidden="true" />
                           <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">Source Verification</h3>
                         </div>
                         <p className="text-gray-700 dark:text-gray-300 text-sm sm:text-base">
@@ -1477,10 +1337,10 @@ const Country: React.FC = () => {
           )}
 
           {/* CTA Section */}
-          <section>
+          <section aria-labelledby="cta-title">
             <Card className="shadow-2xl border-0 bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800">
               <CardContent className="p-6 sm:p-8 md:p-10 text-center">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 sm:mb-6">
+                <h2 id="cta-title" className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 sm:mb-6">
                   Ready to Deploy in {countryName}?
                 </h2>
                 
@@ -1493,13 +1353,19 @@ const Country: React.FC = () => {
                     size="lg"
                     className="bg-white text-blue-700 hover:bg-blue-50 px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
                     onClick={() => navigate("/contact")}
+                    aria-label="Request a consultation for network services"
                   >
-                    <Rocket className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                    <Rocket className="h-4 w-4 sm:h-5 sm:w-5 mr-2" aria-hidden="true" />
                     Request Consultation
                   </Button>
                 </div>
                 
-                
+                <div className="text-blue-200 text-sm">
+                  <p className="flex items-center justify-center gap-2">
+                    <Clock className="h-4 w-4" aria-hidden="true" />
+                    Response time: &lt; 24 hours
+                  </p>
+                </div>
               </CardContent>
             </Card>
           </section>

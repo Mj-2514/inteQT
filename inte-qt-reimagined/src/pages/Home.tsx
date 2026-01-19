@@ -123,7 +123,7 @@ const Home: React.FC = () => {
   const companylogo = "https://www.inte-qt.com/img/logo.d6407a89.jpg";
 
   // === SEO values ===
-  const title = "inte-QT | Managed L3 Internet Global Services";
+  const title = "inte-QT | Global connectivity solutions across globe";
   const description = "Internet access in more than 190 countries around the world offering a variety of solutions. Dedicated Lines, Business Broadband and Wireless Connect.";
   const canonical = "https://www.inte-qt.com/";
   const image = "https://i.imgur.com/fgarNxn.png"; // Updated to match your Vue SEO image
@@ -131,6 +131,7 @@ const Home: React.FC = () => {
 
   return (
     <div className="min-h-screen">
+    <meta name="description" content="Partner with inte-QT for global L3 internet services, SD-WAN, and 24/7 NSOC in 190+ countries. Trusted by telecom, airline, and event industries worldwide."></meta>
       {/* POPUP - EXACT VUE DESIGN */}
       {showPopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
