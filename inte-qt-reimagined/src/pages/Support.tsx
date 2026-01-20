@@ -95,7 +95,7 @@ const Support = () => {
   // optional: payload.captchaToken = await getCaptchaToken();
 
   try {
-    const res = await fetch(`${API_BASE_URL}/api/forms/support`, {
+    const res = await fetch(`${API_BASE}/api/forms/support`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),

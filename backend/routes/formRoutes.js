@@ -10,7 +10,7 @@ dotenv.config();
 // .env should already be loaded in server.js via require('dotenv').config()
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
-  port: 465,
+  port: process.env.SMTP_PORT,
   secure: true, // SSL on connect
   auth: {
     user: process.env.SMTP_USER,
@@ -103,6 +103,11 @@ const buildGeneralEmailHtml = (body) => {
 // SUPPORT FORM → globalsupport@inte-qt.com
 router.post("/support", async (req, res) => {
   try {
+    console.log("📋 Support form received:", {
+      timestamp: new Date().toISOString(),
+      body: req.body,
+    });
+
     const {
       firstName,
       lastName,
@@ -112,36 +117,92 @@ router.post("/support", async (req, res) => {
       phone,
       region,
       concern,
+      countryCode,
     } = req.body;
 
-    if (
-      !firstName ||
-      !lastName ||
-      !companyName ||
-      !serviceId ||
-      !email ||
-      !phone ||
-      !region ||
-      !concern
-    ) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Missing required fields" });
+    // Validate required fields
+    const requiredFields = {
+      firstName, lastName, companyName, serviceId, 
+      email, phone, region, concern
+    };
+    
+    const missingFields = Object.entries(requiredFields)
+      .filter(([key, value]) => !value)
+      .map(([key]) => key);
+
+    if (missingFields.length > 0) {
+      console.log("❌ Missing fields:", missingFields);
+      return res.status(400).json({ 
+        success: false, 
+        message: `Missing required fields: ${missingFields.join(', ')}` 
+      });
     }
 
-    await transporter.sendMail({
+    // Build email
+    const mailOptions = {
       from: `"inte-QT Support" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
       to: "globalsupport@inte-qt.com",
-      subject: "New Support Request",
+      subject: `Support Request: ${firstName} ${lastName} - ${companyName}`,
       html: buildSupportEmailHtml(req.body),
+      // Add text version for compatibility
+      text: `
+        New Support Request
+        ===================
+        Name: ${firstName} ${lastName}
+        Company: ${companyName}
+        Service ID: ${serviceId}
+        Email: ${email}
+        Phone: ${countryCode || ''} ${phone}
+        Region: ${region}
+        Concern: ${concern}
+        Submitted: ${new Date().toISOString()}
+      `,
+    };
+
+    console.log("📤 Attempting to send support email...");
+
+    const info = await transporter.sendMail(mailOptions);
+    
+    console.log("✅ Support email sent successfully:", {
+      messageId: info.messageId,
+      accepted: info.accepted,
+      timestamp: new Date().toISOString(),
     });
 
-    return res.json({ success: true, message: "Support email sent" });
+    return res.json({ 
+      success: true, 
+      message: "Support request submitted successfully",
+      emailId: info.messageId,
+    });
+    
   } catch (err) {
-    console.error("Support email error:", err);
-    return res
-      .status(500)
-      .json({ success: false, message: "Failed to send support email" });
+    console.error("❌ Support email error:", {
+      message: err.message,
+      code: err.code,
+      command: err.command,
+      response: err.response,
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined,
+      timestamp: new Date().toISOString(),
+    });
+
+    // User-friendly error messages
+    let errorMessage = "Failed to submit support request";
+    let statusCode = 500;
+
+    if (err.code === 'EAUTH') {
+      errorMessage = "Email authentication failed. Please check SMTP credentials.";
+    } else if (err.code === 'ECONNECTION') {
+      errorMessage = "Cannot connect to email server. Please try again later.";
+      console.error("💡 Try changing port: 587 with secure: false OR 465 with secure: true");
+    } else if (err.code === 'ENOTFOUND') {
+      errorMessage = "Email server not found. Please check SMTP configuration.";
+    }
+
+    return res.status(statusCode).json({ 
+      success: false, 
+      message: errorMessage,
+      ...(process.env.NODE_ENV === 'development' && { debug: err.message }),
+    });
   }
 });
 
