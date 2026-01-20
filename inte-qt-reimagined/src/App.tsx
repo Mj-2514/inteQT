@@ -105,6 +105,7 @@ import { AuthProvider } from "./context/AuthContext";
 import CreateCountryForm from "./pages/country/CreateCountryForm";
 import AdminReviewSubmission from "./pages/country/AdminReviewSubmission";
 import Country from "./pages/country/Country";
+import EditCountryForm from "./pages/country/EditCountryForm";
 
 /* =====================
    LAYOUT
@@ -291,6 +292,13 @@ const App = () => {
                 <AdminReviewSubmission />
               </ProtectedRoute>
             } />
+            
+            <Route path="/country/edit/:id" element={
+              <ProtectedRoute>
+                <EditCountryForm />
+              </ProtectedRoute>
+            } />
+
             
 
 

@@ -362,6 +362,9 @@ export const getAllSubmissions = async (req, res) => {
 /* =========================
    ADMIN: APPROVE/REJECT SUBMISSION
 ========================= */
+/* =========================
+   ADMIN: APPROVE/REJECT SUBMISSION (FIXED)
+========================= */
 export const reviewSubmission = async (req, res) => {
   try {
     if (req.user.role !== "admin") {
@@ -714,5 +717,569 @@ export const updateMyReferences = async (req, res) => {
   } catch (err) {
     console.error("Error in updateMyReferences:", err);
     res.status(500).json({ message: err.message });
+  }
+};
+/* =========================
+   USER: GET SINGLE SUBMISSION BY ID
+   For editing/viewing a specific submission
+========================= */
+export const getSubmissionById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validate ID format
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ 
+        success: false,
+        message: "Invalid submission ID format" 
+      });
+    }
+
+    const submission = await Country.findOne({
+      _id: id,
+      createdBy: req.user._id // Ensure user can only access their own submissions
+    }).select("-__v");
+
+    if (!submission) {
+      return res.status(404).json({ 
+        success: false,
+        message: "Submission not found or you don't have permission to access it" 
+      });
+    }
+
+    res.json({ 
+      success: true,
+      submission 
+    });
+  } catch (err) {
+    console.error("Error in getSubmissionById:", err);
+    res.status(500).json({ 
+      success: false,
+      message: "Server error" 
+    });
+  }
+};
+/* =========================
+   USER: GET MY SUBMISSION BY ID
+   For editing/viewing a specific submission - with proper authorization
+========================= */
+export const getMySubmission = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validate ID format
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ 
+        success: false,
+        message: "Invalid submission ID format" 
+      });
+    }
+
+    // Find submission with user ownership check
+    const submission = await Country.findOne({
+      _id: id,
+      createdBy: req.user._id
+    })
+    .select("-__v")
+    .lean();
+
+    if (!submission) {
+      return res.status(404).json({ 
+        success: false,
+        message: "Submission not found or you don't have permission to access it" 
+      });
+    }
+
+    // Check if user can edit this submission
+    const canEdit = ['pending', 'rejected', 'draft'].includes(submission.status);
+    
+    // Prepare response data
+    const responseData = {
+      _id: submission._id,
+      Countryname: submission.Countryname || submission.name || "",
+      name: submission.Countryname || submission.name || "",
+      slug: submission.slug || "",
+      partnersRange: submission.partnersRange || "",
+      Ipv4PeersRange: submission.Ipv4PeersRange || "",
+      Ipv6PeersRange: submission.Ipv6PeersRange || "",
+      IxpPartnersRange: submission.IxpPartnersRange || "",
+      Ipv4GatewaysRange: submission.Ipv4GatewaysRange || "",
+      Ipv6GatewaysRange: submission.Ipv6GatewaysRange || "",
+      CloudPartnersRange: submission.CloudPartnersRange || "",
+      ddosProtection: submission.ddosProtection || false,
+      minServiceLatencyRange: submission.minServiceLatencyRange || "",
+      avgServiceLatencyRange: submission.avgServiceLatencyRange || "",
+      features: submission.features || "",
+      ourServices: submission.ourServices || "",
+      commercialOfferDateRange: submission.commercialOfferDateRange || "",
+      deliveryDateRange: submission.deliveryDateRange || "",
+      integrationNote: submission.integrationNote || "",
+      whyChooseUs: submission.whyChooseUs || "",
+      capabilities: submission.capabilities || "",
+      submarineCableImage: submission.submarineCableImage || "",
+      submarineCableLink: submission.submarineCableLink || "",
+      references: submission.references || [],
+      status: submission.status || "pending",
+      rejectionNote: submission.rejectionNote || "",
+      canEdit: canEdit,
+      createdAt: submission.createdAt,
+      updatedAt: submission.updatedAt,
+      // Additional metadata
+      submissionDate: submission.createdAt,
+      lastUpdated: submission.updatedAt,
+      statusHistory: [
+        {
+          status: submission.status,
+          date: submission.updatedAt,
+          note: submission.rejectionNote || null
+        }
+      ]
+    };
+
+    res.json({ 
+      success: true,
+      message: "Submission retrieved successfully",
+      submission: responseData,
+      permissions: {
+        canEdit: canEdit,
+        canDelete: ['pending', 'draft'].includes(submission.status),
+        canView: true,
+        canResubmit: submission.status === 'rejected'
+      }
+    });
+  } catch (err) {
+    console.error("Error in getMySubmission:", err);
+    res.status(500).json({ 
+      success: false,
+      message: "Server error while fetching submission" 
+    });
+  }
+};
+/* =========================
+   USER: GET MY SUBMISSION FOR EDITING
+   For editing a specific submission owned by the user
+========================= */
+export const getMySubmissionForEdit = async (req, res) => {
+  try {
+    console.log("=== GET MY SUBMISSION FOR EDIT API CALLED ===");
+    console.log("Submission ID:", req.params.id);
+    console.log("User ID:", req.user._id);
+    console.log("User Role:", req.user.role);
+
+    const { id } = req.params;
+
+    // Validate ID
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      console.log("Invalid ObjectId:", id);
+      return res.status(400).json({ 
+        success: false,
+        message: "Invalid submission ID" 
+      });
+    }
+
+    // Find the submission by ID
+    const submission = await Country.findById(id);
+    
+    if (!submission) {
+      console.log("Submission not found in database");
+      return res.status(404).json({ 
+        success: false,
+        message: "Submission not found" 
+      });
+    }
+
+    // Check ownership - users can only view their own submissions
+    const isOwner = submission.createdBy.toString() === req.user._id.toString();
+    
+    console.log("Is Owner:", isOwner);
+    console.log("Submission createdBy:", submission.createdBy?.toString());
+    console.log("Current user ID:", req.user._id.toString());
+
+    if (!isOwner && req.user.role !== 'admin') {
+      return res.status(403).json({ 
+        success: false,
+        message: "You don't have permission to view this submission" 
+      });
+    }
+
+    // Prepare response data
+    const responseData = {
+      _id: submission._id,
+      Countryname: submission.Countryname || "",
+      name: submission.Countryname || "", // For compatibility
+      slug: submission.slug || "",
+      partnersRange: submission.partnersRange || "",
+      Ipv4PeersRange: submission.Ipv4PeersRange || "",
+      Ipv6PeersRange: submission.Ipv6PeersRange || "",
+      IxpPartnersRange: submission.IxpPartnersRange || "",
+      Ipv4GatewaysRange: submission.Ipv4GatewaysRange || "",
+      Ipv6GatewaysRange: submission.Ipv6GatewaysRange || "",
+      CloudPartnersRange: submission.CloudPartnersRange || "",
+      ddosProtection: submission.ddosProtection || false,
+      minServiceLatencyRange: submission.minServiceLatencyRange || "",
+      avgServiceLatencyRange: submission.avgServiceLatencyRange || "",
+      features: submission.features || "",
+      ourServices: submission.ourServices || "",
+      commercialOfferDateRange: submission.commercialOfferDateRange || "",
+      deliveryDateRange: submission.deliveryDateRange || "",
+      integrationNote: submission.integrationNote || "",
+      whyChooseUs: submission.whyChooseUs || "",
+      capabilities: submission.capabilities || "",
+      submarineCableImage: submission.submarineCableImage || "",
+      submarineCableLink: submission.submarineCableLink || "",
+      references: submission.references || [],
+      status: submission.status,
+      rejectionNote: submission.rejectionNote || "",
+      createdAt: submission.createdAt,
+      updatedAt: submission.updatedAt
+    };
+
+    res.json({
+      success: true,
+      message: "Submission retrieved successfully",
+      submission: responseData,
+      permissions: {
+        canEdit: isOwner && ['pending', 'rejected', 'draft'].includes(submission.status),
+        canDelete: isOwner && ['pending', 'draft'].includes(submission.status),
+        canView: true,
+        canResubmit: isOwner && submission.status === 'rejected'
+      }
+    });
+
+  } catch (err) {
+    console.error("Error in getMySubmissionForEdit:", err);
+    console.error("Error stack:", err.stack);
+    
+    res.status(500).json({
+      success: false,
+      message: "Server error while fetching submission",
+      error: err.message
+    });
+  }
+};
+// controllers/country.js
+export const userSubmissionById = async (req, res) => {
+  try {
+    console.log("=== GET MY SUBMISSION FOR EDIT API CALLED ===");
+    console.log("Submission ID:", req.params.id);
+    console.log("User ID:", req.user._id);
+    console.log("User Role:", req.user.role);
+
+    const { id } = req.params;
+
+    // Validate ID
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      console.log("Invalid ObjectId:", id);
+      return res.status(400).json({ 
+        success: false,
+        message: "Invalid submission ID" 
+      });
+    }
+
+    // Find the submission by ID
+    const submission = await Country.findById(id);
+    
+    if (!submission) {
+      console.log("Submission not found in database");
+      return res.status(404).json({ 
+        success: false,
+        message: "Submission not found" 
+      });
+    }
+
+    // Check ownership - compare as strings
+    // Admin can view any submission, users can only view their own
+    const isAdmin = req.user.role === 'admin';
+    const isOwner = submission.createdBy.toString() === req.user._id.toString();
+    
+    console.log("Is Admin:", isAdmin);
+    console.log("Is Owner:", isOwner);
+    console.log("Submission createdBy:", submission.createdBy.toString());
+    console.log("Current user ID:", req.user._id.toString());
+
+    if (!isAdmin && !isOwner) {
+      return res.status(403).json({ 
+        success: false,
+        message: "You don't have permission to edit this submission" 
+      });
+    }
+
+    // Check if submission can be edited
+    const canEdit = ['pending', 'rejected', 'draft'].includes(submission.status);
+    if (!canEdit && !isAdmin) {
+      return res.status(400).json({
+        success: false,
+        message: `This submission cannot be edited because it's ${submission.status}. Only pending, rejected, or draft submissions can be edited.`
+      });
+    }
+
+    // Prepare response data
+    const responseData = {
+      _id: submission._id,
+      Countryname: submission.Countryname || "",
+      name: submission.Countryname || "", // For compatibility
+      slug: submission.slug || "",
+      partnersRange: submission.partnersRange || "",
+      Ipv4PeersRange: submission.Ipv4PeersRange || "",
+      Ipv6PeersRange: submission.Ipv6PeersRange || "",
+      IxpPartnersRange: submission.IxpPartnersRange || "",
+      Ipv4GatewaysRange: submission.Ipv4GatewaysRange || "",
+      Ipv6GatewaysRange: submission.Ipv6GatewaysRange || "",
+      CloudPartnersRange: submission.CloudPartnersRange || "",
+      ddosProtection: submission.ddosProtection || false,
+      minServiceLatencyRange: submission.minServiceLatencyRange || "",
+      avgServiceLatencyRange: submission.avgServiceLatencyRange || "",
+      features: submission.features || "",
+      ourServices: submission.ourServices || "",
+      commercialOfferDateRange: submission.commercialOfferDateRange || "",
+      deliveryDateRange: submission.deliveryDateRange || "",
+      integrationNote: submission.integrationNote || "",
+      whyChooseUs: submission.whyChooseUs || "",
+      capabilities: submission.capabilities || "",
+      submarineCableImage: submission.submarineCableImage || "",
+      submarineCableLink: submission.submarineCableLink || "",
+      references: submission.references || [],
+      status: submission.status,
+      rejectionNote: submission.rejectionNote || "",
+      createdAt: submission.createdAt,
+      updatedAt: submission.updatedAt,
+      createdBy: {
+        _id: submission.createdBy,
+        name: req.user.name,
+        email: req.user.email
+      }
+    };
+
+    res.json({
+      success: true,
+      message: "Submission retrieved successfully",
+      submission: responseData,
+      permissions: {
+        canEdit: isAdmin || canEdit,
+        canDelete: isAdmin || ['pending', 'draft'].includes(submission.status),
+        canView: true,
+        canResubmit: submission.status === 'rejected',
+        isAdmin: isAdmin,
+        isOwner: isOwner
+      }
+    });
+
+  } catch (err) {
+    console.error("Error in getMySubmissionForEdit:", err);
+    console.error("Error stack:", err.stack);
+    
+    res.status(500).json({
+      success: false,
+      message: "Server error while fetching submission",
+      error: err.message
+    });
+  }
+};
+
+// controllers/country.js
+export const updateUserSubmissionById = async (req, res) => {
+  try {
+    const { id } = req.params; // Changed from slug to id
+    const updateData = req.body;
+
+    // Find the submission by ID
+    const submission = await Country.findById(id);
+    if (!submission) {
+      return res.status(404).json({ message: "Submission not found" });
+    }
+
+    // Verify user owns this submission
+    if (req.user.role !== "admin" && submission.createdBy.toString() !== req.user.id) {
+      return res.status(403).json({ message: "You can only edit your own submissions" });
+    }
+
+    // ... rest of your existing update logic ...
+    // Keep all the slug generation and field filtering logic
+    
+    // Update submission with filtered data
+    Object.assign(submission, filteredUpdate);
+    
+    // Reset status to "pending" when user makes changes
+    submission.status = "pending";
+    submission.rejectionNote = "";
+
+    await submission.save();
+
+    res.json({ 
+      message: "Submission updated successfully",
+      submission: {
+        _id: submission._id,
+        Countryname: submission.Countryname,
+        slug: submission.slug,
+        status: submission.status,
+        updatedAt: submission.updatedAt
+      }
+    });
+  } catch (err) {
+    console.error("Error updating user submission:", err);
+    
+    if (err.code === 11000) {
+      return res.status(400).json({ 
+        message: "Slug already exists. Please try a different country name." 
+      });
+    }
+    
+    res.status(500).json({ message: err.message });
+  }
+};
+export const updateUserSubmission = async (req, res) => {
+  try {
+    console.log("=== UPDATE USER SUBMISSION API CALLED ===");
+    console.log("Submission ID:", req.params.id);
+    console.log("User ID:", req.user._id);
+    console.log("Update Data:", req.body);
+
+    const { id } = req.params;
+    const updateData = req.body;
+
+    // Validate ID
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ 
+        success: false,
+        message: "Invalid submission ID" 
+      });
+    }
+
+    // Find the submission by ID
+    const submission = await Country.findById(id);
+    if (!submission) {
+      return res.status(404).json({ 
+        success: false,
+        message: "Submission not found" 
+      });
+    }
+
+    // Check ownership - users can only edit their own submissions
+    const isOwner = submission.createdBy.toString() === req.user._id.toString();
+    
+    if (!isOwner) {
+      return res.status(403).json({ 
+        success: false,
+        message: "You can only edit your own submissions" 
+      });
+    }
+
+    // Check if submission can be edited
+    const canEdit = ['pending', 'rejected', 'draft'].includes(submission.status);
+    if (!canEdit) {
+      return res.status(400).json({
+        success: false,
+        message: `This submission cannot be edited because it's ${submission.status}. Only pending, rejected, or draft submissions can be edited.`
+      });
+    }
+
+    // Fields that users are allowed to update
+    const allowedUserFields = [
+      'Countryname',
+      'partnersRange',
+      'Ipv4PeersRange',
+      'Ipv6PeersRange',
+      'IxpPartnersRange',
+      'Ipv4GatewaysRange',
+      'Ipv6GatewaysRange',
+      'CloudPartnersRange',
+      'ddosProtection',
+      'minServiceLatencyRange',
+      'avgServiceLatencyRange',
+      'commercialOfferDateRange',
+      'deliveryDateRange',
+      'submarineCableLink',
+      'submarineCableImage',
+      'features',
+      'ourServices',
+      'capabilities',
+      'integrationNote',
+      'whyChooseUs',
+      'references'
+    ];
+
+    // Filter update data to only allowed fields
+    const filteredUpdate = {};
+    Object.keys(updateData).forEach(key => {
+      if (allowedUserFields.includes(key)) {
+        filteredUpdate[key] = updateData[key];
+      }
+    });
+
+    // If Countryname is updated, update slug too
+    if (filteredUpdate.Countryname && filteredUpdate.Countryname !== submission.Countryname) {
+      const baseSlug = filteredUpdate.Countryname.toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^\w\-]+/g, '')
+        .replace(/\-+/g, '-')
+        .replace(/^-+|-+$/g, '');
+      
+      // Generate unique slug
+      let newSlug = baseSlug;
+      let counter = 1;
+      let existingCountry = await Country.findOne({ 
+        slug: newSlug, 
+        _id: { $ne: submission._id } 
+      });
+      
+      while (existingCountry) {
+        newSlug = `${baseSlug}-${counter}`;
+        existingCountry = await Country.findOne({ 
+          slug: newSlug, 
+          _id: { $ne: submission._id } 
+        });
+        counter++;
+      }
+      
+      filteredUpdate.slug = newSlug;
+      console.log("Generated new slug:", newSlug);
+    }
+
+    // Update submission with filtered data
+    Object.assign(submission, filteredUpdate);
+    
+    // Reset status to "pending" when user makes changes (requires re-approval)
+    submission.status = "pending";
+    submission.rejectionNote = ""; // Clear any previous rejection notes
+    console.log("Status reset to pending for re-approval");
+
+    await submission.save();
+
+    // Prepare response
+    const responseData = {
+      _id: submission._id,
+      Countryname: submission.Countryname,
+      slug: submission.slug,
+      status: submission.status,
+      rejectionNote: submission.rejectionNote,
+      updatedAt: submission.updatedAt
+    };
+
+    res.json({
+      success: true,
+      message: "Submission updated successfully. Status reset to pending for admin review.",
+      submission: responseData,
+      changedFields: Object.keys(filteredUpdate),
+      requiresReapproval: true
+    });
+
+  } catch (err) {
+    console.error("Error updating user submission:", err);
+    console.error("Error stack:", err.stack);
+    
+    if (err.code === 11000) {
+      return res.status(400).json({ 
+        success: false,
+        message: "Slug already exists. Please try a different country name.",
+        error: err.message
+      });
+    }
+    
+    res.status(500).json({
+      success: false,
+      message: "Server error while updating submission",
+      error: err.message
+    });
   }
 };

@@ -12,7 +12,6 @@ import {
   Eye,
   Edit,
   RefreshCw,
-  BarChart3,
   Menu,
   X,
   AlertCircle,
@@ -24,7 +23,7 @@ import {
 } from "lucide-react";
 import { useCountryAuth } from "../../context/AuthContext";
 
-const API_BASE =import.meta.env.VITE_API_BASE;
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 const CountryUserDashboard = () => {
   const { user, token, logout } = useCountryAuth();
@@ -49,6 +48,7 @@ const CountryUserDashboard = () => {
     rejected: [] as any[],
     draft: [] as any[]
   });
+  
   
   // UI States
   const [activeTab, setActiveTab] = useState<'all' | 'pending' | 'approved' | 'rejected' | 'draft'>('all');
@@ -96,8 +96,6 @@ const CountryUserDashboard = () => {
         summaryRes.json()
       ]);
 
-     
-      
       setStats(statsData);
       
       // Set all submissions (flatten all statuses)
@@ -120,26 +118,6 @@ const CountryUserDashboard = () => {
     } catch (err: any) {
       console.error("Error fetching dashboard data:", err);
       setError(err.message || "Failed to load dashboard data");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Fetch submissions by specific status
-  const fetchSubmissionsByStatus = async (status: string) => {
-    try {
-      setLoading(true);
-      const res = await fetch(`${API_BASE}/api/country/dashboard/my-submissions/status/${status}`, {
-        headers: { "Authorization": `Bearer ${token}` }
-      });
-      
-      if (!res.ok) throw new Error("Failed to fetch submissions");
-      
-      const data = await res.json();
-      return data.submissions || [];
-    } catch (err) {
-      console.error("Error fetching by status:", err);
-      return [];
     } finally {
       setLoading(false);
     }
@@ -182,32 +160,8 @@ const CountryUserDashboard = () => {
     }
   };
 
-  const deleteSubmission = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this submission? This action cannot be undone.")) {
-      return;
-    }
 
-    try {
-      const res = await fetch(`${API_BASE}/api/country/dashboard/submission/${id}`, {
-        method: "DELETE",
-        headers: { "Authorization": `Bearer ${token}` }
-      });
 
-      if (res.ok) {
-        alert("Submission deleted successfully!");
-        fetchDashboardData(); // Refresh data
-      } else {
-        const data = await res.json();
-        alert(data.message || "Failed to delete submission");
-      }
-    } catch (error) {
-      alert("Error deleting submission");
-    }
-  };
-
-  const viewSubmissionDetails = (id: string) => {
-    navigate(`/country/submission/${id}`);
-  };
 
   const editSubmission = (id: string) => {
     navigate(`/country/edit/${id}`);
@@ -641,7 +595,7 @@ const CountryUserDashboard = () => {
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Country</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                        
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
@@ -697,7 +651,23 @@ const CountryUserDashboard = () => {
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                              
+                              <div className="flex items-center gap-2">
+                                
+                                
+                                {/* Show Edit button only for pending and rejected submissions */}
+                                {(submission.status === 'pending' || submission.status === 'rejected' || submission.status === 'draft') && (
+                                  <button
+                                    onClick={() => editSubmission(submission._id)}
+                                    className="inline-flex items-center gap-1 px-3 py-1.5 bg-yellow-50 text-yellow-700 hover:bg-yellow-100 border border-yellow-200 rounded-lg transition-colors text-xs font-medium"
+                                    title="Edit Submission"
+                                  >
+                                    <Edit className="h-3 w-3" />
+                                    Edit
+                                  </button>
+                                )}
+                                
+                                
+                              </div>
                             </td>
                           </tr>
                           
@@ -711,7 +681,13 @@ const CountryUserDashboard = () => {
                                     <h4 className="text-sm font-medium text-red-800 mb-1">Rejection Note from Admin:</h4>
                                     <p className="text-sm text-red-700 whitespace-pre-wrap">{submission.rejectionNote}</p>
                                     <div className="mt-3">
-                                      
+                                      <button
+                                        onClick={() => editSubmission(submission._id)}
+                                        className="inline-flex items-center gap-1 px-3 py-1.5 bg-yellow-600 text-white hover:bg-yellow-700 rounded-lg text-xs font-medium"
+                                      >
+                                        <Edit className="h-3 w-3" />
+                                        Edit & Resubmit
+                                      </button>
                                     </div>
                                   </div>
                                 </div>

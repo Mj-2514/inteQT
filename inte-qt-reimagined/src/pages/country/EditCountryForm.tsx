@@ -1,3 +1,4 @@
+// pages/EditCountryForm.tsx
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -15,11 +16,12 @@ import {
   Plus,
   Trash2,
   Link,
-  RefreshCcw
+  RefreshCcw,
+  History
 } from "lucide-react";
 import { useCountryAuth } from "../../context/AuthContext";
 
-const API_BASE =import.meta.env.VITE_API_BASE;
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 interface CountryFormData {
   name: string;
@@ -46,19 +48,52 @@ interface CountryFormData {
   references: string[];
 }
 
-const CreateCountryForm = () => {
+interface SubmissionData {
+  _id: string;
+  Countryname: string;
+  name: string;
+  slug: string;
+  partnersRange: string;
+  Ipv4PeersRange: string;
+  Ipv6PeersRange: string;
+  IxpPartnersRange: string;
+  Ipv4GatewaysRange: string;
+  Ipv6GatewaysRange: string;
+  CloudPartnersRange: string;
+  ddosProtection: boolean;
+  minServiceLatencyRange: string;
+  avgServiceLatencyRange: string;
+  features: string;
+  ourServices: string;
+  commercialOfferDateRange: string;
+  deliveryDateRange: string;
+  integrationNote: string;
+  whyChooseUs: string;
+  capabilities: string;
+  submarineCableImage: string;
+  submarineCableLink: string;
+  references: string[];
+  status: string;
+  rejectionNote?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+const EditCountryForm = () => {
   const { user, token } = useCountryAuth();
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
-  const [isEditMode, setIsEditMode] = useState(false);
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
   const [newReference, setNewReference] = useState("");
   const [originalSlug, setOriginalSlug] = useState("");
+  const [originalData, setOriginalData] = useState<SubmissionData | null>(null);
+  const [showRejectionNote, setShowRejectionNote] = useState(false);
 
   const [formData, setFormData] = useState<CountryFormData>({
     name: "",
@@ -99,14 +134,14 @@ const CreateCountryForm = () => {
   }, []);
 
   useEffect(() => {
-    if (!slugManuallyEdited && formData.name && !isEditMode) {
+    if (!slugManuallyEdited && formData.name) {
       const newSlug = generateSlug(formData.name);
       setFormData(prev => ({
         ...prev,
         slug: newSlug
       }));
     }
-  }, [formData.name, slugManuallyEdited, generateSlug, isEditMode]);
+  }, [formData.name, slugManuallyEdited, generateSlug]);
 
   useEffect(() => {
     if (!token || !user) {
@@ -116,64 +151,84 @@ const CreateCountryForm = () => {
 
     if (id) {
       fetchSubmission(id);
-      setIsEditMode(true);
+    } else {
+      setError("No submission ID provided");
+      navigate("/country/dashboard");
     }
   }, [id, token, user, navigate]);
 
-  const fetchSubmission = async (submissionId: string) => {
-    try {
-      setLoading(true);
-      const res = await fetch(`${API_BASE}/api/country/dashboard/submission/${submissionId}`, {
-        headers: { "Authorization": `Bearer ${token}` }
+    const fetchSubmission = async (submissionId: string) => {
+  try {
+    setLoading(true);
+    setError(null);
+    
+    // Use the correct API endpoint
+    const res = await fetch(`${API_BASE}/api/country/dashboard/users/submission/${submissionId}`, {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+
+    
+
+    const data = await res.json();
+   
+    
+    if (data.success) {
+      const submission = data.submission;
+      const permissions = data.permissions;
+      
+     
+      
+      // Use the permissions from API response instead of checking manually
+      if (!permissions?.canEdit) {
+        setError(`This submission cannot be edited because it's ${submission?.status || 'unknown'}. Only pending, rejected, or draft submissions can be edited.`);
+        setTimeout(() => {
+          navigate("/country/dashboard");
+        }, 3000);
+        return;
+      }
+
+      setOriginalData(submission);
+      
+      setFormData({
+        name: submission.Countryname || submission.name || "",
+        slug: submission.slug || "",
+        partnersRange: submission.partnersRange || "",
+        Ipv4PeersRange: submission.Ipv4PeersRange || "",
+        Ipv6PeersRange: submission.Ipv6PeersRange || "",
+        IxpPartnersRange: submission.IxpPartnersRange || "",
+        Ipv4GatewaysRange: submission.Ipv4GatewaysRange || "",
+        Ipv6GatewaysRange: submission.Ipv6GatewaysRange || "",
+        CloudPartnersRange: submission.CloudPartnersRange || "",
+        ddosProtection: submission.ddosProtection || false,
+        minServiceLatencyRange: submission.minServiceLatencyRange || "",
+        avgServiceLatencyRange: submission.avgServiceLatencyRange || "",
+        features: submission.features || "",
+        ourServices: submission.ourServices || "",
+        commercialOfferDateRange: submission.commercialOfferDateRange || "",
+        deliveryDateRange: submission.deliveryDateRange || "",
+        integrationNote: submission.integrationNote || "",
+        whyChooseUs: submission.whyChooseUs || "",
+        capabilities: submission.capabilities || "",
+        submarineCableImage: submission.submarineCableImage || "",
+        submarineCableLink: submission.submarineCableLink || "",
+        references: submission.references || [],
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        const submission = data.submission || data;
-        
-        setFormData({
-          name: submission.Countryname || submission.name || "",
-          slug: submission.slug || "",
-          partnersRange: submission.partnersRange || "",
-          Ipv4PeersRange: submission.Ipv4PeersRange || "",
-          Ipv6PeersRange: submission.Ipv6PeersRange || "",
-          IxpPartnersRange: submission.IxpPartnersRange || "",
-          Ipv4GatewaysRange: submission.Ipv4GatewaysRange || "",
-          Ipv6GatewaysRange: submission.Ipv6GatewaysRange || "",
-          CloudPartnersRange: submission.CloudPartnersRange || "",
-          ddosProtection: submission.ddosProtection || false,
-          minServiceLatencyRange: submission.minServiceLatencyRange || "",
-          avgServiceLatencyRange: submission.avgServiceLatencyRange || "",
-          features: submission.features || "",
-          ourServices: submission.ourServices || "",
-          commercialOfferDateRange: submission.commercialOfferDateRange || "",
-          deliveryDateRange: submission.deliveryDateRange || "",
-          integrationNote: submission.integrationNote || "",
-          whyChooseUs: submission.whyChooseUs || "",
-          capabilities: submission.capabilities || "",
-          submarineCableImage: submission.submarineCableImage || "",
-          submarineCableLink: submission.submarineCableLink || "",
-          references: submission.references || [],
-        });
+      setOriginalSlug(submission.slug || "");
 
-        setOriginalSlug(submission.slug || "");
-
-        if (submission.submarineCableImage && looksLikeUrl(submission.submarineCableImage)) {
-          setPreviewImage(submission.submarineCableImage);
-        }
-      } else {
-        const errorData = await res.json();
-        throw new Error(errorData.message || "Failed to fetch submission");
+      if (submission.submarineCableImage && looksLikeUrl(submission.submarineCableImage)) {
+        setPreviewImage(submission.submarineCableImage);
       }
-    } catch (err: any) {
-      console.error("Failed to fetch submission:", err);
-      setError(err.message || "Failed to load submission");
-      alert(`Error: ${err.message}. Redirecting to dashboard...`);
-      navigate("/country/dashboard");
-    } finally {
-      setLoading(false);
+    } else {
+      throw new Error(data.message || "Failed to fetch submission");
     }
-  };
+  } catch (err: any) {
+    console.error("Failed to fetch submission:", err);
+    setError(err.message || "Failed to load submission. Please check your connection.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   const looksLikeUrl = (s: string) => {
     if (!s) return false;
@@ -209,188 +264,79 @@ const CreateCountryForm = () => {
     return null;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-
-    const validationError = validateForm();
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const url = `${API_BASE}/api/country/dashboard/submit`;
-      
-      console.log('Submitting to:');
-
-      const payload = {
-        name: formData.name.trim(),
-        slug: formData.slug.trim(),
-        partnersRange: formData.partnersRange.trim(),
-        Ipv4PeersRange: formData.Ipv4PeersRange.trim(),
-        Ipv6PeersRange: formData.Ipv6PeersRange.trim(),
-        IxpPartnersRange: formData.IxpPartnersRange.trim(),
-        Ipv4GatewaysRange: formData.Ipv4GatewaysRange.trim(),
-        Ipv6GatewaysRange: formData.Ipv6GatewaysRange.trim(),
-        CloudPartnersRange: formData.CloudPartnersRange.trim(),
-        ddosProtection: formData.ddosProtection,
-        minServiceLatencyRange: formData.minServiceLatencyRange.trim(),
-        avgServiceLatencyRange: formData.avgServiceLatencyRange.trim(),
-        features: formData.features.trim(),
-        ourServices: formData.ourServices.trim(),
-        commercialOfferDateRange: formData.commercialOfferDateRange.trim(),
-        deliveryDateRange: formData.deliveryDateRange.trim(),
-        integrationNote: formData.integrationNote.trim(),
-        whyChooseUs: formData.whyChooseUs.trim(),
-        capabilities: formData.capabilities.trim(),
-        submarineCableImage: formData.submarineCableImage.trim(),
-        submarineCableLink: formData.submarineCableLink.trim(),
-        references: formData.references.filter(ref => ref.trim() !== ''),
-      };
-
-      console.log('Payload:', payload);
-
-      const res = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await res.json();
-      console.log('Response:', data);
-
-      if (!res.ok) {
-        throw new Error(data.message || "Failed to submit country form");
-      }
-
-      setSubmitted(true);
-      setTimeout(() => {
-        navigate("/country/dashboard");
-      }, 1500);
-    } catch (err: any) {
-      console.error("Submit error:", err);
-      setError(err.message || "Something went wrong");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleUpdate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
+  e.preventDefault();
+  setError(null);
 
-    const validationError = validateForm();
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
+  const validationError = validateForm();
+  if (validationError) {
+    setError(validationError);
+    return;
+  }
 
-    setLoading(true);
+  setUpdating(true);
 
-    try {
-      const url = `${API_BASE}/api/country/dashboard/submit`;
-      
-      console.log('Updating via:');
-
-      const payload = {
-        name: formData.name.trim(),
-        slug: formData.slug.trim(),
-        partnersRange: formData.partnersRange.trim(),
-        Ipv4PeersRange: formData.Ipv4PeersRange.trim(),
-        Ipv6PeersRange: formData.Ipv6PeersRange.trim(),
-        IxpPartnersRange: formData.IxpPartnersRange.trim(),
-        Ipv4GatewaysRange: formData.Ipv4GatewaysRange.trim(),
-        Ipv6GatewaysRange: formData.Ipv6GatewaysRange.trim(),
-        CloudPartnersRange: formData.CloudPartnersRange.trim(),
-        ddosProtection: formData.ddosProtection,
-        minServiceLatencyRange: formData.minServiceLatencyRange.trim(),
-        avgServiceLatencyRange: formData.avgServiceLatencyRange.trim(),
-        features: formData.features.trim(),
-        ourServices: formData.ourServices.trim(),
-        commercialOfferDateRange: formData.commercialOfferDateRange.trim(),
-        deliveryDateRange: formData.deliveryDateRange.trim(),
-        integrationNote: formData.integrationNote.trim(),
-        whyChooseUs: formData.whyChooseUs.trim(),
-        capabilities: formData.capabilities.trim(),
-        submarineCableImage: formData.submarineCableImage.trim(),
-        submarineCableLink: formData.submarineCableLink.trim(),
-        references: formData.references.filter(ref => ref.trim() !== ''),
-      };
-
-      console.log('Update payload:', payload);
-
-      const res = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await res.json();
-      console.log('Update response:', data);
-
-      if (!res.ok) {
-        throw new Error(data.message || "Failed to update country form");
-      }
-
-      setSubmitted(true);
-      setTimeout(() => {
-        navigate("/country/dashboard");
-      }, 1500);
-    } catch (err: any) {
-      console.error("Update error:", err);
-      setError(err.message || "Something went wrong");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSaveDraft = async () => {
-    setError(null);
+  try {
+    // Use the ID-based update API endpoint
+    const url = `${API_BASE}/api/country/dashboard/user/submission/${id}`;
     
-    if (!formData.name.trim() || !formData.slug.trim()) {
-      setError("Name and Slug are required even for draft");
-      return;
+   
+
+    const payload = {
+      Countryname: formData.name.trim(),
+      name: formData.name.trim(),
+      slug: formData.slug.trim(),
+      partnersRange: formData.partnersRange.trim(),
+      Ipv4PeersRange: formData.Ipv4PeersRange.trim(),
+      Ipv6PeersRange: formData.Ipv6PeersRange.trim(),
+      IxpPartnersRange: formData.IxpPartnersRange.trim(),
+      Ipv4GatewaysRange: formData.Ipv4GatewaysRange.trim(),
+      Ipv6GatewaysRange: formData.Ipv6GatewaysRange.trim(),
+      CloudPartnersRange: formData.CloudPartnersRange.trim(),
+      ddosProtection: formData.ddosProtection,
+      minServiceLatencyRange: formData.minServiceLatencyRange.trim(),
+      avgServiceLatencyRange: formData.avgServiceLatencyRange.trim(),
+      features: formData.features.trim(),
+      ourServices: formData.ourServices.trim(),
+      commercialOfferDateRange: formData.commercialOfferDateRange.trim(),
+      deliveryDateRange: formData.deliveryDateRange.trim(),
+      integrationNote: formData.integrationNote.trim(),
+      whyChooseUs: formData.whyChooseUs.trim(),
+      capabilities: formData.capabilities.trim(),
+      submarineCableImage: formData.submarineCableImage.trim(),
+      submarineCableLink: formData.submarineCableLink.trim(),
+      references: formData.references.filter(ref => ref.trim() !== ''),
+    };
+
+    
+
+    const res = await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+   
+
+    if (!res.ok) {
+      throw new Error(data.message || "Failed to update submission");
     }
 
-    setLoading(true);
-
-    try {
-      const payload = {
-        ...formData,
-        status: "draft"
-      };
-
-      const res = await fetch(`${API_BASE}/api/countries/draft`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (res.ok) {
-        alert("Draft saved successfully!");
-        navigate("/country/dashboard");
-      } else {
-        const data = await res.json();
-        throw new Error(data.message || "Failed to save draft");
-      }
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    setSubmitted(true);
+    setTimeout(() => {
+      navigate("/country/dashboard");
+    }, 1500);
+  } catch (err: any) {
+    console.error("Update error:", err);
+    setError(err.message || "Something went wrong. Please try again.");
+  } finally {
+    setUpdating(false);
+  }
+};
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -508,12 +454,67 @@ const CreateCountryForm = () => {
     }
   };
 
-  if (loading && isEditMode) {
+  const resetToOriginal = () => {
+    if (originalData && confirm("Are you sure you want to reset all changes? This cannot be undone.")) {
+      setFormData({
+        name: originalData.Countryname || originalData.name || "",
+        slug: originalData.slug || "",
+        partnersRange: originalData.partnersRange || "",
+        Ipv4PeersRange: originalData.Ipv4PeersRange || "",
+        Ipv6PeersRange: originalData.Ipv6PeersRange || "",
+        IxpPartnersRange: originalData.IxpPartnersRange || "",
+        Ipv4GatewaysRange: originalData.Ipv4GatewaysRange || "",
+        Ipv6GatewaysRange: originalData.Ipv6GatewaysRange || "",
+        CloudPartnersRange: originalData.CloudPartnersRange || "",
+        ddosProtection: originalData.ddosProtection || false,
+        minServiceLatencyRange: originalData.minServiceLatencyRange || "",
+        avgServiceLatencyRange: originalData.avgServiceLatencyRange || "",
+        features: originalData.features || "",
+        ourServices: originalData.ourServices || "",
+        commercialOfferDateRange: originalData.commercialOfferDateRange || "",
+        deliveryDateRange: originalData.deliveryDateRange || "",
+        integrationNote: originalData.integrationNote || "",
+        whyChooseUs: originalData.whyChooseUs || "",
+        capabilities: originalData.capabilities || "",
+        submarineCableImage: originalData.submarineCableImage || "",
+        submarineCableLink: originalData.submarineCableLink || "",
+        references: originalData.references || [],
+      });
+      setOriginalSlug(originalData.slug || "");
+      
+      if (originalData.submarineCableImage && looksLikeUrl(originalData.submarineCableImage)) {
+        setPreviewImage(originalData.submarineCableImage);
+      }
+      
+      setSlugManuallyEdited(false);
+      setError(null);
+    }
+  };
+
+  if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading submission...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error && !originalData) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center max-w-md p-6">
+          <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Error Loading Submission</h2>
+          <p className="text-gray-600 mb-6">{error}</p>
+          <button
+            onClick={() => navigate("/country/dashboard")}
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Back to Dashboard
+          </button>
         </div>
       </div>
     );
@@ -534,36 +535,80 @@ const CreateCountryForm = () => {
             
             <div className="flex items-center gap-3">
               <div className="text-sm text-gray-600">
-                Logged in as <span className="font-semibold">{user?.name}</span>
+                Editing submission for <span className="font-semibold">{formData.name || "Unknown Country"}</span>
               </div>
-              {isEditMode && (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                  <Edit className="h-3 w-3 mr-1" />
-                  Editing Mode
-                </span>
-              )}
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                <RefreshCcw className="h-3 w-3 mr-1" />
+                Editing Mode
+              </span>
             </div>
           </div>
         </div>
       </div>
 
       <main className="max-w-6xl mx-auto px-4 py-8">
-        <div className="mb-8 text-center">
-          <div className="inline-flex items-center justify-center p-3 bg-blue-100 rounded-full mb-4">
-            <Globe className="h-8 w-8 text-blue-600" />
+        <div className="mb-8">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <div className="inline-flex items-center justify-center p-3 bg-blue-100 rounded-full mb-4">
+                <Globe className="h-8 w-8 text-blue-600" />
+              </div>
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+                Edit Country Submission
+              </h1>
+              <p className="text-gray-600 max-w-2xl">
+                Update your country submission details. All fields marked with * are required.
+              </p>
+            </div>
+            
+            <div className="flex flex-col gap-2">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg">
+                <span className="text-sm text-gray-600">Original Slug:</span>
+                <code className="text-sm font-mono bg-white px-2 py-1 rounded border">{originalSlug}</code>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${
+                  originalData?.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                  originalData?.status === 'approved' ? 'bg-green-100 text-green-800' :
+                  originalData?.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                  'bg-gray-100 text-gray-800'
+                }`}>
+                  Status: <span className="capitalize">{originalData?.status}</span>
+                </span>
+                
+                {originalData?.status === 'rejected' && originalData?.rejectionNote && (
+                  <button
+                    onClick={() => setShowRejectionNote(!showRejectionNote)}
+                    className="inline-flex items-center gap-1 text-xs text-red-600 hover:text-red-800"
+                  >
+                    <AlertTriangle className="h-3 w-3" />
+                    View Rejection Note
+                  </button>
+                )}
+                
+                <button
+                  onClick={resetToOriginal}
+                  className="inline-flex items-center gap-1 text-xs text-gray-600 hover:text-gray-800"
+                  title="Reset all changes"
+                >
+                  <History className="h-3 w-3" />
+                  Reset
+                </button>
+              </div>
+            </div>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-            {isEditMode ? "Edit Country Submission" : "Create New Country Submission"}
-          </h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            {isEditMode 
-              ? "Update your country submission details. Note: Slug cannot be changed if it belongs to another user."
-              : "Fill in the details about your country's network infrastructure. All fields marked with * are required."}
-          </p>
-          {isEditMode && originalSlug && (
-            <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg">
-              <span className="text-sm text-gray-600">Original Slug:</span>
-              <code className="text-sm font-mono bg-white px-2 py-1 rounded border">{originalSlug}</code>
+          
+          {showRejectionNote && originalData?.rejectionNote && (
+            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+                <div>
+                  <h4 className="font-medium text-red-800 mb-2">Rejection Note from Admin:</h4>
+                  <p className="text-sm text-red-700 whitespace-pre-wrap">{originalData.rejectionNote}</p>
+                  <p className="text-xs text-red-600 mt-2">Please address these issues before resubmitting.</p>
+                </div>
+              </div>
             </div>
           )}
         </div>
@@ -575,7 +620,7 @@ const CreateCountryForm = () => {
           className="grid grid-cols-1 lg:grid-cols-3 gap-8"
         >
           <div className="lg:col-span-2">
-            <form onSubmit={isEditMode ? handleUpdate : handleSubmit} className="space-y-6">
+            <form onSubmit={handleUpdate} className="space-y-6">
               <div className="bg-white rounded-2xl shadow-lg p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-3 border-b">
                   Basic Information
@@ -595,7 +640,7 @@ const CreateCountryForm = () => {
                       required
                     />
                     <p className="text-xs text-gray-500 mt-1">
-                      Enter the full country name. {!isEditMode && "The slug will be automatically generated."}
+                      Enter the full country name. The slug will be automatically generated.
                     </p>
                   </div>
 
@@ -606,17 +651,15 @@ const CreateCountryForm = () => {
                         <span className="text-xs text-gray-500 ml-2">(URL-friendly identifier)</span>
                       </label>
                       <div className="flex items-center gap-2">
-                        {!isEditMode && (
-                          <button
-                            type="button"
-                            onClick={regenerateSlug}
-                            className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800"
-                            title="Regenerate slug from name"
-                          >
-                            <RefreshCw className="h-3 w-3" />
-                            Regenerate
-                          </button>
-                        )}
+                        <button
+                          type="button"
+                          onClick={regenerateSlug}
+                          className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800"
+                          title="Regenerate slug from name"
+                        >
+                          <RefreshCw className="h-3 w-3" />
+                          Regenerate
+                        </button>
                         <button
                           type="button"
                           onClick={copySlugToClipboard}
@@ -636,7 +679,6 @@ const CreateCountryForm = () => {
                         className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-black pr-32"
                         placeholder="e.g., united-states"
                         required
-                        readOnly={isEditMode && formData.slug === originalSlug}
                       />
                       <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center">
                         <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
@@ -646,17 +688,14 @@ const CreateCountryForm = () => {
                     </div>
                     <div className="flex items-center justify-between mt-1">
                       <p className="text-xs text-gray-500">
-                        {isEditMode 
-                          ? "Slug is locked for editing if it matches the original. You can only change it if you're using a new unique slug."
-                          : "Auto-generated from country name. You can edit it manually if needed."
-                        }
+                        Auto-generated from country name. You can edit it manually if needed.
                       </p>
                       {slugManuallyEdited && (
                         <span className="text-xs text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded">
                           Manually edited
                         </span>
                       )}
-                      {isEditMode && formData.slug === originalSlug && (
+                      {formData.slug === originalSlug && (
                         <span className="text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
                           Original slug
                         </span>
@@ -941,28 +980,6 @@ const CreateCountryForm = () => {
                         if (looksLikeUrl(e.target.value)) {
                           setPreviewImage(e.target.value);
                         }
-                        const ensurePngExtension = (url: string): string => {
-  if (!url) return url;
-
-  try {
-    const parsed = new URL(url);
-
-    // Remove query/hash for extension check
-    const cleanPath = parsed.pathname;
-
-    // If already has an image extension, return original URL
-    if (/\.(png|jpg|jpeg|gif|webp|svg)$/i.test(cleanPath)) {
-      return url;
-    }
-
-    // Append .png to pathname
-    parsed.pathname = `${parsed.pathname}.png`;
-    return parsed.toString();
-  } catch {
-    return url;
-  }
-};
-
                       }}
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-black"
                       placeholder="https://example.com/image.jpg"
@@ -1001,10 +1018,7 @@ const CreateCountryForm = () => {
                   <div>
                     <h4 className="font-medium text-green-800">Success!</h4>
                     <p className="text-sm text-green-600 mt-1">
-                      {isEditMode 
-                        ? "Country form updated successfully. Redirecting..."
-                        : "Country form submitted successfully. Redirecting..."
-                      }
+                      Country form updated successfully. Redirecting to dashboard...
                     </p>
                   </div>
                 </div>
@@ -1013,24 +1027,12 @@ const CreateCountryForm = () => {
               <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t">
                 <button
                   type="submit"
-                  disabled={loading || submitted}
+                  disabled={updating || submitted}
                   className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isEditMode ? <RefreshCcw className="h-5 w-5" /> : <Send className="h-5 w-5" />}
-                  {loading ? "Processing..." : submitted ? "Success!" : isEditMode ? "Update Submission" : "Submit for Review"}
+                  <RefreshCcw className="h-5 w-5" />
+                  {updating ? "Updating..." : submitted ? "Updated!" : "Update & Resubmit for Review"}
                 </button>
-
-                {!isEditMode && (
-                  <button
-                    type="button"
-                    onClick={handleSaveDraft}
-                    disabled={loading || submitted}
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3.5 border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <Save className="h-5 w-5" />
-                    Save as Draft
-                  </button>
-                )}
 
                 <button
                   type="button"
@@ -1038,6 +1040,15 @@ const CreateCountryForm = () => {
                   className="inline-flex items-center justify-center px-6 py-3.5 border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition"
                 >
                   Cancel
+                </button>
+                
+                <button
+                  type="button"
+                  onClick={resetToOriginal}
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition"
+                >
+                  <History className="h-5 w-5" />
+                  Reset Changes
                 </button>
               </div>
             </form>
@@ -1047,35 +1058,25 @@ const CreateCountryForm = () => {
             <div className="bg-white rounded-2xl shadow-lg p-6">
               <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
                 <CheckCircle2 className="h-5 w-5 text-blue-600" />
-                {isEditMode ? "Update Guidelines" : "Submission Guidelines"}
+                Update Guidelines
               </h3>
               <ul className="space-y-3 text-sm text-gray-600">
                 <li className="flex items-start gap-2">
                   <div className="h-1.5 w-1.5 bg-blue-600 rounded-full mt-1.5"></div>
                   <span>Fields marked with * are mandatory</span>
                 </li>
-                {isEditMode && (
-                  <>
-                    <li className="flex items-start gap-2">
-                      <div className="h-1.5 w-1.5 bg-blue-600 rounded-full mt-1.5"></div>
-                      <span>Slug is locked if it matches original. Use new unique slug to change.</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <div className="h-1.5 w-1.5 bg-blue-600 rounded-full mt-1.5"></div>
-                      <span>When updated, status will reset to "pending" for admin review</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <div className="h-1.5 w-1.5 bg-blue-600 rounded-full mt-1.5"></div>
-                      <span>Rejection note (if any) will be cleared after update</span>
-                    </li>
-                  </>
-                )}
-                {!isEditMode && (
-                  <li className="flex items-start gap-2">
-                    <div className="h-1.5 w-1.5 bg-blue-600 rounded-full mt-1.5"></div>
-                    <span>Slug is auto-generated but can be customized</span>
-                  </li>
-                )}
+                <li className="flex items-start gap-2">
+                  <div className="h-1.5 w-1.5 bg-blue-600 rounded-full mt-1.5"></div>
+                  <span>When updated, status will reset to "pending" for admin review</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <div className="h-1.5 w-1.5 bg-blue-600 rounded-full mt-1.5"></div>
+                  <span>Rejection note (if any) will be cleared after update</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <div className="h-1.5 w-1.5 bg-blue-600 rounded-full mt-1.5"></div>
+                  <span>Slug is auto-generated but can be customized</span>
+                </li>
                 <li className="flex items-start gap-2">
                   <div className="h-1.5 w-1.5 bg-blue-600 rounded-full mt-1.5"></div>
                   <span>Ranges should be in format "min-max" or descriptive</span>
@@ -1147,6 +1148,35 @@ const CreateCountryForm = () => {
                 </ul>
               </div>
             </div>
+
+            <div className="bg-yellow-50 rounded-2xl shadow-lg p-6 border border-yellow-100">
+              <h3 className="font-semibold text-yellow-900 mb-3 flex items-center gap-2">
+                <RefreshCcw className="h-5 w-5 text-yellow-600" />
+                Important Notes
+              </h3>
+              <ul className="space-y-3 text-sm text-yellow-700">
+                <li className="flex items-start gap-2">
+                  <div className="h-1.5 w-1.5 bg-yellow-600 rounded-full mt-1.5"></div>
+                  <span>Original submission ID: <code className="text-xs bg-yellow-100 px-1 py-0.5 rounded">{id}</code></span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <div className="h-1.5 w-1.5 bg-yellow-600 rounded-full mt-1.5"></div>
+                  <span>Original status: <span className="font-medium capitalize">{originalData?.status}</span></span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <div className="h-1.5 w-1.5 bg-yellow-600 rounded-full mt-1.5"></div>
+                  <span>Created: {originalData ? new Date(originalData.createdAt).toLocaleDateString() : 'N/A'}</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <div className="h-1.5 w-1.5 bg-yellow-600 rounded-full mt-1.5"></div>
+                  <span>Last updated: {originalData ? new Date(originalData.updatedAt).toLocaleDateString() : 'N/A'}</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <div className="h-1.5 w-1.5 bg-yellow-600 rounded-full mt-1.5"></div>
+                  <span>After update, admin will need to review your submission again</span>
+                </li>
+              </ul>
+            </div>
           </div>
         </motion.div>
       </main>
@@ -1154,4 +1184,4 @@ const CreateCountryForm = () => {
   );
 };
 
-export default CreateCountryForm;
+export default EditCountryForm;
