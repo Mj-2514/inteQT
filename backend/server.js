@@ -13,6 +13,7 @@ import { fileURLToPath } from "url";
 
 
 import eventRoutes from "./routes/EventRoutes.js";
+import uploadRoutes from "./routes/uploadRoutes.js";
 import eventAdminRoutes from "./routes/eventAdminRoutes.js";
 import eventAuthRoutes from "./routes/eventAuthRoutes.js";
 import eventUserRoutes from "./routes/eventUserRoutes.js"
@@ -100,6 +101,7 @@ app.use("/api/events/user", eventUserRoutes)
 app.use("/api/blogs/user", blogUserRoutes);
 app.use("/api/country", countryAuthRoutes);
 app.use("/api/country/dashboard", countryRoutes);
+app.use("/api/upload", uploadRoutes);
 
 
 // ---------- Health ----------

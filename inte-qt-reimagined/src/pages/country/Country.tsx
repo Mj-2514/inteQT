@@ -196,6 +196,34 @@ const Country: React.FC = () => {
     }
   };
 
+  // Helper function to fix image URLs (especially for Imgur without extensions)
+  const fixImageUrl = (url: string | undefined): string => {
+    if (!url) return '';
+    
+    let fixedUrl = url.trim();
+    
+    // Add https:// if missing
+    if (!fixedUrl.startsWith('http://') && !fixedUrl.startsWith('https://')) {
+      fixedUrl = 'https://' + fixedUrl;
+    }
+    
+    // Handle Imgur URLs without extensions
+    if (fixedUrl.includes('imgur.com') || fixedUrl.includes('i.imgur.com')) {
+      // Check if URL already has an extension
+      if (!fixedUrl.match(/\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i)) {
+        // Add .png extension for Imgur URLs without extensions
+        fixedUrl += '.png';
+      }
+      
+      // Ensure i.imgur.com format for direct image links
+      if (fixedUrl.includes('imgur.com/') && !fixedUrl.includes('i.imgur.com/')) {
+        fixedUrl = fixedUrl.replace('imgur.com/', 'i.imgur.com/');
+      }
+    }
+    
+    return fixedUrl;
+  };
+
   // FIXED: Better flag URL function with fallback
   const getFlagUrl = (countryName: string) => {
     if (!countryName) return `https://flagcdn.com/w320/un.png`;
@@ -205,278 +233,278 @@ const Country: React.FC = () => {
     // Map country names to ISO 3166-1 alpha-2 codes
     const countryCodeMap: Record<string, string> = {
       // North America
-  "united states": "us", "usa": "us", "united states of america": "us", "america": "us",
-  "canada": "ca",
-  "mexico": "mx",
-  "guatemala": "gt",
-  "belize": "bz",
-  "el salvador": "sv",
-  "honduras": "hn",
-  "nicaragua": "ni",
-  "costa rica": "cr",
-  "panama": "pa",
-  "bahamas": "bs",
-  "cuba": "cu",
-  "jamaica": "jm",
-  "haiti": "ht",
-  "dominican republic": "do",
-  "puerto rico": "pr",
-  "guadeloupe": "gp",
-  "martinique": "mq",
-  "barbados": "bb",
-  "trinidad and tobago": "tt",
-  "dominica": "dm",
-  "grenada": "gd",
-  "saint lucia": "lc",
-  "saint vincent and the grenadines": "vc",
-  "antigua and barbuda": "ag",
-  "saint kitts and nevis": "kn",
-  
-  // Europe
-  "united kingdom": "gb", "uk": "gb", "great britain": "gb", "britain": "gb", "england": "gb", "scotland": "gb", "wales": "gb",
-  "ireland": "ie",
-  "france": "fr",
-  "spain": "es",
-  "portugal": "pt",
-  "italy": "it",
-  "germany": "de",
-  "netherlands": "nl", "holland": "nl",
-  "belgium": "be",
-  "luxembourg": "lu",
-  "switzerland": "ch",
-  "austria": "at",
-  "liechtenstein": "li",
-  "monaco": "mc",
-  "andorra": "ad",
-  "san marino": "sm",
-  "vatican city": "va",
-  "sweden": "se",
-  "norway": "no",
-  "denmark": "dk",
-  "finland": "fi",
-  "iceland": "is",
-  "greenland": "gl",
-  "faroe islands": "fo",
-  "estonia": "ee",
-  "latvia": "lv",
-  "lithuania": "lt",
-  "poland": "pl",
-  "czech republic": "cz", "czechia": "cz",
-  "slovakia": "sk",
-  "hungary": "hu",
-  "romania": "ro",
-  "bulgaria": "bg",
-  "serbia": "rs",
-  "croatia": "hr",
-  "slovenia": "si",
-  "bosnia and herzegovina": "ba", "bosnia": "ba",
-  "montenegro": "me",
-  "albania": "al",
-  "north macedonia": "mk", "macedonia": "mk",
-  "greece": "gr",
-  "cyprus": "cy",
-  "malta": "mt",
-  "turkey": "tr", "türkiye": "tr",
-  "ukraine": "ua",
-  "belarus": "by",
-  "moldova": "md",
-  "russia": "ru",
-  "georgia": "ge",
-  "armenia": "am",
-  "azerbaijan": "az",
-  "kazakhstan": "kz",
-  
-  // Asia
-  "china": "cn", "people's republic of china": "cn",
-  "japan": "jp",
-  "south korea": "kr", "korea": "kr", "republic of korea": "kr",
-  "north korea": "kp", "democratic people's republic of korea": "kp",
-  "taiwan": "tw",
-  "hong kong": "hk",
-  "macau": "mo",
-  "mongolia": "mn",
-  "india": "in",
-  "pakistan": "pk",
-  "bangladesh": "bd",
-  "sri lanka": "lk",
-  "nepal": "np",
-  "bhutan": "bt",
-  "maldives": "mv",
-  "afghanistan": "af",
-  "iran": "ir",
-  "iraq": "iq",
-  "saudi arabia": "sa",
-  "united arab emirates": "ae", "uae": "ae",
-  "qatar": "qa",
-  "kuwait": "kw",
-  "bahrain": "bh",
-  "oman": "om",
-  "yemen": "ye",
-  "jordan": "jo",
-  "lebanon": "lb",
-  "syria": "sy",
-  "israel": "il",
-  "palestine": "ps",
-  "uzbekistan": "uz",
-  "turkmenistan": "tm",
-  "kyrgyzstan": "kg",
-  "tajikistan": "tj",
-  "thailand": "th",
-  "vietnam": "vn", "viet nam": "vn",
-  "cambodia": "kh",
-  "laos": "la",
-  "myanmar": "mm", "burma": "mm",
-  "malaysia": "my",
-  "singapore": "sg",
-  "indonesia": "id",
-  "philippines": "ph",
-  "brunei": "bn",
-  "east timor": "tl", "timor-leste": "tl",
-  "papua new guinea": "pg",
-  
-  // South America
-  "brazil": "br",
-  "argentina": "ar",
-  "chile": "cl",
-  "colombia": "co",
-  "peru": "pe",
-  "venezuela": "ve",
-  "ecuador": "ec",
-  "bolivia": "bo",
-  "paraguay": "py",
-  "uruguay": "uy",
-  "guyana": "gy",
-  "suriname": "sr",
-  "french guiana": "gf",
-  
-  // Africa
-  "algeria": "dz",
-  "egypt": "eg",
-  "libya": "ly",
-  "morocco": "ma",
-  "sudan": "sd",
-  "tunisia": "tn",
-  "western sahara": "eh",
-  "burkina faso": "bf",
-  "benin": "bj",
-  "cape verde": "cv",
-  "côte d'ivoire": "ci", "ivory coast": "ci",
-  "gambia": "gm",
-  "ghana": "gh",
-  "guinea": "gn",
-  "guinea-bissau": "gw",
-  "liberia": "lr",
-  "mali": "ml",
-  "mauritania": "mr",
-  "niger": "ne",
-  "nigeria": "ng",
-  "senegal": "sn",
-  "sierra leone": "sl",
-  "togo": "tg",
-  "angola": "ao",
-  "cameroon": "cm",
-  "central african republic": "cf",
-  "chad": "td",
-  "congo": "cg", "republic of the congo": "cg",
-  "democratic republic of the congo": "cd", "drc": "cd", "congo-kinshasa": "cd",
-  "equatorial guinea": "gq",
-  "gabon": "ga",
-  "sao tome and principe": "st",
-  "burundi": "bi",
-  "comoros": "km",
-  "djibouti": "dj",
-  "eritrea": "er",
-  "ethiopia": "et",
-  "kenya": "ke",
-  "madagascar": "mg",
-  "malawi": "mw",
-  "mauritius": "mu",
-  "mozambique": "mz",
-  "rwanda": "rw",
-  "seychelles": "sc",
-  "somalia": "so",
-  "south sudan": "ss",
-  "tanzania": "tz",
-  "uganda": "ug",
-  "zambia": "zm",
-  "zimbabwe": "zw",
-  "botswana": "bw",
-  "eswatini": "sz", "swaziland": "sz",
-  "lesotho": "ls",
-  "namibia": "na",
-  "south africa": "za",
-  
-  // Oceania
-  "australia": "au",
-  "new zealand": "nz",
-  "fiji": "fj",
- 
-  "solomon islands": "sb",
-  "vanuatu": "vu",
-  "new caledonia": "nc",
-  "french polynesia": "pf",
-  "samoa": "ws",
-  "american samoa": "as",
-  "cook islands": "ck",
-  "tonga": "to",
-  "tuvalu": "tv",
-  "kiribati": "ki",
-  "micronesia": "fm",
-  "marshall islands": "mh",
-  "palau": "pw",
-  "nauru": "nr",
-  
-  // Caribbean
-  "anguilla": "ai",
-  
-  "aruba": "aw",
-  
-  "bermuda": "bm",
-  "british virgin islands": "vg",
-  "cayman islands": "ky",
+      "united states": "us", "usa": "us", "united states of america": "us", "america": "us",
+      "canada": "ca",
+      "mexico": "mx",
+      "guatemala": "gt",
+      "belize": "bz",
+      "el salvador": "sv",
+      "honduras": "hn",
+      "nicaragua": "ni",
+      "costa rica": "cr",
+      "panama": "pa",
+      "bahamas": "bs",
+      "cuba": "cu",
+      "jamaica": "jm",
+      "haiti": "ht",
+      "dominican republic": "do",
+      "puerto rico": "pr",
+      "guadeloupe": "gp",
+      "martinique": "mq",
+      "barbados": "bb",
+      "trinidad and tobago": "tt",
+      "dominica": "dm",
+      "grenada": "gd",
+      "saint lucia": "lc",
+      "saint vincent and the grenadines": "vc",
+      "antigua and barbuda": "ag",
+      "saint kitts and nevis": "kn",
+      
+      // Europe
+      "united kingdom": "gb", "uk": "gb", "great britain": "gb", "britain": "gb", "england": "gb", "scotland": "gb", "wales": "gb",
+      "ireland": "ie",
+      "france": "fr",
+      "spain": "es",
+      "portugal": "pt",
+      "italy": "it",
+      "germany": "de",
+      "netherlands": "nl", "holland": "nl",
+      "belgium": "be",
+      "luxembourg": "lu",
+      "switzerland": "ch",
+      "austria": "at",
+      "liechtenstein": "li",
+      "monaco": "mc",
+      "andorra": "ad",
+      "san marino": "sm",
+      "vatican city": "va",
+      "sweden": "se",
+      "norway": "no",
+      "denmark": "dk",
+      "finland": "fi",
+      "iceland": "is",
+      "greenland": "gl",
+      "faroe islands": "fo",
+      "estonia": "ee",
+      "latvia": "lv",
+      "lithuania": "lt",
+      "poland": "pl",
+      "czech republic": "cz", "czechia": "cz",
+      "slovakia": "sk",
+      "hungary": "hu",
+      "romania": "ro",
+      "bulgaria": "bg",
+      "serbia": "rs",
+      "croatia": "hr",
+      "slovenia": "si",
+      "bosnia and herzegovina": "ba", "bosnia": "ba",
+      "montenegro": "me",
+      "albania": "al",
+      "north macedonia": "mk", "macedonia": "mk",
+      "greece": "gr",
+      "cyprus": "cy",
+      "malta": "mt",
+      "turkey": "tr", "türkiye": "tr",
+      "ukraine": "ua",
+      "belarus": "by",
+      "moldova": "md",
+      "russia": "ru",
+      "georgia": "ge",
+      "armenia": "am",
+      "azerbaijan": "az",
+      "kazakhstan": "kz",
+      
+      // Asia
+      "china": "cn", "people's republic of china": "cn",
+      "japan": "jp",
+      "south korea": "kr", "korea": "kr", "republic of korea": "kr",
+      "north korea": "kp", "democratic people's republic of korea": "kp",
+      "taiwan": "tw",
+      "hong kong": "hk",
+      "macau": "mo",
+      "mongolia": "mn",
+      "india": "in",
+      "pakistan": "pk",
+      "bangladesh": "bd",
+      "sri lanka": "lk",
+      "nepal": "np",
+      "bhutan": "bt",
+      "maldives": "mv",
+      "afghanistan": "af",
+      "iran": "ir",
+      "iraq": "iq",
+      "saudi arabia": "sa",
+      "united arab emirates": "ae", "uae": "ae",
+      "qatar": "qa",
+      "kuwait": "kw",
+      "bahrain": "bh",
+      "oman": "om",
+      "yemen": "ye",
+      "jordan": "jo",
+      "lebanon": "lb",
+      "syria": "sy",
+      "israel": "il",
+      "palestine": "ps",
+      "uzbekistan": "uz",
+      "turkmenistan": "tm",
+      "kyrgyzstan": "kg",
+      "tajikistan": "tj",
+      "thailand": "th",
+      "vietnam": "vn", "viet nam": "vn",
+      "cambodia": "kh",
+      "laos": "la",
+      "myanmar": "mm", "burma": "mm",
+      "malaysia": "my",
+      "singapore": "sg",
+      "indonesia": "id",
+      "philippines": "ph",
+      "brunei": "bn",
+      "east timor": "tl", "timor-leste": "tl",
+      "papua new guinea": "pg",
+      
+      // South America
+      "brazil": "br",
+      "argentina": "ar",
+      "chile": "cl",
+      "colombia": "co",
+      "peru": "pe",
+      "venezuela": "ve",
+      "ecuador": "ec",
+      "bolivia": "bo",
+      "paraguay": "py",
+      "uruguay": "uy",
+      "guyana": "gy",
+      "suriname": "sr",
+      "french guiana": "gf",
+      
+      // Africa
+      "algeria": "dz",
+      "egypt": "eg",
+      "libya": "ly",
+      "morocco": "ma",
+      "sudan": "sd",
+      "tunisia": "tn",
+      "western sahara": "eh",
+      "burkina faso": "bf",
+      "benin": "bj",
+      "cape verde": "cv",
+      "côte d'ivoire": "ci", "ivory coast": "ci",
+      "gambia": "gm",
+      "ghana": "gh",
+      "guinea": "gn",
+      "guinea-bissau": "gw",
+      "liberia": "lr",
+      "mali": "ml",
+      "mauritania": "mr",
+      "niger": "ne",
+      "nigeria": "ng",
+      "senegal": "sn",
+      "sierra leone": "sl",
+      "togo": "tg",
+      "angola": "ao",
+      "cameroon": "cm",
+      "central african republic": "cf",
+      "chad": "td",
+      "congo": "cg", "republic of the congo": "cg",
+      "democratic republic of the congo": "cd", "drc": "cd", "congo-kinshasa": "cd",
+      "equatorial guinea": "gq",
+      "gabon": "ga",
+      "sao tome and principe": "st",
+      "burundi": "bi",
+      "comoros": "km",
+      "djibouti": "dj",
+      "eritrea": "er",
+      "ethiopia": "et",
+      "kenya": "ke",
+      "madagascar": "mg",
+      "malawi": "mw",
+      "mauritius": "mu",
+      "mozambique": "mz",
+      "rwanda": "rw",
+      "seychelles": "sc",
+      "somalia": "so",
+      "south sudan": "ss",
+      "tanzania": "tz",
+      "uganda": "ug",
+      "zambia": "zm",
+      "zimbabwe": "zw",
+      "botswana": "bw",
+      "eswatini": "sz", "swaziland": "sz",
+      "lesotho": "ls",
+      "namibia": "na",
+      "south africa": "za",
+      
+      // Oceania
+      "australia": "au",
+      "new zealand": "nz",
+      "fiji": "fj",
+     
+      "solomon islands": "sb",
+      "vanuatu": "vu",
+      "new caledonia": "nc",
+      "french polynesia": "pf",
+      "samoa": "ws",
+      "american samoa": "as",
+      "cook islands": "ck",
+      "tonga": "to",
+      "tuvalu": "tv",
+      "kiribati": "ki",
+      "micronesia": "fm",
+      "marshall islands": "mh",
+      "palau": "pw",
+      "nauru": "nr",
+      
+      // Caribbean
+      "anguilla": "ai",
+      
+      "aruba": "aw",
+      
+      "bermuda": "bm",
+      "british virgin islands": "vg",
+      "cayman islands": "ky",
 
-  "curaçao": "cw",
-  
-  
-  "montserrat": "ms",
-  
-  "saint barthelemy": "bl",
-  
-  "saint martin": "mf",
-  
-  "sint maarten": "sx",
-  
-  "turks and caicos islands": "tc",
-  "us virgin islands": "vi",
-  
-  // Other territories
-  "aland islands": "ax",
-  
-  "british indian ocean territory": "io",
-  "christmas island": "cx",
-  "cocos (keeling) islands": "cc",
-  "falkland islands": "fk", "malvinas": "fk",
-  
-  "french southern territories": "tf",
-  "gibraltar": "gi",
-  
-  "guam": "gu",
-  "guernsey": "gg",
-  "isle of man": "im",
-  "jersey": "je",
-  "macao": "mo", 
-  
-  "niue": "nu",
-  "norfolk island": "nf",
-  "northern mariana islands": "mp",
-  "pitcairn islands": "pn",
-  "réunion": "re",
-  "saint helena": "sh",
-  "saint pierre and miquelon": "pm",
-  "svalbard and jan mayen": "sj",
-  "tokelau": "tk",
-  "wallis and futuna": "wf",
-  
+      "curaçao": "cw",
+      
+      
+      "montserrat": "ms",
+      
+      "saint barthelemy": "bl",
+      
+      "saint martin": "mf",
+      
+      "sint maarten": "sx",
+      
+      "turks and caicos islands": "tc",
+      "us virgin islands": "vi",
+      
+      // Other territories
+      "aland islands": "ax",
+      
+      "british indian ocean territory": "io",
+      "christmas island": "cx",
+      "cocos (keeling) islands": "cc",
+      "falkland islands": "fk", "malvinas": "fk",
+      
+      "french southern territories": "tf",
+      "gibraltar": "gi",
+      
+      "guam": "gu",
+      "guernsey": "gg",
+      "isle of man": "im",
+      "jersey": "je",
+      "macao": "mo", 
+      
+      "niue": "nu",
+      "norfolk island": "nf",
+      "northern mariana islands": "mp",
+      "pitcairn islands": "pn",
+      "réunion": "re",
+      "saint helena": "sh",
+      "saint pierre and miquelon": "pm",
+      "svalbard and jan mayen": "sj",
+      "tokelau": "tk",
+      "wallis and futuna": "wf",
+      
     };
 
     // Try exact match
@@ -637,7 +665,8 @@ const Country: React.FC = () => {
 
   const countryName = getCountryName();
   const flagUrl = getFlagUrl(countryName);
-  const hasNetworkImage = !!countryData.submarineCableImage;
+  const submarineImageUrl = fixImageUrl(countryData.submarineCableImage);
+  const hasNetworkImage = !!submarineImageUrl;
   const hasNetworkLink = !!countryData.submarineCableLink;
 
   // SEO Metadata with keywords
@@ -1487,12 +1516,17 @@ const Country: React.FC = () => {
                         >
                           <div className="relative w-full h-48 sm:h-64 md:h-80 lg:h-96 overflow-hidden flex items-center justify-center">
                             <img
-                              src={countryData.submarineCableImage}
+                              src={submarineImageUrl}
                               alt={networkImageAlt}
                               className="max-w-full max-h-full object-contain transition-transform duration-300 group-hover:scale-105"
                               loading="lazy"
                               width="800"
                               height="600"
+                              onError={(e) => {
+                                // Fallback for broken images
+                                const target = e.target as HTMLImageElement;
+                                target.src = 'https://images.unsplash.com/photo-1582659042116-99f30c7a6c8c?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
+                              }}
                             />
                           </div>
                           <figcaption className="sr-only">

@@ -15,11 +15,14 @@ import {
   Plus,
   Trash2,
   Link,
-  RefreshCcw
+  RefreshCcw,
+  Edit,
+  X,
+  Image as ImageIcon
 } from "lucide-react";
 import { useCountryAuth } from "../../context/AuthContext";
 
-const API_BASE =import.meta.env.VITE_API_BASE;
+const API_BASE = "http://localhost:5000";
 
 interface CountryFormData {
   name: string;
@@ -52,6 +55,7 @@ const CreateCountryForm = () => {
   const { id } = useParams();
 
   const [loading, setLoading] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -59,6 +63,7 @@ const CreateCountryForm = () => {
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
   const [newReference, setNewReference] = useState("");
   const [originalSlug, setOriginalSlug] = useState("");
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const [formData, setFormData] = useState<CountryFormData>({
     name: "",
@@ -158,7 +163,7 @@ const CreateCountryForm = () => {
 
         setOriginalSlug(submission.slug || "");
 
-        if (submission.submarineCableImage && looksLikeUrl(submission.submarineCableImage)) {
+        if (submission.submarineCableImage) {
           setPreviewImage(submission.submarineCableImage);
         }
       } else {
@@ -209,6 +214,101 @@ const CreateCountryForm = () => {
     return null;
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const validImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!validImageTypes.includes(file.type)) {
+      setError("Please upload a valid image (JPEG, PNG, GIF, WEBP)");
+      return;
+    }
+
+    // Validate file size (10MB max)
+    if (file.size > 10 * 1024 * 1024) {
+      setError("Image must be under 10MB");
+      return;
+    }
+
+    // Create preview immediately
+    const objectUrl = URL.createObjectURL(file);
+    setPreviewImage(objectUrl);
+
+    try {
+      setUploadingImage(true);
+      setError(null);
+      setUploadProgress(0);
+
+      // Create FormData
+      const formDataObj = new FormData();
+      formDataObj.append("image", file);
+
+      
+
+      // Upload to Cloudinary
+      const response = await fetch(`${API_BASE}/api/upload/image`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+        body: formDataObj,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Clean up preview URL on error
+        URL.revokeObjectURL(objectUrl);
+        setPreviewImage(null);
+        throw new Error(data.message || `Upload failed with status ${response.status}`);
+      }
+
+
+
+      // Update form with Cloudinary URL
+      setFormData(prev => ({
+        ...prev,
+        submarineCableImage: data.url,
+      }));
+
+      // Replace preview with Cloudinary URL
+      URL.revokeObjectURL(objectUrl);
+      setPreviewImage(data.url);
+
+      setUploadProgress(100);
+
+    } catch (err: any) {
+      console.error("Image upload failed:", err);
+      setError(`Upload failed: ${err.message}`);
+      
+      // Clean up preview
+      if (previewImage && previewImage.startsWith('blob:')) {
+        URL.revokeObjectURL(previewImage);
+      }
+      setPreviewImage(null);
+      setFormData(prev => ({
+        ...prev,
+        submarineCableImage: "",
+      }));
+    } finally {
+      setUploadingImage(false);
+      setUploadProgress(0);
+      if (e.target) e.target.value = "";
+    }
+  };
+
+  const handleRemoveImage = () => {
+    if (previewImage && previewImage.startsWith('blob:')) {
+      URL.revokeObjectURL(previewImage);
+    }
+    setPreviewImage(null);
+    setFormData(prev => ({
+      ...prev,
+      submarineCableImage: "",
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -224,7 +324,7 @@ const CreateCountryForm = () => {
     try {
       const url = `${API_BASE}/api/country/dashboard/submit`;
       
-      console.log('Submitting to:');
+   
 
       const payload = {
         name: formData.name.trim(),
@@ -234,7 +334,7 @@ const CreateCountryForm = () => {
         Ipv6PeersRange: formData.Ipv6PeersRange.trim(),
         IxpPartnersRange: formData.IxpPartnersRange.trim(),
         Ipv4GatewaysRange: formData.Ipv4GatewaysRange.trim(),
-        Ipv6GatewaysRange: formData.Ipv6GatewaysRange.trim(),
+        Ipv6GatewaysRange: formData.Ipv6PeersRange.trim(),
         CloudPartnersRange: formData.CloudPartnersRange.trim(),
         ddosProtection: formData.ddosProtection,
         minServiceLatencyRange: formData.minServiceLatencyRange.trim(),
@@ -251,8 +351,7 @@ const CreateCountryForm = () => {
         references: formData.references.filter(ref => ref.trim() !== ''),
       };
 
-      console.log('Payload:', payload);
-
+    
       const res = await fetch(url, {
         method: "POST",
         headers: {
@@ -263,7 +362,7 @@ const CreateCountryForm = () => {
       });
 
       const data = await res.json();
-      console.log('Response:', data);
+   
 
       if (!res.ok) {
         throw new Error(data.message || "Failed to submit country form");
@@ -296,7 +395,7 @@ const CreateCountryForm = () => {
     try {
       const url = `${API_BASE}/api/country/dashboard/submit`;
       
-      console.log('Updating via:');
+    
 
       const payload = {
         name: formData.name.trim(),
@@ -306,7 +405,7 @@ const CreateCountryForm = () => {
         Ipv6PeersRange: formData.Ipv6PeersRange.trim(),
         IxpPartnersRange: formData.IxpPartnersRange.trim(),
         Ipv4GatewaysRange: formData.Ipv4GatewaysRange.trim(),
-        Ipv6GatewaysRange: formData.Ipv6GatewaysRange.trim(),
+        Ipv6GatewaysRange: formData.Ipv6PeersRange.trim(),
         CloudPartnersRange: formData.CloudPartnersRange.trim(),
         ddosProtection: formData.ddosProtection,
         minServiceLatencyRange: formData.minServiceLatencyRange.trim(),
@@ -323,8 +422,7 @@ const CreateCountryForm = () => {
         references: formData.references.filter(ref => ref.trim() !== ''),
       };
 
-      console.log('Update payload:', payload);
-
+     
       const res = await fetch(url, {
         method: "POST",
         headers: {
@@ -335,7 +433,7 @@ const CreateCountryForm = () => {
       });
 
       const data = await res.json();
-      console.log('Update response:', data);
+    
 
       if (!res.ok) {
         throw new Error(data.message || "Failed to update country form");
@@ -390,23 +488,6 @@ const CreateCountryForm = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-      setError("Please upload an image file");
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setPreviewImage(reader.result as string);
-      setFormData(prev => ({ ...prev, submarineCableImage: reader.result as string }));
-    };
-    reader.readAsDataURL(file);
   };
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -557,15 +638,9 @@ const CreateCountryForm = () => {
           </h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
             {isEditMode 
-              ? "Update your country submission details. Note: Slug cannot be changed if it belongs to another user."
+              ? "Update your country submission details."
               : "Fill in the details about your country's network infrastructure. All fields marked with * are required."}
           </p>
-          {isEditMode && originalSlug && (
-            <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg">
-              <span className="text-sm text-gray-600">Original Slug:</span>
-              <code className="text-sm font-mono bg-white px-2 py-1 rounded border">{originalSlug}</code>
-            </div>
-          )}
         </div>
 
         <motion.div
@@ -576,6 +651,7 @@ const CreateCountryForm = () => {
         >
           <div className="lg:col-span-2">
             <form onSubmit={isEditMode ? handleUpdate : handleSubmit} className="space-y-6">
+              {/* Basic Information Section */}
               <div className="bg-white rounded-2xl shadow-lg p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-3 border-b">
                   Basic Information
@@ -594,87 +670,183 @@ const CreateCountryForm = () => {
                       placeholder="e.g., United States"
                       required
                     />
-                    <p className="text-xs text-gray-500 mt-1">
-                      Enter the full country name. {!isEditMode && "The slug will be automatically generated."}
-                    </p>
                   </div>
 
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <label className="block text-sm font-medium text-gray-700">
                         Slug *
-                        <span className="text-xs text-gray-500 ml-2">(URL-friendly identifier)</span>
                       </label>
                       <div className="flex items-center gap-2">
-                        {!isEditMode && (
-                          <button
-                            type="button"
-                            onClick={regenerateSlug}
-                            className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800"
-                            title="Regenerate slug from name"
-                          >
-                            <RefreshCw className="h-3 w-3" />
-                            Regenerate
-                          </button>
-                        )}
+                        <button
+                          type="button"
+                          onClick={regenerateSlug}
+                          className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800"
+                        >
+                          <RefreshCw className="h-3 w-3" />
+                          Regenerate
+                        </button>
                         <button
                           type="button"
                           onClick={copySlugToClipboard}
                           className="inline-flex items-center gap-1 text-xs text-gray-600 hover:text-gray-800"
-                          title="Copy slug to clipboard"
                         >
                           <Copy className="h-3 w-3" />
                           Copy
                         </button>
                       </div>
                     </div>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        value={formData.slug}
-                        onChange={handleSlugChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-black pr-32"
-                        placeholder="e.g., united-states"
-                        required
-                        readOnly={isEditMode && formData.slug === originalSlug}
-                      />
-                      <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center">
-                        <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                          {formData.slug.length > 0 ? `${formData.slug.length} chars` : "empty"}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between mt-1">
-                      <p className="text-xs text-gray-500">
-                        {isEditMode 
-                          ? "Slug is locked for editing if it matches the original. You can only change it if you're using a new unique slug."
-                          : "Auto-generated from country name. You can edit it manually if needed."
-                        }
-                      </p>
-                      {slugManuallyEdited && (
-                        <span className="text-xs text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded">
-                          Manually edited
-                        </span>
-                      )}
-                      {isEditMode && formData.slug === originalSlug && (
-                        <span className="text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
-                          Original slug
-                        </span>
-                      )}
-                    </div>
-                    
-                    {formData.slug && (
-                      <div className="mt-2 p-2 bg-gray-50 rounded-lg border">
-                        <p className="text-xs text-gray-600 mb-1">Preview URL:</p>
-                        <code className="text-xs text-blue-600 break-all">
-                          {window.location.origin}/country?slug={formData.slug}
-                        </code>
-                      </div>
-                    )}
+                    <input
+                      type="text"
+                      value={formData.slug}
+                      onChange={handleSlugChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-black"
+                      placeholder="e.g., united-states"
+                      required
+                    />
                   </div>
                 </div>
               </div>
 
+              {/* Submarine Cable Image Section - UPDATED */}
+              <div className="bg-white rounded-2xl shadow-lg p-6">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-3 border-b">
+                  Submarine Cable Information
+                </h2>
+                
+                <div className="space-y-6">
+                  {/* Image Upload Section */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Submarine Cable Image
+                    </label>
+                    
+                    <div className="space-y-4">
+                      {/* Upload Area */}
+                      <div className={`border-2 border-dashed ${uploadingImage ? 'border-blue-400' : 'border-gray-300'} rounded-xl p-6 text-center transition-colors hover:border-blue-500 bg-gray-50`}>
+                        <input
+                          type="file"
+                          id="image-upload"
+                          accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                          onChange={handleImageUpload}
+                          className="hidden"
+                          disabled={uploadingImage}
+                        />
+                        
+                        <label htmlFor="image-upload" className={`cursor-pointer ${uploadingImage ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                          {uploadingImage ? (
+                            <div className="space-y-3">
+                              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mx-auto"></div>
+                              <p className="text-sm text-gray-600">Uploading to Cloudinary...</p>
+                              {uploadProgress > 0 && (
+                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                  <div 
+                                    className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                                    style={{ width: `${uploadProgress}%` }}
+                                  ></div>
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="space-y-2">
+                              <Upload className="h-10 w-10 text-gray-400 mx-auto" />
+                              <p className="text-sm text-gray-600">Click to upload image</p>
+                              <p className="text-xs text-gray-500">PNG, JPG, GIF, WEBP up to 10MB</p>
+                            </div>
+                          )}
+                        </label>
+                      </div>
+
+                      {/* Image Preview */}
+                      {previewImage && (
+                        <div className="relative">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium text-gray-700">Preview</span>
+                            <button
+                              type="button"
+                              onClick={handleRemoveImage}
+                              className="text-red-600 hover:text-red-800 text-sm flex items-center gap-1"
+                            >
+                              <X className="h-4 w-4" />
+                              Remove
+                            </button>
+                          </div>
+                          <div className="border rounded-xl overflow-hidden">
+                            <img
+                              src={previewImage}
+                              alt="Submarine cable preview"
+                              className="w-full h-64 object-contain bg-gray-100"
+                              onError={() => {
+                                setError("Failed to load image. Please re-upload.");
+                                setPreviewImage(null);
+                                setFormData(prev => ({ ...prev, submarineCableImage: "" }));
+                              }}
+                            />
+                          </div>
+                          <div className="mt-2 text-xs text-gray-500">
+                            {previewImage.includes('cloudinary.com') ? (
+                              <span className="text-green-600">✓ Uploaded to Cloudinary</span>
+                            ) : (
+                              <span className="text-blue-600">External image URL</span>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Image URL Field (for external URLs) */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Or enter image URL
+                        </label>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={formData.submarineCableImage}
+                            onChange={(e) => {
+                              const url = e.target.value;
+                              setFormData(prev => ({ ...prev, submarineCableImage: url }));
+                              if (looksLikeUrl(url)) {
+                                setPreviewImage(url);
+                              }
+                            }}
+                            className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-black"
+                            placeholder="https://example.com/image.jpg"
+                          />
+                          {formData.submarineCableImage && !previewImage && looksLikeUrl(formData.submarineCableImage) && (
+                            <button
+                              type="button"
+                              onClick={() => setPreviewImage(formData.submarineCableImage)}
+                              className="px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition"
+                            >
+                              Preview
+                            </button>
+                          )}
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">
+                          Enter a direct image URL or upload a file
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Cable Link Field */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <LinkIcon className="inline h-4 w-4 mr-1" />
+                      Submarine Cable Link
+                    </label>
+                    <input
+                      type="url"
+                      value={formData.submarineCableLink}
+                      onChange={(e) => setFormData({...formData, submarineCableLink: e.target.value})}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-black"
+                      placeholder="https://submarinecablemap.com/..."
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Network Statistics Section */}
               <div className="bg-white rounded-2xl shadow-lg p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-3 border-b">
                   Network Statistics
@@ -716,7 +888,7 @@ const CreateCountryForm = () => {
                       value={formData.minServiceLatencyRange}
                       onChange={(e) => setFormData({...formData, minServiceLatencyRange: e.target.value})}
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-black"
-                      placeholder="e.g., 10-20ms (mention ms if applicable)"
+                      placeholder="e.g., 10-20ms"
                     />
                   </div>
 
@@ -729,7 +901,7 @@ const CreateCountryForm = () => {
                       value={formData.avgServiceLatencyRange}
                       onChange={(e) => setFormData({...formData, avgServiceLatencyRange: e.target.value})}
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-black"
-                      placeholder="e.g., 20-30ms (mention ms if applicable)"
+                      placeholder="e.g., 20-30ms"
                     />
                   </div>
                 </div>
@@ -750,96 +922,20 @@ const CreateCountryForm = () => {
               </div>
 
               {/* References Section */}
-              <div className="bg-white rounded-2xl shadow-lg p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-3 border-b">
-                  References
-                </h2>
-                
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Add Reference URL
-                    </label>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={newReference}
-                        onChange={(e) => setNewReference(e.target.value)}
-                        onPaste={handlePasteReferences}
-                        className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-black"
-                        placeholder="https://example.com/report.pdf"
-                      />
-                      <button
-                        type="button"
-                        onClick={handleAddReference}
-                        className="inline-flex items-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
-                      >
-                        <Plus className="h-4 w-4" />
-                        Add
-                      </button>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-2">
-                      Paste multiple URLs separated by commas, semicolons, or new lines
-                    </p>
-                  </div>
+             
 
-                  {formData.references.length > 0 && (
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-sm font-medium text-gray-700">
-                          References ({formData.references.length})
-                        </h3>
-                        <button
-                          type="button"
-                          onClick={handleClearReferences}
-                          className="text-xs text-red-600 hover:text-red-800 flex items-center gap-1"
-                        >
-                          <Trash2 className="h-3 w-3" />
-                          Clear All
-                        </button>
-                      </div>
-                      <div className="space-y-2 max-h-60 overflow-y-auto p-2 border rounded-lg">
-                        {formData.references.map((ref, index) => (
-                          <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100">
-                            <div className="flex items-center gap-2 flex-1 min-w-0">
-                              <Link className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                              <a 
-                                href={ref} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="text-sm text-blue-600 hover:text-blue-800 truncate"
-                                title={ref}
-                              >
-                                {ref}
-                              </a>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveReference(index)}
-                              className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded"
-                              title="Remove reference"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-                
+              {/* Detailed Information */}
               <div className="bg-white rounded-2xl shadow-lg p-6 space-y-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-3 border-b">
                   Detailed Information
                 </h2>
                 
                 {[
-                  { label: "Landline and Mobile", key: "features", rows: 3, placeholder: "Key features of your network infrastructure..." },
-                  { label: "Our Services", key: "ourServices", rows: 3, placeholder: "Services offered to clients..." },
-                  { label: "Country Internet", key: "integrationNote", rows: 3, placeholder: "Notes about integration process..." },
-                  { label: "Why Choose Us", key: "whyChooseUs", rows: 4, placeholder: "What makes your offering unique..." },
-                  { label: "Capabilities", key: "capabilities", rows: 4, placeholder: "Technical capabilities and expertise..." },
+                  { label: "Landline and Mobile", key: "features", rows: 3 },
+                  { label: "Our Services", key: "ourServices", rows: 3 },
+                  { label: "Country Internet", key: "integrationNote", rows: 3 },
+                  { label: "Why Choose Us", key: "whyChooseUs", rows: 4 },
+                  { label: "Capabilities", key: "capabilities", rows: 4 },
                 ].map((field) => (
                   <div key={field.key}>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -850,7 +946,7 @@ const CreateCountryForm = () => {
                       value={formData[field.key as keyof CountryFormData] as string}
                       onChange={(e) => setFormData({...formData, [field.key]: e.target.value})}
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-none text-black"
-                      placeholder={field.placeholder}
+                      placeholder={`Enter ${field.label.toLowerCase()}...`}
                     />
                   </div>
                 ))}
@@ -884,107 +980,7 @@ const CreateCountryForm = () => {
                 </div>
               </div>
 
-              <div className="bg-white rounded-2xl shadow-lg p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-3 border-b">
-                  Submarine Cable Information
-                </h2>
-                
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Submarine Cable Image
-                    </label>
-                    <div className="flex flex-col md:flex-row gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center justify-center w-full">
-                          <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition">
-                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                              <Upload className="h-8 w-8 text-gray-400 mb-2" />
-                              <p className="text-sm text-gray-500">Click to upload image</p>
-                              <p className="text-xs text-gray-400 mt-1">PNG, JPG up to 5MB</p>
-                            </div>
-                            <input
-                              type="file"
-                              className="hidden"
-                              accept="image/*"
-                              onChange={handleImageUpload}
-                            />
-                          </label>
-                        </div>
-                        <p className="text-xs text-gray-500 mt-2">Or enter image URL below</p>
-                      </div>
-                      
-                      {previewImage && (
-                        <div className="md:w-48">
-                          <div className="h-32 w-full rounded-xl overflow-hidden border">
-                            <img
-                              src={previewImage}
-                              alt="Preview"
-                              className="h-full w-full object-cover"
-                            />
-                          </div>
-                          <p className="text-xs text-gray-500 mt-2 text-center">Preview</p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Image URL
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.submarineCableImage}
-                      onChange={(e) => {
-                        setFormData({...formData, submarineCableImage: e.target.value});
-                        if (looksLikeUrl(e.target.value)) {
-                          setPreviewImage(e.target.value);
-                        }
-                        const ensurePngExtension = (url: string): string => {
-  if (!url) return url;
-
-  try {
-    const parsed = new URL(url);
-
-    // Remove query/hash for extension check
-    const cleanPath = parsed.pathname;
-
-    // If already has an image extension, return original URL
-    if (/\.(png|jpg|jpeg|gif|webp|svg)$/i.test(cleanPath)) {
-      return url;
-    }
-
-    // Append .png to pathname
-    parsed.pathname = `${parsed.pathname}.png`;
-    return parsed.toString();
-  } catch {
-    return url;
-  }
-};
-
-                      }}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-black"
-                      placeholder="https://example.com/image.jpg"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      <LinkIcon className="inline h-4 w-4 mr-1" />
-                      Submarine Cable Link
-                    </label>
-                    <input
-                      type="url"
-                      value={formData.submarineCableLink}
-                      onChange={(e) => setFormData({...formData, submarineCableLink: e.target.value})}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-black"
-                      placeholder="https://submarinecablemap.com/..."
-                    />
-                  </div>
-                </div>
-              </div>
-
+              {/* Error and Success Messages */}
               {error && (
                 <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-xl">
                   <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
@@ -1010,10 +1006,11 @@ const CreateCountryForm = () => {
                 </div>
               )}
 
+              {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t">
                 <button
                   type="submit"
-                  disabled={loading || submitted}
+                  disabled={loading || submitted || uploadingImage}
                   className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isEditMode ? <RefreshCcw className="h-5 w-5" /> : <Send className="h-5 w-5" />}
@@ -1043,6 +1040,7 @@ const CreateCountryForm = () => {
             </form>
           </div>
 
+          {/* Sidebar */}
           <div className="space-y-6">
             <div className="bg-white rounded-2xl shadow-lg p-6">
               <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
@@ -1054,97 +1052,57 @@ const CreateCountryForm = () => {
                   <div className="h-1.5 w-1.5 bg-blue-600 rounded-full mt-1.5"></div>
                   <span>Fields marked with * are mandatory</span>
                 </li>
-                {isEditMode && (
-                  <>
-                    <li className="flex items-start gap-2">
-                      <div className="h-1.5 w-1.5 bg-blue-600 rounded-full mt-1.5"></div>
-                      <span>Slug is locked if it matches original. Use new unique slug to change.</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <div className="h-1.5 w-1.5 bg-blue-600 rounded-full mt-1.5"></div>
-                      <span>When updated, status will reset to "pending" for admin review</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <div className="h-1.5 w-1.5 bg-blue-600 rounded-full mt-1.5"></div>
-                      <span>Rejection note (if any) will be cleared after update</span>
-                    </li>
-                  </>
-                )}
-                {!isEditMode && (
-                  <li className="flex items-start gap-2">
-                    <div className="h-1.5 w-1.5 bg-blue-600 rounded-full mt-1.5"></div>
-                    <span>Slug is auto-generated but can be customized</span>
-                  </li>
-                )}
                 <li className="flex items-start gap-2">
                   <div className="h-1.5 w-1.5 bg-blue-600 rounded-full mt-1.5"></div>
-                  <span>Ranges should be in format "min-max" or descriptive</span>
+                  <span>Upload images will be stored on Cloudinary</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <div className="h-1.5 w-1.5 bg-blue-600 rounded-full mt-1.5"></div>
-                  <span>URLs must be valid (start with http:// or https://)</span>
+                  <span>External image URLs are also accepted</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <div className="h-1.5 w-1.5 bg-blue-600 rounded-full mt-1.5"></div>
-                  <span>Add references to supporting documents or reports</span>
+                  <span>Maximum image size: 10MB</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <div className="h-1.5 w-1.5 bg-blue-600 rounded-full mt-1.5"></div>
-                  <span>Submissions will be reviewed by admin before publishing</span>
+                  <span>Submissions require admin approval</span>
                 </li>
               </ul>
             </div>
 
             <div className="bg-blue-50 rounded-2xl shadow-lg p-6 border border-blue-100">
-              <h3 className="font-semibold text-blue-900 mb-3">Status Information</h3>
+              <h3 className="font-semibold text-blue-900 mb-3">Image Upload Status</h3>
               <div className="space-y-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <div className="h-3 w-3 bg-yellow-500 rounded-full"></div>
-                    <span className="text-sm font-medium text-blue-900">Pending</span>
+                {uploadingImage ? (
+                  <div className="flex items-center gap-3">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-blue-900">Uploading...</p>
+                      <div className="w-full bg-blue-100 rounded-full h-1.5 mt-1">
+                        <div 
+                          className="bg-blue-600 h-1.5 rounded-full transition-all"
+                          style={{ width: `${uploadProgress}%` }}
+                        ></div>
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-xs text-blue-700">Awaiting admin review</p>
-                </div>
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <div className="h-3 w-3 bg-green-500 rounded-full"></div>
-                    <span className="text-sm font-medium text-blue-900">Approved</span>
+                ) : previewImage ? (
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                    <div>
+                      <p className="text-sm font-medium text-green-900">Image Ready</p>
+                      <p className="text-xs text-green-700">
+                        {previewImage.includes('cloudinary.com') ? 'Uploaded to Cloudinary' : 'External URL'}
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-xs text-blue-700">Published on platform</p>
-                </div>
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <div className="h-3 w-3 bg-red-500 rounded-full"></div>
-                    <span className="text-sm font-medium text-blue-900">Rejected</span>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="h-5 w-5 text-yellow-600" />
+                    <p className="text-sm text-yellow-900">No image uploaded</p>
                   </div>
-                  <p className="text-xs text-blue-700">Will include feedback for edits</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gray-50 rounded-2xl shadow-lg p-6 border border-gray-200">
-              <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                <Globe className="h-5 w-5 text-gray-600" />
-                About References
-              </h3>
-              <div className="space-y-3 text-sm text-gray-600">
-                <p>
-                  <strong>What are references?</strong> URLs to supporting documents, reports, or related resources.
-                </p>
-                <div className="bg-white p-3 rounded-lg border">
-                  <p className="font-medium mb-1">Examples:</p>
-                  <ul className="text-xs space-y-1">
-                    <li>• https://example.com/whitepaper.pdf</li>
-                    <li>• https://stats.example.com/report-2024</li>
-                    <li>• https://docs.example.com/technical-specs</li>
-                  </ul>
-                </div>
-                <ul className="list-disc pl-4 space-y-1">
-                  <li>URLs must start with http:// or https://</li>
-                  <li>You can add multiple references</li>
-                  <li>Paste multiple URLs at once (separated by commas or new lines)</li>
-                  <li>References help validate your submission</li>
-                </ul>
+                )}
               </div>
             </div>
           </div>

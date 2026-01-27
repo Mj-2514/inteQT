@@ -15,12 +15,12 @@ export const createOrUpdateCountry = async (req, res) => {
       Countryname,
       slug,
       partnersRange,
-      Ipv4PeersRange,        // Changed from avgIpv4PeersRange
-      Ipv6PeersRange,        // Changed from avgIpv6PeersRange
-      IxpPartnersRange,      // Changed from avgIxpPartnersRange
-      Ipv4GatewaysRange,     // Changed from avgIpv4GatewaysRange
-      Ipv6GatewaysRange,     // Changed from avgIpv6GatewaysRange
-      CloudPartnersRange,    // Changed from avgCloudPartnersRange
+      Ipv4PeersRange,
+      Ipv6PeersRange,
+      IxpPartnersRange,
+      Ipv4GatewaysRange,
+      Ipv6GatewaysRange,
+      CloudPartnersRange,
       ddosProtection,
       minServiceLatencyRange,
       avgServiceLatencyRange,
@@ -33,44 +33,59 @@ export const createOrUpdateCountry = async (req, res) => {
       capabilities,
       submarineCableImage,
       submarineCableLink,
-      references,  // Added references field
+      references,
     } = req.body;
 
+    console.log('=== CREATE/UPDATE COUNTRY REQUEST ===');
     console.log('Form Data Received:', {
       name,
       Countryname,
       slug,
-      partnersRange,
-      Ipv4PeersRange,
-      CloudPartnersRange,
-      references
+      submarineCableImage: submarineCableImage ? "Image present" : "No image",
+      referencesCount: references ? (Array.isArray(references) ? references.length : 1) : 0
     });
 
     // Use whichever is provided
     const countryName = Countryname || name;
     
-    // Validate required fields only
+    // Validate required fields
     if (!countryName || !countryName.trim()) {
-      return res.status(400).json({ message: "Country name is required" });
+      return res.status(400).json({ 
+        success: false,
+        message: "Country name is required" 
+      });
     }
     
     if (!slug || !slug.trim()) {
-      return res.status(400).json({ message: "Slug is required" });
+      return res.status(400).json({ 
+        success: false,
+        message: "Slug is required" 
+      });
     }
 
     // Check slug format
     if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
       return res.status(400).json({ 
+        success: false,
         message: "Slug must be lowercase with hyphens only (e.g., 'united-states')" 
       });
     }
 
     // Check if slug exists
-    const existing = await Country.findOne({ slug });
-    const isEditingOwnSubmission = existing && existing.createdBy.toString() === req.user._id.toString();
+    const existingCountry = await Country.findOne({ slug });
     
-    if (existing && !isEditingOwnSubmission) {
-      return res.status(400).json({ message: "Slug already exists" });
+    // Check if user owns this country
+    let isEditingOwnSubmission = false;
+    if (existingCountry) {
+      isEditingOwnSubmission = existingCountry.createdBy.toString() === req.user._id.toString();
+    }
+
+    // If slug exists but user doesn't own it, block
+    if (existingCountry && !isEditingOwnSubmission) {
+      return res.status(400).json({ 
+        success: false,
+        message: "Slug already exists. Please choose a different slug." 
+      });
     }
 
     // Prepare references array
@@ -78,18 +93,19 @@ export const createOrUpdateCountry = async (req, res) => {
     if (references) {
       if (Array.isArray(references)) {
         // Filter out empty strings and validate URLs
-        referencesArray = references.filter(ref => ref.trim() !== '');
+        referencesArray = references.filter(ref => ref && ref.trim() !== '');
         
-        // Optional: Validate URLs
+        // Validate URLs
         const urlPattern = /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/;
         const invalidUrls = referencesArray.filter(url => !urlPattern.test(url));
         
         if (invalidUrls.length > 0) {
           return res.status(400).json({ 
+            success: false,
             message: `Invalid URLs found: ${invalidUrls.join(', ')}` 
           });
         }
-      } else if (typeof references === 'string') {
+      } else if (typeof references === 'string' && references.trim() !== '') {
         // Handle comma-separated string
         referencesArray = references.split(',')
           .map(ref => ref.trim())
@@ -101,67 +117,112 @@ export const createOrUpdateCountry = async (req, res) => {
         
         if (invalidUrls.length > 0) {
           return res.status(400).json({ 
+            success: false,
             message: `Invalid URLs found: ${invalidUrls.join(', ')}` 
           });
         }
       }
     }
 
-    // Prepare data object with correct field names
-    const countryData = {
-      Countryname: countryName,
-      slug,
-      partnersRange: partnersRange || "",
-      Ipv4PeersRange: Ipv4PeersRange || "",       // Direct mapping
-      Ipv6PeersRange: Ipv6PeersRange || "",       // Direct mapping
-      IxpPartnersRange: IxpPartnersRange || "",   // Direct mapping
-      Ipv4GatewaysRange: Ipv4GatewaysRange || "", // Direct mapping
-      Ipv6GatewaysRange: Ipv6GatewaysRange || "", // Direct mapping
-      CloudPartnersRange: CloudPartnersRange || "", // Direct mapping
-      ddosProtection: ddosProtection || false,
-      minServiceLatencyRange: minServiceLatencyRange || "",
-      avgServiceLatencyRange: avgServiceLatencyRange || "",
-      features: features || "",
-      ourServices: ourServices || "",
-      commercialOfferDateRange: commercialOfferDateRange || "",
-      deliveryDateRange: deliveryDateRange || "",
-      integrationNote: integrationNote || "",
-      whyChooseUs: whyChooseUs || "",
-      capabilities: capabilities || "",
-      submarineCableImage: submarineCableImage || "",
-      submarineCableLink: submarineCableLink || "",
-      references: referencesArray, // Add references
+    // Check if submarineCableImage is a Cloudinary URL
+    const isCloudinaryUrl = submarineCableImage && 
+                           (submarineCableImage.includes('cloudinary.com') || 
+                            submarineCableImage.includes('res.cloudinary.com'));
+
+    // Helper function to extract public_id from Cloudinary URL
+    const extractCloudinaryPublicId = (url) => {
+      if (!url || !url.includes('cloudinary.com')) return null;
+      
+      try {
+        // Example: https://res.cloudinary.com/demo/image/upload/v1234567/folder/image.jpg
+        const urlParts = url.split('/');
+        const uploadIndex = urlParts.indexOf('upload');
+        
+        if (uploadIndex > -1) {
+          // Skip version if present (starts with 'v')
+          const startIndex = urlParts[uploadIndex + 1].startsWith('v') ? 
+                            uploadIndex + 2 : uploadIndex + 1;
+          
+          // Get everything after upload
+          const pathParts = urlParts.slice(startIndex);
+          const fullPath = pathParts.join('/');
+          
+          // Remove file extension
+          return fullPath.replace(/\.[^/.]+$/, "");
+        }
+      } catch (error) {
+        console.error('Error extracting Cloudinary public_id:', error);
+      }
+      return null;
     };
 
-    console.log('Prepared country data:', countryData);
+    // Prepare data object
+    const countryData = {
+      Countryname: countryName.trim(),
+      slug: slug.trim(),
+      partnersRange: partnersRange?.trim() || "",
+      Ipv4PeersRange: Ipv4PeersRange?.trim() || "",
+      Ipv6PeersRange: Ipv6PeersRange?.trim() || "",
+      IxpPartnersRange: IxpPartnersRange?.trim() || "",
+      Ipv4GatewaysRange: Ipv4GatewaysRange?.trim() || "",
+      Ipv6GatewaysRange: Ipv6GatewaysRange?.trim() || "",
+      CloudPartnersRange: CloudPartnersRange?.trim() || "",
+      ddosProtection: ddosProtection || false,
+      minServiceLatencyRange: minServiceLatencyRange?.trim() || "",
+      avgServiceLatencyRange: avgServiceLatencyRange?.trim() || "",
+      features: features?.trim() || "",
+      ourServices: ourServices?.trim() || "",
+      commercialOfferDateRange: commercialOfferDateRange?.trim() || "",
+      deliveryDateRange: deliveryDateRange?.trim() || "",
+      integrationNote: integrationNote?.trim() || "",
+      whyChooseUs: whyChooseUs?.trim() || "",
+      capabilities: capabilities?.trim() || "",
+      submarineCableImage: submarineCableImage?.trim() || "",
+      submarineCableLink: submarineCableLink?.trim() || "",
+      references: referencesArray,
+    };
+
+    console.log('Prepared country data:', {
+      ...countryData,
+      submarineCableImage: isCloudinaryUrl ? "Cloudinary URL" : 
+                          countryData.submarineCableImage ? "External URL" : "No image",
+      referencesCount: referencesArray.length
+    });
 
     // If updating existing submission
-    if (existing && isEditingOwnSubmission) {
-      // Handle image deletion if new image provided
-      if (submarineCableImage && existing.submarineCableImage && existing.submarineCableImage !== submarineCableImage) {
+    if (existingCountry && isEditingOwnSubmission) {
+      const oldImage = existingCountry.submarineCableImage;
+      const newImage = countryData.submarineCableImage;
+      
+      // Handle Cloudinary image deletion when image changes
+      if (oldImage && oldImage !== newImage && oldImage.includes('cloudinary.com')) {
         try {
-          const oldUrl = existing.submarineCableImage;
-          if (oldUrl.includes('cloudinary.com')) {
-            const publicId = oldUrl.split('/').pop().split('.')[0];
-            await cloudinary.uploader.destroy(publicId);
-            console.log('Deleted old Cloudinary image:', publicId);
+          const publicId = extractCloudinaryPublicId(oldImage);
+          if (publicId) {
+            console.log('Deleting old Cloudinary image:', publicId);
+            const result = await cloudinary.uploader.destroy(publicId);
+            console.log('Cloudinary deletion result:', result);
           }
         } catch (cloudinaryErr) {
-          console.error('Error deleting old image:', cloudinaryErr);
+          console.error('Error deleting old Cloudinary image:', cloudinaryErr);
+          // Don't fail the whole request if image deletion fails
         }
       }
 
       // Update all fields
-      Object.assign(existing, countryData);
-      existing.status = "pending"; // Reset status when updated
-      existing.rejectionNote = ""; // Clear rejection note
+      Object.assign(existingCountry, countryData);
+      existingCountry.status = "pending"; // Reset status when updated
+      existingCountry.rejectionNote = ""; // Clear rejection note
+      existingCountry.updatedAt = Date.now();
       
-      await existing.save();
+      await existingCountry.save();
+      
+      console.log('Country updated successfully:', existingCountry._id);
       
       return res.json({ 
         success: true,
         message: "Country form updated and submitted for review", 
-        country: existing,
+        country: existingCountry,
         isUpdate: true 
       });
     }
@@ -172,6 +233,8 @@ export const createOrUpdateCountry = async (req, res) => {
       status: "pending",
       createdBy: req.user._id,
     });
+
+    console.log('New country created successfully:', country._id);
 
     res.status(201).json({ 
       success: true,
@@ -184,15 +247,33 @@ export const createOrUpdateCountry = async (req, res) => {
     
     // Handle duplicate key error specifically
     if (err.code === 11000) {
+      const field = Object.keys(err.keyPattern)[0];
+      if (field === 'slug') {
+        return res.status(400).json({ 
+          success: false,
+          message: "Slug already exists. Please choose a different one." 
+        });
+      }
       return res.status(400).json({ 
         success: false,
-        message: "Slug already exists. Please choose a different one." 
+        message: "Duplicate entry found" 
+      });
+    }
+    
+    // Handle validation errors
+    if (err.name === 'ValidationError') {
+      const messages = Object.values(err.errors).map(e => e.message);
+      return res.status(400).json({ 
+        success: false,
+        message: "Validation failed",
+        errors: messages 
       });
     }
     
     res.status(500).json({ 
       success: false,
-      message: err.message 
+      message: "Server error. Please try again later.",
+      error: process.env.NODE_ENV === 'development' ? err.message : undefined
     });
   }
 };

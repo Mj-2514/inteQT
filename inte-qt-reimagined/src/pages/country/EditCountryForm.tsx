@@ -17,11 +17,13 @@ import {
   Trash2,
   Link,
   RefreshCcw,
-  History
+  History,
+  X,
+  Image as ImageIcon
 } from "lucide-react";
 import { useCountryAuth } from "../../context/AuthContext";
 
-const API_BASE = import.meta.env.VITE_API_BASE;
+const API_BASE = "http://localhost:5000";
 
 interface CountryFormData {
   name: string;
@@ -86,6 +88,7 @@ const EditCountryForm = () => {
 
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -94,6 +97,8 @@ const EditCountryForm = () => {
   const [originalSlug, setOriginalSlug] = useState("");
   const [originalData, setOriginalData] = useState<SubmissionData | null>(null);
   const [showRejectionNote, setShowRejectionNote] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const [formData, setFormData] = useState<CountryFormData>({
     name: "",
@@ -157,78 +162,71 @@ const EditCountryForm = () => {
     }
   }, [id, token, user, navigate]);
 
-    const fetchSubmission = async (submissionId: string) => {
-  try {
-    setLoading(true);
-    setError(null);
-    
-    // Use the correct API endpoint
-    const res = await fetch(`${API_BASE}/api/country/dashboard/users/submission/${submissionId}`, {
-      headers: { "Authorization": `Bearer ${token}` }
-    });
-
-    
-
-    const data = await res.json();
-   
-    
-    if (data.success) {
-      const submission = data.submission;
-      const permissions = data.permissions;
+  const fetchSubmission = async (submissionId: string) => {
+    try {
+      setLoading(true);
+      setError(null);
       
-     
-      
-      // Use the permissions from API response instead of checking manually
-      if (!permissions?.canEdit) {
-        setError(`This submission cannot be edited because it's ${submission?.status || 'unknown'}. Only pending, rejected, or draft submissions can be edited.`);
-        setTimeout(() => {
-          navigate("/country/dashboard");
-        }, 3000);
-        return;
-      }
-
-      setOriginalData(submission);
-      
-      setFormData({
-        name: submission.Countryname || submission.name || "",
-        slug: submission.slug || "",
-        partnersRange: submission.partnersRange || "",
-        Ipv4PeersRange: submission.Ipv4PeersRange || "",
-        Ipv6PeersRange: submission.Ipv6PeersRange || "",
-        IxpPartnersRange: submission.IxpPartnersRange || "",
-        Ipv4GatewaysRange: submission.Ipv4GatewaysRange || "",
-        Ipv6GatewaysRange: submission.Ipv6GatewaysRange || "",
-        CloudPartnersRange: submission.CloudPartnersRange || "",
-        ddosProtection: submission.ddosProtection || false,
-        minServiceLatencyRange: submission.minServiceLatencyRange || "",
-        avgServiceLatencyRange: submission.avgServiceLatencyRange || "",
-        features: submission.features || "",
-        ourServices: submission.ourServices || "",
-        commercialOfferDateRange: submission.commercialOfferDateRange || "",
-        deliveryDateRange: submission.deliveryDateRange || "",
-        integrationNote: submission.integrationNote || "",
-        whyChooseUs: submission.whyChooseUs || "",
-        capabilities: submission.capabilities || "",
-        submarineCableImage: submission.submarineCableImage || "",
-        submarineCableLink: submission.submarineCableLink || "",
-        references: submission.references || [],
+      const res = await fetch(`${API_BASE}/api/country/dashboard/users/submission/${submissionId}`, {
+        headers: { "Authorization": `Bearer ${token}` }
       });
 
-      setOriginalSlug(submission.slug || "");
+      const data = await res.json();
+      
+      if (data.success) {
+        const submission = data.submission;
+        const permissions = data.permissions;
+        
+        if (!permissions?.canEdit) {
+          setError(`This submission cannot be edited because it's ${submission?.status || 'unknown'}. Only pending, rejected, or draft submissions can be edited.`);
+          setTimeout(() => {
+            navigate("/country/dashboard");
+          }, 3000);
+          return;
+        }
 
-      if (submission.submarineCableImage && looksLikeUrl(submission.submarineCableImage)) {
-        setPreviewImage(submission.submarineCableImage);
+        setOriginalData(submission);
+        
+        setFormData({
+          name: submission.Countryname || submission.name || "",
+          slug: submission.slug || "",
+          partnersRange: submission.partnersRange || "",
+          Ipv4PeersRange: submission.Ipv4PeersRange || "",
+          Ipv6PeersRange: submission.Ipv6PeersRange || "",
+          IxpPartnersRange: submission.IxpPartnersRange || "",
+          Ipv4GatewaysRange: submission.Ipv4GatewaysRange || "",
+          Ipv6GatewaysRange: submission.Ipv6GatewaysRange || "",
+          CloudPartnersRange: submission.CloudPartnersRange || "",
+          ddosProtection: submission.ddosProtection || false,
+          minServiceLatencyRange: submission.minServiceLatencyRange || "",
+          avgServiceLatencyRange: submission.avgServiceLatencyRange || "",
+          features: submission.features || "",
+          ourServices: submission.ourServices || "",
+          commercialOfferDateRange: submission.commercialOfferDateRange || "",
+          deliveryDateRange: submission.deliveryDateRange || "",
+          integrationNote: submission.integrationNote || "",
+          whyChooseUs: submission.whyChooseUs || "",
+          capabilities: submission.capabilities || "",
+          submarineCableImage: submission.submarineCableImage || "",
+          submarineCableLink: submission.submarineCableLink || "",
+          references: submission.references || [],
+        });
+
+        setOriginalSlug(submission.slug || "");
+
+        if (submission.submarineCableImage && looksLikeUrl(submission.submarineCableImage)) {
+          setPreviewImage(submission.submarineCableImage);
+        }
+      } else {
+        throw new Error(data.message || "Failed to fetch submission");
       }
-    } else {
-      throw new Error(data.message || "Failed to fetch submission");
+    } catch (err: any) {
+      console.error("Failed to fetch submission:", err);
+      setError(err.message || "Failed to load submission. Please check your connection.");
+    } finally {
+      setLoading(false);
     }
-  } catch (err: any) {
-    console.error("Failed to fetch submission:", err);
-    setError(err.message || "Failed to load submission. Please check your connection.");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   const looksLikeUrl = (s: string) => {
     if (!s) return false;
@@ -264,95 +262,161 @@ const EditCountryForm = () => {
     return null;
   };
 
+  // Separate function to upload image to Cloudinary
+  const uploadImageToCloudinary = async (file: File): Promise<string> => {
+    try {
+      setUploadingImage(true);
+      setUploadProgress(0);
+      
+      const formDataObj = new FormData();
+      formDataObj.append("image", file);
+
+      const response = await fetch(`${API_BASE}/api/upload/image`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+        body: formDataObj,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || `Upload failed with status ${response.status}`);
+      }
+
+     
+      return data.url;
+
+    } catch (err: any) {
+      console.error("Image upload failed:", err);
+      throw new Error(`Upload failed: ${err.message}`);
+    } finally {
+      setUploadingImage(false);
+      setUploadProgress(0);
+    }
+  };
+
   const handleUpdate = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setError(null);
+    e.preventDefault();
+    setError(null);
 
-  const validationError = validateForm();
-  if (validationError) {
-    setError(validationError);
-    return;
-  }
-
-  setUpdating(true);
-
-  try {
-    // Use the ID-based update API endpoint
-    const url = `${API_BASE}/api/country/dashboard/user/submission/${id}`;
-    
-   
-
-    const payload = {
-      Countryname: formData.name.trim(),
-      name: formData.name.trim(),
-      slug: formData.slug.trim(),
-      partnersRange: formData.partnersRange.trim(),
-      Ipv4PeersRange: formData.Ipv4PeersRange.trim(),
-      Ipv6PeersRange: formData.Ipv6PeersRange.trim(),
-      IxpPartnersRange: formData.IxpPartnersRange.trim(),
-      Ipv4GatewaysRange: formData.Ipv4GatewaysRange.trim(),
-      Ipv6GatewaysRange: formData.Ipv6GatewaysRange.trim(),
-      CloudPartnersRange: formData.CloudPartnersRange.trim(),
-      ddosProtection: formData.ddosProtection,
-      minServiceLatencyRange: formData.minServiceLatencyRange.trim(),
-      avgServiceLatencyRange: formData.avgServiceLatencyRange.trim(),
-      features: formData.features.trim(),
-      ourServices: formData.ourServices.trim(),
-      commercialOfferDateRange: formData.commercialOfferDateRange.trim(),
-      deliveryDateRange: formData.deliveryDateRange.trim(),
-      integrationNote: formData.integrationNote.trim(),
-      whyChooseUs: formData.whyChooseUs.trim(),
-      capabilities: formData.capabilities.trim(),
-      submarineCableImage: formData.submarineCableImage.trim(),
-      submarineCableLink: formData.submarineCableLink.trim(),
-      references: formData.references.filter(ref => ref.trim() !== ''),
-    };
-
-    
-
-    const res = await fetch(url, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
-      body: JSON.stringify(payload),
-    });
-
-    const data = await res.json();
-   
-
-    if (!res.ok) {
-      throw new Error(data.message || "Failed to update submission");
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
+      return;
     }
 
-    setSubmitted(true);
-    setTimeout(() => {
-      navigate("/country/dashboard");
-    }, 1500);
-  } catch (err: any) {
-    console.error("Update error:", err);
-    setError(err.message || "Something went wrong. Please try again.");
-  } finally {
-    setUpdating(false);
-  }
-};
+    setUpdating(true);
+
+    try {
+      // If user uploaded a new file, upload it to Cloudinary first
+      let finalImageUrl = formData.submarineCableImage;
+      
+      if (imageFile) {
+        try {
+          finalImageUrl = await uploadImageToCloudinary(imageFile);
+         
+        } catch (uploadError: any) {
+          throw new Error(`Image upload failed: ${uploadError.message}`);
+        }
+      }
+
+      // Use the ID-based update API endpoint
+      const url = `${API_BASE}/api/country/dashboard/user/submission/${id}`;
+
+      const payload = {
+        Countryname: formData.name.trim(),
+        name: formData.name.trim(),
+        slug: formData.slug.trim(),
+        partnersRange: formData.partnersRange.trim(),
+        Ipv4PeersRange: formData.Ipv4PeersRange.trim(),
+        Ipv6PeersRange: formData.Ipv6PeersRange.trim(),
+        IxpPartnersRange: formData.IxpPartnersRange.trim(),
+        Ipv4GatewaysRange: formData.Ipv4GatewaysRange.trim(),
+        Ipv6GatewaysRange: formData.Ipv6GatewaysRange.trim(),
+        CloudPartnersRange: formData.CloudPartnersRange.trim(),
+        ddosProtection: formData.ddosProtection,
+        minServiceLatencyRange: formData.minServiceLatencyRange.trim(),
+        avgServiceLatencyRange: formData.avgServiceLatencyRange.trim(),
+        features: formData.features.trim(),
+        ourServices: formData.ourServices.trim(),
+        commercialOfferDateRange: formData.commercialOfferDateRange.trim(),
+        deliveryDateRange: formData.deliveryDateRange.trim(),
+        integrationNote: formData.integrationNote.trim(),
+        whyChooseUs: formData.whyChooseUs.trim(),
+        capabilities: formData.capabilities.trim(),
+        submarineCableImage: finalImageUrl.trim(),
+        submarineCableLink: formData.submarineCableLink.trim(),
+        references: formData.references.filter(ref => ref.trim() !== ''),
+      };
+
+      const res = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to update submission");
+      }
+
+      setSubmitted(true);
+      setTimeout(() => {
+        navigate("/country/dashboard");
+      }, 1500);
+    } catch (err: any) {
+      console.error("Update error:", err);
+      setError(err.message || "Something went wrong. Please try again.");
+    } finally {
+      setUpdating(false);
+    }
+  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith("image/")) {
-      setError("Please upload an image file");
+    // Validate file type
+    const validImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!validImageTypes.includes(file.type)) {
+      setError("Please upload a valid image (JPEG, PNG, GIF, WEBP)");
       return;
     }
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setPreviewImage(reader.result as string);
-      setFormData(prev => ({ ...prev, submarineCableImage: reader.result as string }));
-    };
-    reader.readAsDataURL(file);
+    // Validate file size (10MB max)
+    if (file.size > 10 * 1024 * 1024) {
+      setError("Image must be under 10MB");
+      return;
+    }
+
+    // Store the file for later upload
+    setImageFile(file);
+
+    // Create preview immediately with blob URL
+    const objectUrl = URL.createObjectURL(file);
+    setPreviewImage(objectUrl);
+    setUploadProgress(0);
+    
+    // Clear the image file input
+    e.target.value = '';
+  };
+
+  const handleRemoveImage = () => {
+    if (previewImage && previewImage.startsWith('blob:')) {
+      URL.revokeObjectURL(previewImage);
+    }
+    setPreviewImage(null);
+    setImageFile(null);
+    setFormData(prev => ({
+      ...prev,
+      submarineCableImage: "",
+    }));
   };
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -482,10 +546,18 @@ const EditCountryForm = () => {
       });
       setOriginalSlug(originalData.slug || "");
       
-      if (originalData.submarineCableImage && looksLikeUrl(originalData.submarineCableImage)) {
-        setPreviewImage(originalData.submarineCableImage);
+      // Clean up blob URL if exists
+      if (previewImage && previewImage.startsWith('blob:')) {
+        URL.revokeObjectURL(previewImage);
       }
       
+      if (originalData.submarineCableImage && looksLikeUrl(originalData.submarineCableImage)) {
+        setPreviewImage(originalData.submarineCableImage);
+      } else {
+        setPreviewImage(null);
+      }
+      
+      setImageFile(null);
       setSlugManuallyEdited(false);
       setError(null);
     }
@@ -714,6 +786,163 @@ const EditCountryForm = () => {
                 </div>
               </div>
 
+              {/* Submarine Cable Image Section - UPDATED */}
+              <div className="bg-white rounded-2xl shadow-lg p-6">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-3 border-b">
+                  Submarine Cable Information
+                </h2>
+                
+                <div className="space-y-6">
+                  {/* Image Upload Section */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Submarine Cable Image
+                    </label>
+                    
+                    <div className="space-y-4">
+                      {/* Upload Area */}
+                      <div className={`border-2 border-dashed ${uploadingImage ? 'border-blue-400' : 'border-gray-300'} rounded-xl p-6 text-center transition-colors hover:border-blue-500 bg-gray-50`}>
+                        <input
+                          type="file"
+                          id="image-upload"
+                          accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                          onChange={handleImageUpload}
+                          className="hidden"
+                          disabled={uploadingImage || updating}
+                        />
+                        
+                        <label htmlFor="image-upload" className={`cursor-pointer ${uploadingImage || updating ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                          {uploadingImage ? (
+                            <div className="space-y-3">
+                              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mx-auto"></div>
+                              <p className="text-sm text-gray-600">Uploading to Cloudinary...</p>
+                              {uploadProgress > 0 && (
+                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                  <div 
+                                    className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                                    style={{ width: `${uploadProgress}%` }}
+                                  ></div>
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="space-y-2">
+                              <Upload className="h-10 w-10 text-gray-400 mx-auto" />
+                              <p className="text-sm text-gray-600">Click to upload image</p>
+                              <p className="text-xs text-gray-500">PNG, JPG, GIF, WEBP up to 10MB</p>
+                            </div>
+                          )}
+                        </label>
+                      </div>
+
+                      {/* Image Preview */}
+                      {previewImage && (
+                        <div className="relative">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium text-gray-700">Preview</span>
+                            <button
+                              type="button"
+                              onClick={handleRemoveImage}
+                              className="text-red-600 hover:text-red-800 text-sm flex items-center gap-1"
+                              disabled={updating}
+                            >
+                              <X className="h-4 w-4" />
+                              Remove
+                            </button>
+                          </div>
+                          <div className="border rounded-xl overflow-hidden">
+                            <img
+                              src={previewImage}
+                              alt="Submarine cable preview"
+                              className="w-full h-64 object-contain bg-gray-100"
+                              onError={() => {
+                                setError("Failed to load image. Please re-upload.");
+                                setPreviewImage(null);
+                                setFormData(prev => ({ ...prev, submarineCableImage: "" }));
+                                setImageFile(null);
+                              }}
+                            />
+                          </div>
+                          <div className="mt-2 text-xs text-gray-500">
+                            {previewImage.includes('cloudinary.com') ? (
+                              <span className="text-green-600">✓ Uploaded to Cloudinary</span>
+                            ) : previewImage.startsWith('blob:') ? (
+                              <span className="text-blue-600">New image ready to upload</span>
+                            ) : (
+                              <span className="text-blue-600">External image URL</span>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Image URL Field (for external URLs) */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Or enter image URL
+                        </label>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={formData.submarineCableImage}
+                            onChange={(e) => {
+                              const url = e.target.value;
+                              setFormData(prev => ({ ...prev, submarineCableImage: url }));
+                              if (looksLikeUrl(url)) {
+                                // Clean up blob URL if exists
+                                if (previewImage && previewImage.startsWith('blob:')) {
+                                  URL.revokeObjectURL(previewImage);
+                                }
+                                setPreviewImage(url);
+                                setImageFile(null);
+                              }
+                            }}
+                            className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-black"
+                            placeholder="https://example.com/image.jpg"
+                            disabled={uploadingImage}
+                          />
+                          {formData.submarineCableImage && !previewImage && looksLikeUrl(formData.submarineCableImage) && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                // Clean up blob URL if exists
+                                if (previewImage && previewImage.startsWith('blob:')) {
+                                  URL.revokeObjectURL(previewImage);
+                                }
+                                setPreviewImage(formData.submarineCableImage);
+                                setImageFile(null);
+                              }}
+                              className="px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition"
+                              disabled={updating}
+                            >
+                              Preview
+                            </button>
+                          )}
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">
+                          Enter a direct image URL or upload a file
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Cable Link Field */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <LinkIcon className="inline h-4 w-4 mr-1" />
+                      Submarine Cable Link
+                    </label>
+                    <input
+                      type="url"
+                      value={formData.submarineCableLink}
+                      onChange={(e) => setFormData({...formData, submarineCableLink: e.target.value})}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-black"
+                      placeholder="https://submarinecablemap.com/..."
+                      disabled={updating}
+                    />
+                  </div>
+                </div>
+              </div>
+
               <div className="bg-white rounded-2xl shadow-lg p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-3 border-b">
                   Network Statistics
@@ -740,6 +969,7 @@ const EditCountryForm = () => {
                         className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-black"
                         placeholder={field.placeholder}
                         required={field.label.includes('*')}
+                        disabled={updating}
                       />
                     </div>
                   ))}
@@ -756,6 +986,7 @@ const EditCountryForm = () => {
                       onChange={(e) => setFormData({...formData, minServiceLatencyRange: e.target.value})}
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-black"
                       placeholder="e.g., 10-20ms (mention ms if applicable)"
+                      disabled={updating}
                     />
                   </div>
 
@@ -769,6 +1000,7 @@ const EditCountryForm = () => {
                       onChange={(e) => setFormData({...formData, avgServiceLatencyRange: e.target.value})}
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-black"
                       placeholder="e.g., 20-30ms (mention ms if applicable)"
+                      disabled={updating}
                     />
                   </div>
                 </div>
@@ -780,6 +1012,7 @@ const EditCountryForm = () => {
                       checked={formData.ddosProtection}
                       onChange={(e) => setFormData({...formData, ddosProtection: e.target.checked})}
                       className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      disabled={updating}
                     />
                     <span className="text-sm font-medium text-gray-700">
                       DDoS Protection Available
@@ -788,85 +1021,7 @@ const EditCountryForm = () => {
                 </div>
               </div>
 
-              {/* References Section */}
-              <div className="bg-white rounded-2xl shadow-lg p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-3 border-b">
-                  References
-                </h2>
-                
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Add Reference URL
-                    </label>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={newReference}
-                        onChange={(e) => setNewReference(e.target.value)}
-                        onPaste={handlePasteReferences}
-                        className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-black"
-                        placeholder="https://example.com/report.pdf"
-                      />
-                      <button
-                        type="button"
-                        onClick={handleAddReference}
-                        className="inline-flex items-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
-                      >
-                        <Plus className="h-4 w-4" />
-                        Add
-                      </button>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-2">
-                      Paste multiple URLs separated by commas, semicolons, or new lines
-                    </p>
-                  </div>
-
-                  {formData.references.length > 0 && (
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-sm font-medium text-gray-700">
-                          References ({formData.references.length})
-                        </h3>
-                        <button
-                          type="button"
-                          onClick={handleClearReferences}
-                          className="text-xs text-red-600 hover:text-red-800 flex items-center gap-1"
-                        >
-                          <Trash2 className="h-3 w-3" />
-                          Clear All
-                        </button>
-                      </div>
-                      <div className="space-y-2 max-h-60 overflow-y-auto p-2 border rounded-lg">
-                        {formData.references.map((ref, index) => (
-                          <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100">
-                            <div className="flex items-center gap-2 flex-1 min-w-0">
-                              <Link className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                              <a 
-                                href={ref} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="text-sm text-blue-600 hover:text-blue-800 truncate"
-                                title={ref}
-                              >
-                                {ref}
-                              </a>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveReference(index)}
-                              className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded"
-                              title="Remove reference"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
+          
                 
               <div className="bg-white rounded-2xl shadow-lg p-6 space-y-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-3 border-b">
@@ -890,6 +1045,7 @@ const EditCountryForm = () => {
                       onChange={(e) => setFormData({...formData, [field.key]: e.target.value})}
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-none text-black"
                       placeholder={field.placeholder}
+                      disabled={updating}
                     />
                   </div>
                 ))}
@@ -905,6 +1061,7 @@ const EditCountryForm = () => {
                       onChange={(e) => setFormData({...formData, commercialOfferDateRange: e.target.value})}
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-black"
                       placeholder="e.g., 30-60 days"
+                      disabled={updating}
                     />
                   </div>
 
@@ -918,85 +1075,7 @@ const EditCountryForm = () => {
                       onChange={(e) => setFormData({...formData, deliveryDateRange: e.target.value})}
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-black"
                       placeholder="e.g., 30-60 days"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-2xl shadow-lg p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-3 border-b">
-                  Submarine Cable Information
-                </h2>
-                
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Submarine Cable Image
-                    </label>
-                    <div className="flex flex-col md:flex-row gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center justify-center w-full">
-                          <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition">
-                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                              <Upload className="h-8 w-8 text-gray-400 mb-2" />
-                              <p className="text-sm text-gray-500">Click to upload image</p>
-                              <p className="text-xs text-gray-400 mt-1">PNG, JPG up to 5MB</p>
-                            </div>
-                            <input
-                              type="file"
-                              className="hidden"
-                              accept="image/*"
-                              onChange={handleImageUpload}
-                            />
-                          </label>
-                        </div>
-                        <p className="text-xs text-gray-500 mt-2">Or enter image URL below</p>
-                      </div>
-                      
-                      {previewImage && (
-                        <div className="md:w-48">
-                          <div className="h-32 w-full rounded-xl overflow-hidden border">
-                            <img
-                              src={previewImage}
-                              alt="Preview"
-                              className="h-full w-full object-cover"
-                            />
-                          </div>
-                          <p className="text-xs text-gray-500 mt-2 text-center">Preview</p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Image URL
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.submarineCableImage}
-                      onChange={(e) => {
-                        setFormData({...formData, submarineCableImage: e.target.value});
-                        if (looksLikeUrl(e.target.value)) {
-                          setPreviewImage(e.target.value);
-                        }
-                      }}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-black"
-                      placeholder="https://example.com/image.jpg"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      <LinkIcon className="inline h-4 w-4 mr-1" />
-                      Submarine Cable Link
-                    </label>
-                    <input
-                      type="url"
-                      value={formData.submarineCableLink}
-                      onChange={(e) => setFormData({...formData, submarineCableLink: e.target.value})}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-black"
-                      placeholder="https://submarinecablemap.com/..."
+                      disabled={updating}
                     />
                   </div>
                 </div>
@@ -1027,7 +1106,7 @@ const EditCountryForm = () => {
               <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t">
                 <button
                   type="submit"
-                  disabled={updating || submitted}
+                  disabled={updating || submitted || uploadingImage}
                   className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <RefreshCcw className="h-5 w-5" />
@@ -1038,6 +1117,7 @@ const EditCountryForm = () => {
                   type="button"
                   onClick={() => navigate("/country/dashboard")}
                   className="inline-flex items-center justify-center px-6 py-3.5 border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition"
+                  disabled={updating}
                 >
                   Cancel
                 </button>
@@ -1046,6 +1126,7 @@ const EditCountryForm = () => {
                   type="button"
                   onClick={resetToOriginal}
                   className="inline-flex items-center justify-center gap-2 px-6 py-3.5 border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition"
+                  disabled={updating}
                 >
                   <History className="h-5 w-5" />
                   Reset Changes
@@ -1067,88 +1148,72 @@ const EditCountryForm = () => {
                 </li>
                 <li className="flex items-start gap-2">
                   <div className="h-1.5 w-1.5 bg-blue-600 rounded-full mt-1.5"></div>
+                  <span>Uploaded images will be stored on Cloudinary</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <div className="h-1.5 w-1.5 bg-blue-600 rounded-full mt-1.5"></div>
+                  <span>External image URLs are also accepted</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <div className="h-1.5 w-1.5 bg-blue-600 rounded-full mt-1.5"></div>
+                  <span>Maximum image size: 10MB</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <div className="h-1.5 w-1.5 bg-blue-600 rounded-full mt-1.5"></div>
                   <span>When updated, status will reset to "pending" for admin review</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <div className="h-1.5 w-1.5 bg-blue-600 rounded-full mt-1.5"></div>
                   <span>Rejection note (if any) will be cleared after update</span>
                 </li>
-                <li className="flex items-start gap-2">
-                  <div className="h-1.5 w-1.5 bg-blue-600 rounded-full mt-1.5"></div>
-                  <span>Slug is auto-generated but can be customized</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <div className="h-1.5 w-1.5 bg-blue-600 rounded-full mt-1.5"></div>
-                  <span>Ranges should be in format "min-max" or descriptive</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <div className="h-1.5 w-1.5 bg-blue-600 rounded-full mt-1.5"></div>
-                  <span>URLs must be valid (start with http:// or https://)</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <div className="h-1.5 w-1.5 bg-blue-600 rounded-full mt-1.5"></div>
-                  <span>Add references to supporting documents or reports</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <div className="h-1.5 w-1.5 bg-blue-600 rounded-full mt-1.5"></div>
-                  <span>Submissions will be reviewed by admin before publishing</span>
-                </li>
               </ul>
             </div>
 
             <div className="bg-blue-50 rounded-2xl shadow-lg p-6 border border-blue-100">
-              <h3 className="font-semibold text-blue-900 mb-3">Status Information</h3>
+              <h3 className="font-semibold text-blue-900 mb-3">Image Upload Status</h3>
               <div className="space-y-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <div className="h-3 w-3 bg-yellow-500 rounded-full"></div>
-                    <span className="text-sm font-medium text-blue-900">Pending</span>
+                {uploadingImage ? (
+                  <div className="flex items-center gap-3">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-blue-900">Uploading...</p>
+                      <div className="w-full bg-blue-100 rounded-full h-1.5 mt-1">
+                        <div 
+                          className="bg-blue-600 h-1.5 rounded-full transition-all"
+                          style={{ width: `${uploadProgress}%` }}
+                        ></div>
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-xs text-blue-700">Awaiting admin review</p>
-                </div>
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <div className="h-3 w-3 bg-green-500 rounded-full"></div>
-                    <span className="text-sm font-medium text-blue-900">Approved</span>
+                ) : previewImage ? (
+                  <div className="flex items-center gap-2">
+                    {previewImage.includes('cloudinary.com') ? (
+                      <CheckCircle2 className="h-5 w-5 text-green-600" />
+                    ) : previewImage.startsWith('blob:') ? (
+                      <Upload className="h-5 w-5 text-blue-600" />
+                    ) : (
+                      <Link className="h-5 w-5 text-blue-600" />
+                    )}
+                    <div>
+                      <p className="text-sm font-medium text-blue-900">
+                        {previewImage.includes('cloudinary.com') ? 'Uploaded to Cloudinary' : 
+                         previewImage.startsWith('blob:') ? 'New image ready' : 'External URL'}
+                      </p>
+                      <p className="text-xs text-blue-700">
+                        {imageFile ? `Will be uploaded when you submit` : 'Ready to use'}
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-xs text-blue-700">Published on platform</p>
-                </div>
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <div className="h-3 w-3 bg-red-500 rounded-full"></div>
-                    <span className="text-sm font-medium text-blue-900">Rejected</span>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="h-5 w-5 text-yellow-600" />
+                    <p className="text-sm text-yellow-900">No image uploaded</p>
                   </div>
-                  <p className="text-xs text-blue-700">Will include feedback for edits</p>
-                </div>
+                )}
               </div>
             </div>
 
-            <div className="bg-gray-50 rounded-2xl shadow-lg p-6 border border-gray-200">
-              <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                <Globe className="h-5 w-5 text-gray-600" />
-                About References
-              </h3>
-              <div className="space-y-3 text-sm text-gray-600">
-                <p>
-                  <strong>What are references?</strong> URLs to supporting documents, reports, or related resources.
-                </p>
-                <div className="bg-white p-3 rounded-lg border">
-                  <p className="font-medium mb-1">Examples:</p>
-                  <ul className="text-xs space-y-1">
-                    <li>• https://example.com/whitepaper.pdf</li>
-                    <li>• https://stats.example.com/report-2024</li>
-                    <li>• https://docs.example.com/technical-specs</li>
-                  </ul>
-                </div>
-                <ul className="list-disc pl-4 space-y-1">
-                  <li>URLs must start with http:// or https://</li>
-                  <li>You can add multiple references</li>
-                  <li>Paste multiple URLs at once (separated by commas or new lines)</li>
-                  <li>References help validate your submission</li>
-                </ul>
-              </div>
-            </div>
-
+            
             <div className="bg-yellow-50 rounded-2xl shadow-lg p-6 border border-yellow-100">
               <h3 className="font-semibold text-yellow-900 mb-3 flex items-center gap-2">
                 <RefreshCcw className="h-5 w-5 text-yellow-600" />
@@ -1173,7 +1238,7 @@ const EditCountryForm = () => {
                 </li>
                 <li className="flex items-start gap-2">
                   <div className="h-1.5 w-1.5 bg-yellow-600 rounded-full mt-1.5"></div>
-                  <span>After update, admin will need to review your submission again</span>
+                  <span>Images are uploaded to Cloudinary when you submit the form</span>
                 </li>
               </ul>
             </div>
