@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { useCountryAuth } from "../../context/AuthContext";
 
-const API_BASE = "http://localhost:5000";
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 interface CountryFormData {
   name: string;
