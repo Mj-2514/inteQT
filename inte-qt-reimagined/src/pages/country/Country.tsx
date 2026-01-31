@@ -1398,12 +1398,7 @@ const Country: React.FC = () => {
                                 <Counter end={parseRangeValue(countryData.avgServiceLatencyRange)} suffix="ms" duration={1800} />
                               </h5>
                             </div>
-                            <div className="space-y-1 sm:space-y-2">
-                              <h4 className="font-medium text-gray-900 dark:text-white text-sm sm:text-base">Cloud Partner Services</h4>
-                              <h5 className="text-xl sm:text-2xl font-bold text-orange-600">
-                                {cloudPartners.length > 0 ? cloudPartners.length : "N/A"}
-                              </h5>
-                            </div>
+                            
                           </div>
                         </div>
                       </div>
