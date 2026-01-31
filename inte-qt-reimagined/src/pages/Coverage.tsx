@@ -14,7 +14,7 @@ const Coverage = () => {
       id: "north-america",
       name: "North America",
       slug: "north-america",
-      countries: 25,
+      countries: 20,
       description: "Comprehensive connectivity across USA, Canada, and Mexico",
       image: "https://i.imgur.com/SrLzIM8.jpg",
       features: ["High-density networks", "Financial hub connectivity", "Low-latency routes"]
@@ -23,7 +23,7 @@ const Coverage = () => {
       id: "south-america",
       name: "South America",
       slug: "south-america",
-      countries: 20,
+      countries: 10,
       description: "Emerging market connectivity with local partner support",
       image: "https://i.imgur.com/YGlkriS.jpg",
       features: ["Brazil coverage", "Andean region access", "Local ISP partnerships"]
@@ -32,7 +32,7 @@ const Coverage = () => {
       id: "europe",
       name: "Europe",
       slug: "europe",
-      countries: 45,
+      countries: 40,
       description: "Pan-European network with EU compliance and GDPR support",
       image: "https://i.imgur.com/tuFAw97.jpg",
       features: ["EU data compliance", "Multi-language support", "High-speed backbone"]
@@ -41,7 +41,7 @@ const Coverage = () => {
       id: "asia",
       name: "Asia",
       slug: "asia",
-      countries: 48,
+      countries: 45,
       description: "Largest coverage across APAC with emerging market expertise",
       image: "https://i.imgur.com/iHPP1Ia.jpg",
       features: ["China access", "SEA coverage", "Emerging market expertise"]
@@ -59,7 +59,7 @@ const Coverage = () => {
       id: "oceania",
       name: "Oceania",
       slug: "oceania",
-      countries: 17,
+      countries: 11,
       description: "Island connectivity with submarine cable access",
       image: "https://images.unsplash.com/photo-1539475314840-751cecc1dacd",
       features: ["Australia/NZ coverage", "Pacific islands", "Submarine cable access"]

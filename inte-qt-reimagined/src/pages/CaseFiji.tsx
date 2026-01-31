@@ -16,32 +16,40 @@ import { motion } from "framer-motion";
 ----------------------------------- */
 const mainServices = [
   {
-    title: "Challenge",
+    title: "Challenges",
     icon: Network,
-    image: "https://i.imgur.com/Dvbfhyz.jpg",
+    image: "Wireless connectivity solution",
     description: `
-      The customer and end-user sought quick deployment and installation of links due to the critical nature of banking operations. Timely delivery was essential given the extensive requirements across the country's geography.
+      At inte-QT, we believe that challenges make us stronger and better with each delivery.
+
+The customer required connectivity for a reputed bank located in Fiji, a country of islands where the sun rises as it sets in the West.
+
+The customer and end-user sought quick deployment and installation of links due to the critical nature of banking operations. Timely delivery was essential given the extensive requirements across the country's geography.
 
 User operations had restricted access, making secure service paramount.
 
 Being in a seismic zone prone to natural calamities like cyclones, accessing sites for connectivity deployment proved difficult.
 
 Challenges included infrastructure shortages, timely equipment availability, and the need to avoid disruptions to existing services.
+
+Additionally, commercial terms needed to be aggressive to ensure savings.
     `,
     features: [
       "Faster Deployment and Migration",
-"Secure Access to Cloud Applications",
-"Integration of Remote Offices with the Mainland",
-"Adverse Climate Conditions",
-"Unavailability of Required Infrastructure"
+      "Secure Access to Cloud Applications",
+      "Integration of Remote Offices with the Mainland",
+      "Adverse Climate Conditions",
+      "Unavailability of Required Infrastructure"
     ],
   },
   {
     title: "Solution",
     icon: Shield,
-    image: "https://i.imgur.com/4O7Reay.jpg",
+    image: "Technology implementation",
     description: `
-      We engaged all relevant interfaces to address the customer's needs. Local partners and service providers were informed of the critical nature of the service.
+      Deeper customer engagement has always been part of the culture at Bits and Byte Global. Our customer appreciates the support we provide, allowing for open communication of requirements and concerns.
+
+We engaged all relevant interfaces to address the customer's needs. Local partners and service providers were informed of the critical nature of the service.
 
 Logistics were aligned to ensure installations were completed without delays. Relevant teams ensured services went live smoothly.
 
@@ -56,17 +64,15 @@ inte-Qt Dedicated Line service offers commitment across all fronts, from bandwid
     ],
   },
   {
-    title: "Outcome",
+    title: "Outcomes",
     icon: Globe,
-    image: "https://i.imgur.com/7fH1NGe.jpg",
+    image: "Beautiful beach in Fiji",
     description: `
       Collaborative efforts led to timely delivery of services, meeting all quality parameters. Sustainable operations were achieved, with various links live and connected to the cloud.
 
 The execution resulted in significant monetary savings, estimated at around 38%, without compromising service quality. The precise design improved operational effectiveness through prompt monitoring.
 
 The customer and end-user appreciated inte-Qt's Dedicated Line service and network support, yielding both tangible benefits and improved service parameters.
-
-
     `,
     features: [
       "Sustainable and seamless operations for the user.",
@@ -83,9 +89,9 @@ const CaseFiji = () => {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CaseStudy",
-    name: "Strategic Network Deployment for Fiji’s Leading Bank",
+    name: "Bank Connectivity Solution in Fiji",
     description:
-      "inte-QT delivered a resilient, scalable, high-performance telecom network for a leading financial institution in Fiji, supporting digital banking transformation.",
+      "inte-QT delivered a dedicated connectivity solution for a reputed bank in Fiji, overcoming geographical challenges and infrastructure shortages to ensure secure banking operations.",
     url: "https://www.inte-qt.com/cases/fiji",
     industry: "Banking & Financial Services",
     provider: {
@@ -104,11 +110,11 @@ const CaseFiji = () => {
       {/* SEO */}
       <Helmet>
         <title>
-          Strategic Network Deployment for Fiji’s Leading Bank | inte-QT
+          Bank Connectivity Solution in Fiji | inte-QT Case Study
         </title>
         <meta
           name="description"
-          content="Explore how inte-QT designed and deployed a resilient, scalable telecom network for a leading bank in Fiji, enabling reliable digital banking and future growth."
+          content="inte-QT delivered a dedicated connectivity solution for a reputed bank in Fiji, overcoming geographical challenges and infrastructure shortages."
         />
         <link rel="canonical" href="https://www.inte-qt.com/cases/fiji" />
         <script type="application/ld+json">
@@ -127,16 +133,11 @@ const CaseFiji = () => {
             transition={{ duration: 0.5 }}
             className="text-4xl md:text-5xl font-bold mb-6"
           >
-            Strategic Network Deployment for Fiji’s Leading Bank
+            Bank Connectivity Solution in Fiji
           </motion.h1>
 
           <p className="text-lg text-muted-foreground max-w-3xl">
-            As digital banking adoption accelerated across the Pacific region,
-            one of Fiji’s leading financial institutions required a robust,
-            secure, and future-ready telecom network. inte-QT partnered closely
-            with the bank to design and deploy a high-performance infrastructure
-            capable of supporting mission-critical operations and an expanding
-            digital customer experience.
+            The customer required connectivity for a reputed bank located in Fiji, a country of islands. inte-QT delivered a dedicated connectivity solution, overcoming geographical challenges, infrastructure shortages, and adverse climate conditions to ensure secure and seamless banking operations.
           </p>
         </div>
       </section>
@@ -197,21 +198,18 @@ const CaseFiji = () => {
       {/* OUTCOME */}
       <section className="py-16 bg-muted/30">
         <div className="container max-w-5xl">
-          <h2 className="text-3xl font-semibold mb-6">The Outcome</h2>
+          <h2 className="text-3xl font-semibold mb-6">Successful Outcomes</h2>
 
           <p className="text-muted-foreground mb-4">
-            Following the deployment, the bank experienced significant
-            improvements in network stability, application responsiveness, and
-            overall service reliability. Digital transactions became faster and
-            more consistent, directly enhancing the customer experience across
-            Fiji.
+            Collaborative efforts led to timely delivery of services, meeting all quality parameters. Sustainable operations were achieved, with various links live and connected to the cloud.
+          </p>
+
+          <p className="text-muted-foreground mb-4">
+            The execution resulted in significant monetary savings, estimated at around 38%, without compromising service quality. The precise design improved operational effectiveness through prompt monitoring.
           </p>
 
           <p className="text-muted-foreground">
-            With a resilient and scalable telecom foundation in place, the bank
-            is now positioned to support future growth, introduce new digital
-            services, and maintain high availability in an increasingly
-            competitive financial landscape.
+            The customer and end-user appreciated inte-Qt's Dedicated Line service and network support, yielding both tangible benefits and improved service parameters.
           </p>
         </div>
       </section>

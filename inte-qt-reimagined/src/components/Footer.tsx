@@ -140,7 +140,7 @@ const Footer = () => {
 
               <li className="flex items-start gap-2">
                 <Phone className="w-5 h-5 mt-1" />
-                <span>(+44) 203 289 6070</span>
+                <span>+34 919940071</span>
               </li>
 
               <li className="flex items-start gap-2">

@@ -108,6 +108,7 @@ const Country: React.FC = () => {
   const [countrySlug, setCountrySlug] = useState<string>("");
   const [activeTab, setActiveTab] = useState<'overview' | 'references'>('overview');
   const [cloudPartners, setCloudPartners] = useState<string[]>([]);
+  const [cloudPartnersLoading, setCloudPartnersLoading] = useState(false);
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
@@ -122,19 +123,10 @@ const Country: React.FC = () => {
     fetchCountryData(slugFromQuery);
   }, [location.search, navigate]);
 
-  useEffect(() => {
-    if (countryData?.CloudPartnersRange) {
-      const partners = countryData.CloudPartnersRange
-        .split(/[,;|/]+/)
-        .map(partner => partner.trim())
-        .filter(partner => partner.length > 0);
-      setCloudPartners(partners);
-    }
-  }, [countryData?.CloudPartnersRange]);
-
   const fetchCountryData = async (slug: string) => {
     try {
       setLoading(true);
+      setCloudPartnersLoading(true);
       setError(null);
       
       const res = await fetch(`${API_BASE}/api/country/${slug}`);
@@ -155,13 +147,27 @@ const Country: React.FC = () => {
         return;
       }
       
-      setCountryData(data.data);
+      const countryData = data.data;
+      
+      // Parse cloud partners immediately
+      if (countryData?.CloudPartnersRange) {
+        const partners = countryData.CloudPartnersRange
+          .split(/[,;|/]+/)
+          .map(partner => partner.trim())
+          .filter(partner => partner.length > 0);
+        setCloudPartners(partners);
+      } else {
+        setCloudPartners([]);
+      }
+      
+      setCountryData(countryData);
       
     } catch (err: any) {
       console.error("Error fetching country data:", err);
       setError(err.message || "Failed to load country information. Please try again.");
     } finally {
       setLoading(false);
+      setCloudPartnersLoading(false);
     }
   };
 
@@ -972,7 +978,7 @@ const Country: React.FC = () => {
                 Partner with our network services center for enterprise-grade infrastructure with {countryData.partnersRange} global partners
                 {countryData.ddosProtection && " and military-grade security services"}
                 {hasReferences && `, backed by ${countryData.references?.length} supporting case references`}
-                {hasCloudPartners && `, integrated with ${cloudPartners.length} cloud platform partners`}.
+                {`, integrated with various cloud platform partners`}.
               </p>
 
               {/* Service Badges */}
@@ -1011,14 +1017,7 @@ const Country: React.FC = () => {
                   </div>
                 )}
 
-                {hasCloudPartners && (
-                  <div role="listitem">
-                    <Badge className="bg-indigo-500/30 backdrop-blur-sm text-indigo-100 border-indigo-400/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full hover:bg-indigo-500/40 transition-colors text-xs sm:text-sm">
-                      <Cloud className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" aria-hidden="true" />
-                      {cloudPartners.length} Cloud Partners
-                    </Badge>
-                  </div>
-                )}
+ 
               </div>
             </article>
           </div>
@@ -1165,7 +1164,7 @@ const Country: React.FC = () => {
               </section>
 
               {/* Cloud Partners Section */}
-              {hasCloudPartners && (
+              {cloudPartners.length > 0 && (
                 <section className="mb-12 sm:mb-16 cloud-integration" aria-labelledby="cloud-integration-title">
                   <Card className="shadow-xl border border-gray-200 dark:border-gray-800">
                     <CardContent className="p-6 sm:p-8">
@@ -1377,7 +1376,7 @@ const Country: React.FC = () => {
                           <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
                             Enterprise-grade network infrastructure services in {countryName} featuring {countryData.Ipv4PeersRange} IPv4 connectivity, 
                             {countryData.Ipv6PeersRange} IPv6 services, and connectivity through {countryData.IxpPartnersRange} Internet Exchange Points.
-                            {hasCloudPartners && ` Seamlessly integrated with ${cloudPartners.join(', ')} cloud platform partners.`}
+                            {cloudPartners.length > 0 && ` Seamlessly integrated with ${cloudPartners.join(', ')} cloud platform partners.`}
                           </p>
                           
                           <div className="grid grid-cols-2 sm:grid-cols-2 gap-4 sm:gap-6 mt-4 sm:mt-6">
@@ -1402,7 +1401,7 @@ const Country: React.FC = () => {
                             <div className="space-y-1 sm:space-y-2">
                               <h4 className="font-medium text-gray-900 dark:text-white text-sm sm:text-base">Cloud Partner Services</h4>
                               <h5 className="text-xl sm:text-2xl font-bold text-orange-600">
-                                {hasCloudPartners ? cloudPartners.length : "N/A"}
+                                {cloudPartners.length > 0 ? cloudPartners.length : "N/A"}
                               </h5>
                             </div>
                           </div>

@@ -324,8 +324,6 @@ const CreateCountryForm = () => {
     try {
       const url = `${API_BASE}/api/country/dashboard/submit`;
       
-   
-
       const payload = {
         name: formData.name.trim(),
         slug: formData.slug.trim(),
@@ -334,7 +332,7 @@ const CreateCountryForm = () => {
         Ipv6PeersRange: formData.Ipv6PeersRange.trim(),
         IxpPartnersRange: formData.IxpPartnersRange.trim(),
         Ipv4GatewaysRange: formData.Ipv4GatewaysRange.trim(),
-        Ipv6GatewaysRange: formData.Ipv6PeersRange.trim(),
+        Ipv6GatewaysRange: formData.Ipv6GatewaysRange.trim(), // FIXED: Use Ipv6GatewaysRange
         CloudPartnersRange: formData.CloudPartnersRange.trim(),
         ddosProtection: formData.ddosProtection,
         minServiceLatencyRange: formData.minServiceLatencyRange.trim(),
@@ -351,7 +349,6 @@ const CreateCountryForm = () => {
         references: formData.references.filter(ref => ref.trim() !== ''),
       };
 
-    
       const res = await fetch(url, {
         method: "POST",
         headers: {
@@ -362,7 +359,6 @@ const CreateCountryForm = () => {
       });
 
       const data = await res.json();
-   
 
       if (!res.ok) {
         throw new Error(data.message || "Failed to submit country form");
@@ -395,8 +391,6 @@ const CreateCountryForm = () => {
     try {
       const url = `${API_BASE}/api/country/dashboard/submit`;
       
-    
-
       const payload = {
         name: formData.name.trim(),
         slug: formData.slug.trim(),
@@ -405,7 +399,7 @@ const CreateCountryForm = () => {
         Ipv6PeersRange: formData.Ipv6PeersRange.trim(),
         IxpPartnersRange: formData.IxpPartnersRange.trim(),
         Ipv4GatewaysRange: formData.Ipv4GatewaysRange.trim(),
-        Ipv6GatewaysRange: formData.Ipv6PeersRange.trim(),
+        Ipv6GatewaysRange: formData.Ipv6GatewaysRange.trim(), // FIXED: Use Ipv6GatewaysRange
         CloudPartnersRange: formData.CloudPartnersRange.trim(),
         ddosProtection: formData.ddosProtection,
         minServiceLatencyRange: formData.minServiceLatencyRange.trim(),
@@ -422,7 +416,6 @@ const CreateCountryForm = () => {
         references: formData.references.filter(ref => ref.trim() !== ''),
       };
 
-     
       const res = await fetch(url, {
         method: "POST",
         headers: {
@@ -433,7 +426,6 @@ const CreateCountryForm = () => {
       });
 
       const data = await res.json();
-    
 
       if (!res.ok) {
         throw new Error(data.message || "Failed to update country form");
@@ -708,7 +700,7 @@ const CreateCountryForm = () => {
                 </div>
               </div>
 
-              {/* Submarine Cable Image Section - UPDATED */}
+              {/* Submarine Cable Image Section */}
               <div className="bg-white rounded-2xl shadow-lg p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-3 border-b">
                   Submarine Cable Information
@@ -922,7 +914,85 @@ const CreateCountryForm = () => {
               </div>
 
               {/* References Section */}
-             
+              <div className="bg-white rounded-2xl shadow-lg p-6">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-3 border-b">
+                  References
+                </h2>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Add Reference URL
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={newReference}
+                        onChange={(e) => setNewReference(e.target.value)}
+                        onPaste={handlePasteReferences}
+                        className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-black"
+                        placeholder="https://example.com/reference"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleAddReference}
+                        className="px-4 py-3 bg-blue-100 text-blue-600 font-medium rounded-xl hover:bg-blue-200 transition flex items-center gap-2"
+                      >
+                        <Plus className="h-5 w-5" />
+                        Add
+                      </button>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Paste multiple URLs separated by commas, semicolons, or new lines
+                    </p>
+                  </div>
+
+                  {formData.references.length > 0 && (
+                    <div>
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-sm font-medium text-gray-700">
+                          References ({formData.references.length})
+                        </span>
+                        <button
+                          type="button"
+                          onClick={handleClearReferences}
+                          className="text-red-600 hover:text-red-800 text-sm flex items-center gap-1"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          Clear All
+                        </button>
+                      </div>
+                      <div className="space-y-2 max-h-60 overflow-y-auto">
+                        {formData.references.map((ref, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center justify-between bg-gray-50 p-3 rounded-lg border"
+                          >
+                            <div className="flex items-center gap-2 truncate">
+                              <Link className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                              <a
+                                href={ref}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm text-blue-600 hover:underline truncate"
+                              >
+                                {ref}
+                              </a>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveReference(index)}
+                              className="text-gray-400 hover:text-red-600 p-1"
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
 
               {/* Detailed Information */}
               <div className="bg-white rounded-2xl shadow-lg p-6 space-y-6">

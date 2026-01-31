@@ -15,28 +15,13 @@ const mainSections = [
     icon: Network,
     image: "https://images.unsplash.com/vector-1759549084820-637fc3b99068?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Y2hhbGxlbmdlfGVufDB8MHwwfHx8Mg%3D%3D",
     paragraphs: [
-      `A requirement came up for internet connectivity at for a global organization who works for human rights and development programs in the country 'Lebanon' in West Asia.`,
+      `A requirement came up for internet connectivity for a global organization who works for human rights and development programs in the country 'Lebanon' in West Asia.`,
       `Knowing the strengths and capabilities of inte-QT across the globe, the customer asked us if we can execute a service delivery in a complex environment within the given timelines as a global conference was approaching.`,
     ],
     highlights: [
-      "Aging network infrastructure with frequent disruptions",
-      "Inadequate bandwidth for enterprise digital services",
-      "Critical need for resilient and secure connectivity",
-    ],
-  },
-  {
-    title: "Goals",
-    icon: Globe,
-    image: "https://images.unsplash.com/photo-1610540604745-3e96fba9ccef?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Z29hbHN8ZW58MHwwfDB8fHwy",
-    paragraphs: [
-      `The technical specifications were different from the normal internet access deliveries. There was need to a install circuit of high bandwidth using copper lines and scope was work from end to end within the given time frames.`,
-      `The complex regulatory requirements were creating challenges to get the installation lines from the service provider. Challenge the Challenges, this is the spirit with which inte-QT's service delivery team works.`,
-      `The team engaged with the local partner to fulfil the regulatory requirements using out of the box approaches and ensured that the lines are delivered in time. we have a very strong partner network in more than 190+ countries across the world.`,
-    ],
-    highlights: [
-      "High-capacity dedicated connectivity tailored to enterprise use",
-      "Optimized routing for improved performance",
-      "Redundant paths for resilience and uptime",
+      "Complex regulatory requirements creating installation challenges",
+      "Need for high bandwidth circuit using copper lines",
+      "End-to-end scope within tight timelines",
     ],
   },
   {
@@ -44,28 +29,42 @@ const mainSections = [
     icon: Shield,
     image: "https://images.unsplash.com/photo-1627634777217-c864268db30c?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8c29sdXRpb25zfGVufDB8MHwwfHx8Mg%3D%3D",
     paragraphs: [
-      `The delivery then seemed to be quite straight and on track well before the scheduled completion. Then, a sudden tragic accident happened in the capital. `,
-      ` There was a high intensity blast near the seaport. The blast was so devastating that it damaged almost everything in few kilometers of the radius.`,
+      `The delivery then seemed to be quite straight and on track well before the scheduled completion. Then, a sudden tragic accident happened in the capital.`,
+      `There was a high intensity blast near the seaport. The blast was so devastating that it damaged almost everything in few kilometers of the radius.`,
     ],
     highlights: [
-      "Comprehensive network assessment and audit",
-      "Real-time coordination with local partners",
-      "Stress testing for performance and resilience",
+      "Challenge the Challenges spirit - out of the box approaches",
+      "Engaged with local partner to fulfil regulatory requirements",
+      "Leveraged strong partner network across 190+ countries",
     ],
   },
   {
     title: "Learnings",
-    icon: Shield,
+    icon: Globe,
     image: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bGVhcm5pbmd8ZW58MHwwfDB8fHwy",
     paragraphs: [
-      `The end user site was also damaged seriously, and infrastructure restoration was very much essential to move forward in the delivery. The capital was almost halt for a month, our timelines were surely impacted and delays were quite visible.The team also add to face challenges due to surging COVID-19 cases which resulted in limited movements and restrictions were imposed.`,
-      `Amidst all these roadblocks, the team aligned the resources towards achieving the goal in the timelines, following the COVID protocols. The team was allowed to visit the site for limited hours and limited personals`,
-      `Finally with the collective efforts, we completed the delivery not only with the required technicals but also providing additional features to the customer and more importantly it was well within the timelines committed. Thus, another feather in the cap of inte-QT team exceeding customer expectations and making customer delight.`,
+      `The end user site was also damaged seriously, and infrastructure restoration was very much essential to move forward in the delivery. The capital was almost halt for a month, our timelines were surely impacted and delays were quite visible.`,
+      `The team also had to face challenges due to surging COVID-19 cases which resulted in limited movements and restrictions were imposed.`,
+      `Amidst all these roadblocks, the team aligned the resources towards achieving the goal in the timelines, following the COVID protocols. The team was allowed to visit the site for limited hours and limited personals.`,
     ],
     highlights: [
-      "Improved uptime and application responsiveness",
-      "Stable connectivity amid regional infrastructure challenges",
-      "Future-ready foundation for digital services",
+      "Capital city infrastructure severely damaged by blast",
+      "COVID-19 restrictions limited movements and access",
+      "Timeline impacts from multiple simultaneous crises",
+    ],
+  },
+  {
+    title: "Success",
+    icon: Shield,
+    image: "https://images.unsplash.com/photo-1610540604745-3e96fba9ccef?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Z29hbHN8ZW58MHwwfDB8fHwy",
+    paragraphs: [
+      `Finally with the collective efforts, we completed the delivery not only with the required technicals but also providing additional features to the customer and more importantly it was well within the timelines committed.`,
+      `Thus, another feather in the cap of inte-QT team exceeding customer expectations and making customer delight.`,
+    ],
+    highlights: [
+      "Delivery completed within committed timelines despite crises",
+      "Provided additional features beyond requirements",
+      "Exceeded customer expectations and achieved customer delight",
     ],
   },
 ];
@@ -77,9 +76,9 @@ const AmidCrisis = () => {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CaseStudy",
-    name: "Delivering Connectivity Amid Crisis – Lebanon Case",
+    name: "Delivering Connectivity Amid Crisis in Lebanon",
     description:
-      "inte-QT delivered a resilient, customized network solution for enterprise clients in Lebanon, ensuring stable connectivity and performance amid regional challenges.",
+      "inte-QT delivered internet connectivity for a global human rights organization in Lebanon despite port blast disaster and COVID-19 restrictions.",
     url: "https://www.inte-qt.com/cases/lebanon",
     provider: {
       "@type": "Organization",
@@ -95,10 +94,10 @@ const AmidCrisis = () => {
   return (
     <>
       <Helmet>
-        <title>Lebanon Case Study | Connectivity Amid Crisis – inte-QT</title>
+        <title>Delivering Connectivity Amid Crisis - Lebanon Case Study | inte-QT</title>
         <meta
           name="description"
-          content="Explore how inte-QT delivered a resilient and customized network solution for enterprise clients in Lebanon, ensuring stable connectivity and enhanced performance amid local challenges."
+          content="inte-QT delivered internet connectivity for a global human rights organization in Lebanon despite port blast disaster and COVID-19 restrictions."
         />
         <link rel="canonical" href="https://www.inte-qt.com/cases/lebanon" />
         <script type="application/ld+json">
@@ -117,13 +116,10 @@ const AmidCrisis = () => {
             className="max-w-4xl"
           >
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 leading-tight">
-              Delivering Connectivity Amid Crisis – Lebanon Case
+              Delivering Connectivity Amid Crisis in Lebanon
             </h1>
             <p className="text-base sm:text-lg md:text-xl text-muted-foreground">
-              inte-QT partnered with enterprises in Lebanon to design and deploy a
-              customized telecom network that delivered resilient, high-performance
-              connectivity, even amid infrastructure challenges and regional
-              uncertainty.
+              inte-QT successfully delivered internet connectivity for a global human rights organization in Lebanon, overcoming a devastating port blast, COVID-19 restrictions, and complex regulatory challenges within tight deadlines.
             </p>
           </motion.div>
         </div>
@@ -209,10 +205,10 @@ const AmidCrisis = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 md:mb-6">
-              Need Resilient Connectivity for Your Enterprise?
+              Need Resilient Connectivity in Challenging Environments?
             </h2>
             <p className="text-sm sm:text-base md:text-lg text-muted-foreground mb-6 md:mb-8">
-              Contact inte-QT today to discuss how we can deliver reliable, high-performance network solutions for your organization, even in challenging environments.
+              Contact inte-QT today to discuss how we can deliver reliable connectivity solutions for your organization, even in the most challenging circumstances.
             </p>
             <a
               href="/contact"
