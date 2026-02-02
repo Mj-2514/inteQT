@@ -22,16 +22,14 @@ const Footer = () => {
         text-white
       "
     >
-      
-
       <div className="relative container mx-auto px-6 lg:px-12 py-20 bg-[#1f2a33]">
         {/* Main Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-14">
-
+          
           {/* Brand */}
           <div>
             <img
-              src={"/logo1.png"}
+              src="/logo1.png"
               alt="inte-QT"
               className="w-32 h-auto mb-4"
             />
@@ -40,7 +38,7 @@ const Footer = () => {
               Your Global Access Enabler in 190+ Countries
             </p>
 
-            {/* Social Icons — FIXED */}
+            {/* Social Icons */}
             <div className="flex gap-4">
               <a
                 href="https://www.linkedin.com/company/bitsandbyteglobal/"
@@ -154,9 +152,22 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-white/25 pt-8 text-center">
+        <div className="border-t border-white/25 pt-8 text-center space-y-3">
           <p className="text-sm opacity-90">
             © {currentYear} INTELLIGENT QUOTING TECHNOLOGY S.L. All Rights Reserved.
+          </p>
+
+          {/* Trust / Business Listing */}
+          <p className="text-xs opacity-75">
+            📍 Business listed on{" "}
+            <a
+              href="https://jsdl.in/DT-30318YIEKW7"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-yellow-300 transition"
+            >
+              Justdial
+            </a>
           </p>
         </div>
       </div>
