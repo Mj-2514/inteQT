@@ -473,7 +473,7 @@ export const reviewSubmission = async (req, res) => {
     if (status === "rejected") {
       country.rejectionNote = rejectionNote;
       // Remove the slug when rejected to prevent SEO conflicts
-      country.slug = undefined;
+      
       // Clear references if rejected (optional)
       country.references = [];
     } else {
