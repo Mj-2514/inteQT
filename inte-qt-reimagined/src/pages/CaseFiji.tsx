@@ -18,7 +18,7 @@ const mainServices = [
   {
     title: "Challenges",
     icon: Network,
-    image: "Wireless connectivity solution",
+    image: "https://i.imgur.com/7fH1NGe.jpg",
     description: `
       At inte-QT, we believe that challenges make us stronger and better with each delivery.
 
@@ -45,7 +45,7 @@ Additionally, commercial terms needed to be aggressive to ensure savings.
   {
     title: "Solution",
     icon: Shield,
-    image: "Technology implementation",
+    image: "https://i.imgur.com/Dvbfhyz.jpg",
     description: `
       Deeper customer engagement has always been part of the culture at Bits and Byte Global. Our customer appreciates the support we provide, allowing for open communication of requirements and concerns.
 
@@ -66,7 +66,7 @@ inte-Qt Dedicated Line service offers commitment across all fronts, from bandwid
   {
     title: "Outcomes",
     icon: Globe,
-    image: "Beautiful beach in Fiji",
+    image: "https://i.imgur.com/4O7Reay.jpg",
     description: `
       Collaborative efforts led to timely delivery of services, meeting all quality parameters. Sustainable operations were achieved, with various links live and connected to the cloud.
 
